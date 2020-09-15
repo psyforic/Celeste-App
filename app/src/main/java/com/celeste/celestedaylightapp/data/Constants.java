@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Constants {
-
+    public static final String CREDENTIALS = "Credentials";
     public static Resources getStrRes(Context context) {
         return context.getResources();
     }
