@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!--    <style name="loginButton" parent="viewParent">-->
+<!--        <item name="android:background">@drawable/login_button_bk</item>-->
+<!--        <item name="android:textColor">@color/whiteTextColor</item>-->
+<!--        <item name="android:buttonCornerRadius">12dp</item>-->
+<!--        <item name="android:textStyle">bold</item>-->
+<!--    </style>-->
+
+<!--    <style name="loginButton" parent="viewParent">-->
+<!--        <item name="android:background">@drawable/login_button_bk</item>-->
+<!--        <item name="android:textColor">@color/whiteTextColor</item>-->
+<!--        <item name="android:buttonCornerRadius">12dp</item>-->
+<!--        <item name="android:textStyle">bold</item>-->
+<!--    </style>-->
+
+    <style name="loginButton" parent="viewParent">
+        <item name="mrl_rippleOverlay">true</item>
+        <item name="mrl_rippleColor">#80FFFFFF</item>
+        <item name="mrl_rippleHover">true</item>
+        <item name="mrl_rippleAlpha">0.2</item>
+        <item name="android:background">@drawable/login_button_bk</item>
+        <item name="android:textColor">@color/whiteTextColor</item>
+        <item name="android:buttonCornerRadius">12dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

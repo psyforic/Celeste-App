@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="icons">
+        <item>@drawable/ic_ac_unit</item>
+        <item>@drawable/ic_afternoon</item>
+        <item>@drawable/ic_asleep</item>
+        <item>@drawable/ic_do_not_disturb</item>
+        <item>@drawable/ic_evening</item>
+        <item>@drawable/ic_happy</item>
+        <item>@drawable/ic_mood</item>
+        <item>@drawable/ic_night</item>
+        <item>@drawable/ic_notif_active</item>
+        <item>@drawable/ic_wb_incandescent</item>
+        <item>@drawable/ic_watch_later</item>
+        <item>@drawable/ic_sunny</item>
+        <item>@drawable/ic_star_half</item>
+        <item>@drawable/ic_work</item>
+    </string-array>
+
+    <string-array name="default_modes_names">
+        <item>Morning</item>
+        <item>Afternoon</item>
+        <item>Happy</item>
+        <item>Night</item>
+        <item>At Work</item>
+        <item>Deep Work</item>
+    </string-array>
+
+    <string-array name="default_modes_icons">
+        <item>@drawable/ic_automatic</item>
+        <item>@drawable/ic_sunny</item>
+        <item>@drawable/ic_happy</item>
+        <item>@drawable/ic_night</item>
+        <item>@drawable/ic_work</item>
+        <item>@drawable/ic_do_not_disturb</item>
+    </string-array>
+
+    <string-array name="default_modes_commands">
+        <item>a00"</item>
+        <item>a00"</item>
+        <item>a00"</item>
+        <item>a00"</item>
+        <item>a00"</item>
+        <item>a00"</item>
+    </string-array>
+    <string-array name="default_modes_sectioned">
+        <item>false</item>
+        <item>false</item>
+        <item>false</item>
+        <item>false</item>
+        <item>false</item>
+        <item>false</item>
+    </string-array>
+</resources>

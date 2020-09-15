@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:id="@+id/main_content"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:background="@color/mdtp_white"-->
+<!--    android:fitsSystemWindows="true"-->
+<!--    android:orientation="vertical">-->
+
+<!--    <com.google.android.material.appbar.AppBarLayout-->
+<!--        android:id="@+id/appbar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:theme="@style/AppTheme.AppBarOverlay">-->
+
+<!--    </com.google.android.material.appbar.AppBarLayout>-->
+
+    <androidx.core.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nested_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        android:scrollingCache="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:layout_marginTop="@dimen/activity_vertical_margin">
+
+            <com.skumar.flexibleciruclarseekbar.CircularSeekBar
+                android:id="@+id/mCircularSeekBar"
+                android:layout_width="243dp"
+                android:layout_height="240dp"
+                android:layout_centerHorizontal="true"
+                android:focusableInTouchMode="true"
+                android:paddingLeft="60dp"
+                android:paddingTop="60dp"
+                android:paddingRight="60dp"
+                android:paddingBottom="10dp"
+                app:arcWidth="20dp" />
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="70dp"
+                android:src="@drawable/ic_logo_new" />
+
+            <TextView
+                android:id="@+id/mSeekBarValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/mCircularSeekBar"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="185dp"
+                android:fontFamily="sans-serif-light"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="28sp" />
+
+            <TextView
+                android:id="@+id/text_mode_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/mCircularSeekBar"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/spacing_medium"
+                android:fontFamily="@font/poppins_light"
+                android:text="@string/str_no_mode_selected"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textSize="22sp" />
+
+            <View
+                android:id="@+id/top_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/text_mode_name"
+                android:layout_marginLeft="@dimen/spacing_xlarge"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:layout_marginRight="@dimen/spacing_xlarge"
+                android:background="@color/grey_100" />
+
+            <LinearLayout
+                android:id="@+id/recycler_view_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/top_divider"
+                android:layout_marginLeft="@dimen/spacing_xlarge"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:layout_marginRight="@dimen/spacing_xlarge"
+                android:layout_marginBottom="@dimen/spacing_small"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/recycler_view_holder"
+                android:orientation="vertical">
+
+                <View
+                    android:id="@+id/top_divider2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="@dimen/spacing_xlarge"
+                    android:layout_marginRight="@dimen/spacing_xlarge"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/grey_100"
+                    android:paddingTop="@dimen/spacing_medium" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:clickable="true"
+                    android:onClick="onConnectClicked"
+                    app:fabCustomSize="48dp"
+                    app:fabSize="auto"
+                    app:rippleColor="@color/colorPrimaryDark"
+                    app:srcCompat="@drawable/ic_power_settings"
+                    tools:ignore="RelativeOverlap" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </RelativeLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+<!--</LinearLayout>-->

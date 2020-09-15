@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "819108191249",
+    "firebase_url": "https://celeste-bedc1.firebaseio.com",
+    "project_id": "celeste-bedc1",
+    "storage_bucket": "celeste-bedc1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819108191249:android:7e6682a9d99f0e422e65b0",
+        "android_client_info": {
+          "package_name": "com.celeste.celestedaylightapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819108191249-t0m3h2s8uset8andl760rhbaqmfacifa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBttqBA8EnKO9oWZYKNqfgo9vGkrYY4b6k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819108191249-t0m3h2s8uset8andl760rhbaqmfacifa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
