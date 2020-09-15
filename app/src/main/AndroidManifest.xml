@@ -17,14 +17,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.AddUser"></activity>
+<!--        <activity android:name=".activity.TenantLogin"></activity>-->
+        <activity android:name=".activity.AddUser" />
         <activity android:name=".activity.AutomaticModesActivity" />
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.Modes" />
         <activity android:name=".activity.Login" />
         <activity android:name=".activity.AddModeActivity" /> <!-- <activity android:name=".activity.LoginActivity" /> -->
         <activity android:name=".activity.MainActivity" />
-        <activity android:name=".activity.LoginActivity">
+        <activity android:name=".activity.TenantLogin">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
