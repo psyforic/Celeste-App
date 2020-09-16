@@ -40,10 +40,10 @@
                 android:layout_height="240dp"
                 android:layout_centerHorizontal="true"
                 android:focusableInTouchMode="true"
-                android:paddingLeft="60dp"
-                android:paddingTop="60dp"
-                android:paddingRight="60dp"
-                android:paddingBottom="10dp"
+                android:paddingLeft="40dp"
+                android:paddingTop="40dp"
+                android:paddingRight="40dp"
+                android:paddingBottom="20dp"
                 app:arcWidth="20dp" />
 
             <ImageView

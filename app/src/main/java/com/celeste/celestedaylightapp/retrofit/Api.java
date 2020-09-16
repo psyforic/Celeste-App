@@ -3,6 +3,7 @@ package com.celeste.celestedaylightapp.retrofit;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateModel;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
 import com.celeste.celestedaylightapp.model.tenant.TenantDetailResult;
+import com.celeste.celestedaylightapp.model.tenant.TenantResponse;
 import com.celeste.celestedaylightapp.model.user.UserProfile;
 
 import retrofit2.Call;
@@ -24,6 +25,10 @@ public interface Api {
 
     @GET("/api/services/app/User/Get")
     Call<UserProfile> getUser(@Query("id") int Id);
+
+
+    @GET("/api/services/app/Account/IsTenantAvailable")
+    Call<TenantResponse> getTenant();
 
     @GET("/api/services/app/User/GetAll")
     Call<UserProfile> getUser(@Query("Keyword") String Keyword, @Query("IsActive") boolean IsActive, @Query("SkipCount") int SkipCount, @Query("MaxResultCount") int MaxResultCount);

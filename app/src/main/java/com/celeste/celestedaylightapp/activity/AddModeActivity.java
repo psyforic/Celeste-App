@@ -52,7 +52,6 @@ public class AddModeActivity extends AppCompatActivity {
        mCircularSeekBar.setDrawMarkings(true);
        mCircularSeekBar.setDotMarkers(false);
 
-//        mCircularSeekBar.setRingColor(getResources().getColor(R.color.colorPrimary));
         mCircularSeekBar.setRoundedEdges(true);
         mCircularSeekBar.setIsGradient(true);
         mCircularSeekBar.setPopup(false);

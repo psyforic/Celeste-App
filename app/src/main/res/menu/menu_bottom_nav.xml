@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_dashboard"
         android:title="Dashboard" />
 
+    <item
+        android:id="@+id/navigation_modes"
+        android:icon="@drawable/ic_modes"
+        android:title="Modes" />
 
     <item
         android:id="@+id/navigation_settings"
@@ -13,13 +18,15 @@
         android:title="Settings" />
 
     <item
-        android:id="@+id/navigation_modes"
-        android:icon="@drawable/ic_person"
-        android:title="Users" />
-
-    <item
         android:id="@+id/navigation_profile"
-        android:icon="@drawable/ic_about"
-        android:title="About" />
+        android:icon="@drawable/ic_more"
+        android:title="More" />
+<!--    <item-->
+<!--        android:id="@+id/more"-->
+<!--        android:title="More"-->
+<!--        android:icon="@android:drawable/btn_star"-->
+<!--        android:contentDescription="@string/content_description_more"-->
+<!--        app:showAsAction="never"/>-->
+
 
 </menu>

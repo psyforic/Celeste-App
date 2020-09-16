@@ -42,7 +42,7 @@ import java.util.UUID;
  * A simple {@link Fragment} subclass.
  * create an instance of this fragment.
  */
-public class ModesFragment extends BleProfileServiceReadyActivity<UARTService.UARTBinder> implements UARTInterface, MainActivity.ConfigurationListener  {
+public class ModesFragment extends BleProfileServiceReadyActivity<UARTService.UARTBinder> implements UARTInterface, MainActivity.ConfigurationListener {
     private View parenView;
     private RecyclerView recyclerView;
     private ActionModeCallback actionModeCallback;

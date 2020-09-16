@@ -39,16 +39,15 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthListener;
+    AttemptLoginTask loginTask = null;
+    Api apiService = ApiClient.getInstance().create(Api.class);
     private AppCompatEditText editEmail, editPassword;
     private TextInputLayout textInputEmail;
     private TextInputLayout textInputPassword;
-
     private Button btnLogin;
     private TextView btnRegister;
     private ProgressBar progressBar;
     private View parentView;
-    AttemptLoginTask loginTask = null;
-    Api apiService = ApiClient.getInstance().create(Api.class);
 
     private static boolean isValidEmail(String email) {
         return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
@@ -75,8 +74,8 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 loginTask = new AttemptLoginTask(editEmail.getText().toString(), editPassword.getText().toString());
                 loginTask.execute();
-//                // submitForm();
-//                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                // submitForm();
+                //               startActivity(new Intent(LoginActivity.this, MainActivity.class));
 //                hideKeyboard();
             }
         });
@@ -87,73 +86,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         Tools.systemBarLolipop(this);
-    }
-
-//    private void login() {
-//        if (!validateEmail()) {
-//            return;
-//        }
-//        if (!validatePassword()) {
-//            return;
-//        }
-//        loginTask = new AttemptLoginTask(editEmail.getText().toString(), editPassword.getText().toString());
-//        loginTask.execute();
-//    }
-    private class AttemptLoginTask extends AsyncTask<String, String, String> {
-
-        private String usernameOrEmailAddress;
-        private String password;
-
-        public AttemptLoginTask(String usernameOrEmailAddress, String password) {
-            this.usernameOrEmailAddress = usernameOrEmailAddress;
-            this.password = password;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
-            btnLogin.setVisibility(View.GONE);
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            try {
-                AuthenticateModel userLogin = new AuthenticateModel(usernameOrEmailAddress, password);
-                userLogin.setRememberClient(true);
-                Call<AuthenticateResult> call = apiService.authenticateUser(userLogin);
-                call.enqueue(new Callback<AuthenticateResult>() {
-                    @Override
-                    public void onResponse(Call<AuthenticateResult> call, Response<AuthenticateResult> response) {
-                        if (response.code() == 500) {
-                            Toast.makeText(getApplicationContext(), "username or password incorrect", Toast.LENGTH_LONG).show();
-                            progressBar.setVisibility(View.GONE);
-                        } else if (response.code() == 200) {
-                            if (response.body() != null) {
-                                EasyPreference.with(getApplicationContext()).addObject(Constants.CREDENTIALS, response.body().getResult()).save();
-                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                progressBar.setVisibility(View.GONE);
-                                finish();
-                            }
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<AuthenticateResult> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
-                        progressBar.setVisibility(View.GONE);
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-        @Override
-        protected void onPostExecute(String s) {
-            btnLogin.setVisibility(View.VISIBLE);
-            hideKeyboard();
-            super.onPostExecute(s);
-        }
     }
 
     private void setupUI() {
@@ -209,13 +141,81 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        mAuth.removeAuthStateListener(mAuthListener);
+//        mAuth.removeAuthStateListener(mAuthListener);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        //      mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    //    private void login() {
+//        if (!validateEmail()) {
+//            return;
+//        }
+//        if (!validatePassword()) {
+//            return;
+//        }
+//        loginTask = new AttemptLoginTask(editEmail.getText().toString(), editPassword.getText().toString());
+//        loginTask.execute();
+//    }
+    private class AttemptLoginTask extends AsyncTask<String, String, String> {
+
+        private String usernameOrEmailAddress;
+        private String password;
+
+        public AttemptLoginTask(String usernameOrEmailAddress, String password) {
+            this.usernameOrEmailAddress = usernameOrEmailAddress;
+            this.password = password;
+        }
+
+        @Override
+        protected void onPreExecute() {
+//            progressBar.setVisibility(View.VISIBLE);
+            btnLogin.setVisibility(View.GONE);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                AuthenticateModel userLogin = new AuthenticateModel(usernameOrEmailAddress, password);
+                userLogin.setRememberClient(true);
+                Call<AuthenticateResult> call = apiService.authenticateUser(userLogin);
+                call.enqueue(new Callback<AuthenticateResult>() {
+                    @Override
+                    public void onResponse(Call<AuthenticateResult> call, Response<AuthenticateResult> response) {
+                        if (response.code() == 500) {
+                            Toast.makeText(getApplicationContext(), "username or password incorrect", Toast.LENGTH_LONG).show();
+                            //   progressBar.setVisibility(View.GONE);
+                        } else if (response.code() == 200) {
+                            if (response.body() != null) {
+                                EasyPreference.with(getApplicationContext()).addObject(Constants.CREDENTIALS, response.body().getResult()).save();
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                //     progressBar.setVisibility(View.GONE);
+                                finish();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AuthenticateResult> call, Throwable t) {
+                        Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            btnLogin.setVisibility(View.VISIBLE);
+            hideKeyboard();
+            super.onPostExecute(s);
+        }
     }
 
     private class MyTextWatcher implements TextWatcher {

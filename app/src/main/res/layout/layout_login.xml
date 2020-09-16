@@ -101,6 +101,5 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/loginViewsMargin"/>
 
-
     </LinearLayout>
 </androidx.cardview.widget.CardView>

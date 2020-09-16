@@ -10,6 +10,8 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -29,9 +31,8 @@ import com.celeste.celestedaylightapp.database.DatabaseHelper;
 import com.celeste.celestedaylightapp.domain.Command;
 import com.celeste.celestedaylightapp.domain.UartConfiguration;
 import com.celeste.celestedaylightapp.fragment.Frag_Dashboard;
-import com.celeste.celestedaylightapp.fragment.FragmentAbout;
+import com.celeste.celestedaylightapp.fragment.FragmentUserModes;
 import com.celeste.celestedaylightapp.fragment.SettingsFragment;
-import com.celeste.celestedaylightapp.fragment.UsersFragment;
 import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.profile.BleProfileService;
 import com.celeste.celestedaylightapp.profile.BleProfileServiceReadyActivity;
@@ -377,19 +378,18 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                     fragment = new Frag_Dashboard();
                     actionBar.setTitle("Dashboard");
                     break;
-
+                case R.id.navigation_modes:
+                    fragment = new FragmentUserModes();
+                    actionBar.setTitle("Modes");
+                    break;
                 case R.id.navigation_settings:
                     fragment = new SettingsFragment();
                     actionBar.setTitle("Settings");
                     break;
-                case R.id.navigation_modes:
-                    fragment = new UsersFragment();
-                    actionBar.setTitle("Users");
-                    break;
-                case R.id.navigation_profile:
-                    fragment = new FragmentAbout();
-                    actionBar.setTitle("About");
-                    break;
+//                case R.id.navigation_profile:
+//                //    fragment = new ModesFragment();
+//                    actionBar.setTitle("More");
+//                    break;
                 default:
                     fragment = new Frag_Dashboard();
                     break;
@@ -424,46 +424,67 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         Tools.setSystemBarLight(this);
     }
 
-
-    private void animateNavigation(final boolean hide) {
-        if (isNavigationHide && hide || !isNavigationHide && !hide) return;
-        isNavigationHide = hide;
-        int moveY = hide ? (2 * navigation.getHeight()) : 0;
-        navigation.animate().translationY(moveY).setStartDelay(100).setDuration(300).start();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.actions_menu, menu);
+        return true;
     }
-
 
     @Override
-    public void send(String text) {
-        if (mServiceBinder != null)
-            mServiceBinder.send(text);
-    }
-
-    public interface ConfigurationListener {
-        void onConfigurationModified();
-
-        void onConfigurationChanged(final UartConfiguration configuration);
-
-        //void setEditMode(final boolean editMode);
-    }
-
-    private class CommentVisitor implements Visitor {
-        @Override
-        public void read(final Type type, final NodeMap<InputNode> node) throws Exception {
-            // do nothing
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_profile:
+                //add the function to perform here
+               break;
+            case R.id.action_about:
+                //add the function to perform here
+                break;
+            case R.id.action_logout:
+                //add the function to perform here
+                break;
+        }
+            return super.onOptionsItemSelected(item);
         }
 
-        @Override
-        public void write(final Type type, final NodeMap<OutputNode> node) throws Exception {
-            if (type.getType().equals(Command[].class)) {
-                OutputNode element = node.getNode();
+        private void animateNavigation ( final boolean hide){
+            if (isNavigationHide && hide || !isNavigationHide && !hide) return;
+            isNavigationHide = hide;
+            int moveY = hide ? (2 * navigation.getHeight()) : 0;
+            navigation.animate().translationY(moveY).setStartDelay(100).setDuration(300).start();
+        }
 
-                StringBuilder builder = new StringBuilder("A configuration must have 9 commands, one for each button.\n        Possible icons are:");
-                for (Command.Icon icon : Command.Icon.values())
-                    builder.append("\n          - ").append(icon.toString());
-                element.setComment(builder.toString());
+
+        @Override
+        public void send (String text){
+            if (mServiceBinder != null)
+                mServiceBinder.send(text);
+        }
+
+        public interface ConfigurationListener {
+            void onConfigurationModified();
+
+            void onConfigurationChanged(final UartConfiguration configuration);
+
+            //void setEditMode(final boolean editMode);
+        }
+
+        private class CommentVisitor implements Visitor {
+            @Override
+            public void read(final Type type, final NodeMap<InputNode> node) throws Exception {
+                // do nothing
+            }
+
+            @Override
+            public void write(final Type type, final NodeMap<OutputNode> node) throws Exception {
+                if (type.getType().equals(Command[].class)) {
+                    OutputNode element = node.getNode();
+
+                    StringBuilder builder = new StringBuilder("A configuration must have 9 commands, one for each button.\n        Possible icons are:");
+                    for (Command.Icon icon : Command.Icon.values())
+                        builder.append("\n          - ").append(icon.toString());
+                    element.setComment(builder.toString());
+                }
             }
         }
-    }
 
-}
+    }

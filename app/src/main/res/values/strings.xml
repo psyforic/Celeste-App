@@ -116,6 +116,7 @@
     <string name="str_your_name">your name</string>
     <string name="str_my_presets">My Presets</string>
     <string name="str_sync">Sync</string>
+    <string name="content_description_more">More</string>
     <string name="str_profile">Profile</string>
     <string name="str_your_location">Port Elizabeth, ZA</string>
     <string-array name="dfu_app_file_browser">

@@ -38,7 +38,7 @@ import org.simpleframework.xml.stream.HyphenStyle;
 import java.util.List;
 import java.util.UUID;
 
-public class AutomaticModesActivity extends BleProfileServiceReadyActivity<UARTService.UARTBinder> implements UARTInterface, MainActivity.ConfigurationListener {
+public class AutomaticModesActivity  extends BleProfileServiceReadyActivity<UARTService.UARTBinder> implements UARTInterface, MainActivity.ConfigurationListener {
     private View parenView;
     private RecyclerView recyclerView;
     private ActionModeCallback actionModeCallback;
