@@ -20,14 +20,15 @@ import com.celeste.celestedaylightapp.UARTInterface;
 import com.celeste.celestedaylightapp.UARTService;
 import com.celeste.celestedaylightapp.adapter.ModeListAdapter;
 import com.celeste.celestedaylightapp.data.Constants;
-import com.celeste.celestedaylightapp.data.Tools;
-import com.celeste.celestedaylightapp.database.DatabaseHelper;
 import com.celeste.celestedaylightapp.domain.Command;
 import com.celeste.celestedaylightapp.domain.UartConfiguration;
 import com.celeste.celestedaylightapp.fragment.Frag_Dashboard;
 import com.celeste.celestedaylightapp.model.Mode;
 import com.celeste.celestedaylightapp.profile.BleProfileService;
 import com.celeste.celestedaylightapp.profile.BleProfileServiceReadyActivity;
+import com.celeste.celestedaylightapp.sqllitedb.DBManager;
+import com.celeste.celestedaylightapp.database.DatabaseHelper;
+import com.celeste.celestedaylightapp.utils.Tools;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.simpleframework.xml.Serializer;
@@ -51,6 +52,7 @@ public class AutomaticModesActivity  extends BleProfileServiceReadyActivity<UART
     private UartConfiguration mConfiguration;
     private SharedPreferences mPreferences;
     private final static String PREFS_CONFIGURATION = "configuration_id";
+    private DBManager dbManager;
 
   /*  @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +83,7 @@ public class AutomaticModesActivity  extends BleProfileServiceReadyActivity<UART
         setup();
         addMode();
         initComponent();
-      //  setDefaultFragment();
+
     }
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -92,15 +94,9 @@ public class AutomaticModesActivity  extends BleProfileServiceReadyActivity<UART
         Tools.setSystemBarColor(this);
     }
 
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//
-//
-//    }
     private void initComponent() {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-     //   recyclerView.addItemDecoration(new LineItemDecoration(this, LinearLayout.VERTICAL));
         recyclerView.setHasFixedSize(true);
         modes = Constants.getDefaultModesData(this);
         try {
@@ -129,7 +125,6 @@ public class AutomaticModesActivity  extends BleProfileServiceReadyActivity<UART
                         break;
                 }
                 final UARTInterface uart = (UARTInterface) AutomaticModesActivity.this;
-                // Toast.makeText(AutomaticModesActivity.this, "Clicked " + obj.getCommand(), Toast.LENGTH_LONG).show();
                 uart.send(text);
             }
         });

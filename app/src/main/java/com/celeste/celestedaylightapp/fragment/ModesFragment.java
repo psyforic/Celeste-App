@@ -19,14 +19,17 @@ import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.UARTInterface;
 import com.celeste.celestedaylightapp.UARTService;
 import com.celeste.celestedaylightapp.activity.MainActivity;
-import com.celeste.celestedaylightapp.adapter.ModeListAdapter;
+import com.celeste.celestedaylightapp.adapter.UserModesAdapter;
 import com.celeste.celestedaylightapp.data.Constants;
 import com.celeste.celestedaylightapp.database.DatabaseHelper;
-import com.celeste.celestedaylightapp.domain.Command;
 import com.celeste.celestedaylightapp.domain.UartConfiguration;
 import com.celeste.celestedaylightapp.model.Mode;
+import com.celeste.celestedaylightapp.model.usermode.UserMode;
 import com.celeste.celestedaylightapp.profile.BleProfileService;
 import com.celeste.celestedaylightapp.profile.BleProfileServiceReadyActivity;
+import com.celeste.celestedaylightapp.retrofit.Api;
+import com.celeste.celestedaylightapp.retrofit.ApiClient;
+import com.celeste.celestedaylightapp.sqllitedb.DBManager;
 import com.celeste.celestedaylightapp.widget.LineItemDecoration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -35,6 +38,7 @@ import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.stream.Format;
 import org.simpleframework.xml.stream.HyphenStyle;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,13 +53,15 @@ public class ModesFragment extends BleProfileServiceReadyActivity<UARTService.UA
     private ActionMode actionMode;
     private List<Mode> modes;
     private LinearLayout lyt_not_found;
-    private ModeListAdapter mAdapter;
+    private UserModesAdapter mAdapter;
     private FloatingActionButton fab;
     private UARTService.UARTBinder mServiceBinder;
     private UartConfiguration mConfiguration;
     private SharedPreferences mPreferences;
     private final static String PREFS_CONFIGURATION = "configuration_id";
-
+    private DBManager dbManager;
+    private List<UserMode> assessments = new ArrayList<>();
+    private Api api = ApiClient.getInstance(this).create(Api.class);
     public ModesFragment() {
         // Required empty public constructor
     }
@@ -83,15 +89,6 @@ public class ModesFragment extends BleProfileServiceReadyActivity<UARTService.UA
         initComponent();
     }
 
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//        // Inflate the layout for this fragment
-//        view = inflater.inflate(R.layout.modes_framgent, container, false);
-//        listModes();
-//        return view;
-//    }
-
     private void initComponent() {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -108,26 +105,26 @@ public class ModesFragment extends BleProfileServiceReadyActivity<UARTService.UA
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mAdapter = new ModeListAdapter(mConfiguration, this, new ModeListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Command obj, int position) {
-                final Command.Eol eol = obj.getEol();
-                String text = obj.getCommand();
-                if (text == null)
-                    text = "";
-                switch (eol) {
-                    case CR_LF:
-                        text = text.replaceAll("\n", "\r\n");
-                        break;
-                    case CR:
-                        text = text.replaceAll("\n", "\r");
-                        break;
-                }
-                final UARTInterface uart = (UARTInterface) ModesFragment.this;
-                // Toast.makeText(AutomaticModesActivity.this, "Clicked " + obj.getCommand(), Toast.LENGTH_LONG).show();
-                uart.send(text);
-            }
-        });
+//        mAdapter = new ModeListAdapter(mConfiguration, this, new ModeListAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(Command obj, int position) {
+//                final Command.Eol eol = obj.getEol();
+//                String text = obj.getCommand();
+//                if (text == null)
+//                    text = "";
+//                switch (eol) {
+//                    case CR_LF:
+//                        text = text.replaceAll("\n", "\r\n");
+//                        break;
+//                    case CR:
+//                        text = text.replaceAll("\n", "\r");
+//                        break;
+//                }
+//                final UARTInterface uart = (UARTInterface) ModesFragment.this;
+//                // Toast.makeText(AutomaticModesActivity.this, "Clicked " + obj.getCommand(), Toast.LENGTH_LONG).show();
+//                uart.send(text);
+//            }
+//        });
 
         recyclerView.setAdapter(mAdapter);
         actionModeCallback = new ActionModeCallback();
@@ -137,7 +134,21 @@ public class ModesFragment extends BleProfileServiceReadyActivity<UARTService.UA
             lyt_not_found.setVisibility(View.GONE);
         }
     }
-
+//    public void showModes()
+//    {
+//        Call<UserModeGetResponse> call=api.getUserMode(1+"");
+//        call.enqueue(new Callback<UserModeGetResponse>() {
+//            @Override
+//            public void onResponse(Call<UserModeGetResponse> call, Response<UserModeGetResponse> response) {
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<UserModeGetResponse> call, Throwable t) {
+//
+//            }
+//        });
+//    }
     private void setup() {
         parenView = findViewById(android.R.id.content);
         lyt_not_found = findViewById(R.id.lyt_not_found);
@@ -159,7 +170,7 @@ public class ModesFragment extends BleProfileServiceReadyActivity<UARTService.UA
     @Override
     public void onConfigurationChanged(UartConfiguration configuration) {
         mConfiguration = configuration;
-        mAdapter.setConfiguration(configuration);
+      //  mAdapter.setConfiguration(configuration);
     }
 
     @Override

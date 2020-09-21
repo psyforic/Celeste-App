@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/loginCard"
+    android:id="@+id/tenant_login_layout"
     app:cardCornerRadius="@dimen/loginCardRadius"
     android:elevation="5dp"
     android:layout_gravity="center"
@@ -14,6 +15,7 @@
         style="@style/linearParent"
         android:layout_gravity="center"
         android:padding="@dimen/loginViewsMargin">
+
 
         <TextView
             android:layout_width="wrap_content"
@@ -32,7 +34,7 @@
             android:layout_marginTop="@dimen/loginViewsMargin">
 
             <EditText
-                android:id="@+id/edit_email"
+                android:id="@+id/edit_tenancyName"
                 style="@style/modifiedEditText"
                 android:layout_marginLeft="-4dp"
                 android:layout_marginRight="-4dp"

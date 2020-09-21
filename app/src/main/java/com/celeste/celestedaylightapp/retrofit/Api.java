@@ -2,9 +2,10 @@ package com.celeste.celestedaylightapp.retrofit;
 
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateModel;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
-import com.celeste.celestedaylightapp.model.tenant.TenantDetailResult;
+import com.celeste.celestedaylightapp.model.modes.ModeGetResponse;
+import com.celeste.celestedaylightapp.model.tenant.TenantLoginModel;
 import com.celeste.celestedaylightapp.model.tenant.TenantResponse;
-import com.celeste.celestedaylightapp.model.user.UserProfile;
+import com.celeste.celestedaylightapp.model.user.UserGetResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -18,18 +19,28 @@ public interface Api {
     Call<AuthenticateResult> authenticateUser(@Body AuthenticateModel model);
 
     @GET("/api/services/app/Tenant/GetAll")
-    Call<TenantDetailResult> getTenants(@Query("Keyword") String Keyword, @Query("IsActive") boolean IsActive, @Query("SkipCount") int SkipCount, @Query("MaxResultCount") int MaxResultCount);
+    Call<TenantResponse> getTenants(@Query("Keyword") String Keyword, @Query("IsActive") boolean IsActive, @Query("SkipCount") int SkipCount, @Query("MaxResultCount") int MaxResultCount);
 
 //    @GET("/api/services/app/Tenant/GetAll")
 //    Call<TenantDetailModel> getTenant(@Query("Id") String Id);
 
-    @GET("/api/services/app/User/Get")
-    Call<UserProfile> getUser(@Query("id") int Id);
 
+//    @GET("/api/services/app/UserModes/GetAll")
+//    Call<UserModeGetResponse> getUserModes(@Query("MaxResultCount") int MaxResultCount,@Query("SkipCount") int SkipCount);
 
-    @GET("/api/services/app/Account/IsTenantAvailable")
-    Call<TenantResponse> getTenant();
+    @GET("/api/services/app/Mode/GetAll")
+    Call<ModeGetResponse> getModes(@Query("MaxResultCount") int MaxResultCount, @Query("SkipCount") int SkipCount);
+
+    @GET("/api/services/app/User/GetUserandModes")
+    Call<ModeGetResponse> getUserMode(@Query("id") int id);
 
     @GET("/api/services/app/User/GetAll")
-    Call<UserProfile> getUser(@Query("Keyword") String Keyword, @Query("IsActive") boolean IsActive, @Query("SkipCount") int SkipCount, @Query("MaxResultCount") int MaxResultCount);
+    Call<UserGetResponse> getUsers(@Query("Keyword") String Keyword, @Query("IsActive") boolean IsActive, @Query("SkipCount") int SkipCount, @Query("MaxResultCount") int MaxResultCount);
+
+    @GET("/api/services/app/User/GetUserandModes")
+    Call<UserGetResponse> getUser(@Query("id") int id);
+
+    @POST("/api/services/app/Account/IsTenantAvailable")
+    Call<TenantResponse> tenantLogin(@Body() TenantLoginModel tenantLoginModel);
+
 }

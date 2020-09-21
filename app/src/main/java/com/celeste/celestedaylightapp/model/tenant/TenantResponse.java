@@ -12,35 +12,87 @@ import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "state",
-        "tenantId"
+        "result",
+        "targetUrl",
+        "success",
+        "error",
+        "unAuthorizedRequest",
+        "__abp"
 })
 public class TenantResponse {
-    @JsonProperty("state")
-    private Integer state;
-    @JsonProperty("tenantId")
-    private Integer tenantId;
+    @JsonProperty("result")
+    private TenantLoginResult result;
+    @JsonProperty("targetUrl")
+    private String targetUrl;
+    @JsonProperty("success")
+    private Boolean success;
+    @JsonProperty("error")
+    private Object error;
+    @JsonProperty("unAuthorizedRequest")
+    private Boolean unAuthorizedRequest;
+    @JsonProperty("__abp")
+    private Boolean abp;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("state")
-    public Integer getState() {
-        return state;
+    @JsonProperty("result")
+    public TenantLoginResult getResult() {
+        return result;
     }
 
-    @JsonProperty("state")
-    public void setState(Integer state) {
-        this.state = state;
+    @JsonProperty("result")
+    public void setResult(TenantLoginResult result) {
+        this.result = result;
     }
 
-    @JsonProperty("tenantId")
-    public Integer getTenantId() {
-        return tenantId;
+    @JsonProperty("targetUrl")
+    public Object getTargetUrl() {
+        return targetUrl;
     }
 
-    @JsonProperty("tenantId")
-    public void setTenantId(Integer tenantId) {
-        this.tenantId = tenantId;
+    @JsonProperty("targetUrl")
+    public void setTargetUrl(String targetUrl) {
+        this.targetUrl = targetUrl;
+    }
+
+    @JsonProperty("success")
+    public Boolean getSuccess() {
+        return success;
+    }
+
+    @JsonProperty("success")
+    public void setSuccess(Boolean success) {
+        this.success = success;
+    }
+
+    @JsonProperty("error")
+    public Object getError() {
+        return error;
+    }
+
+    @JsonProperty("error")
+    public void setError(Object error) {
+        this.error = error;
+    }
+
+    @JsonProperty("unAuthorizedRequest")
+    public Boolean getUnAuthorizedRequest() {
+        return unAuthorizedRequest;
+    }
+
+    @JsonProperty("unAuthorizedRequest")
+    public void setUnAuthorizedRequest(Boolean unAuthorizedRequest) {
+        this.unAuthorizedRequest = unAuthorizedRequest;
+    }
+
+    @JsonProperty("__abp")
+    public Boolean getAbp() {
+        return abp;
+    }
+
+    @JsonProperty("__abp")
+    public void setAbp(Boolean abp) {
+        this.abp = abp;
     }
 
     @JsonAnyGetter

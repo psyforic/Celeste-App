@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.celeste.celestedaylightapp.R;
-import com.celeste.celestedaylightapp.data.Tools;
+import com.celeste.celestedaylightapp.utils.Tools;
 
 import java.util.Timer;
 import java.util.TimerTask;

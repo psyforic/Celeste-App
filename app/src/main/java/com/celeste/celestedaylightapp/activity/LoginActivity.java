@@ -1,5 +1,6 @@
 package com.celeste.celestedaylightapp.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -7,29 +8,32 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatEditText;
 
 import com.celeste.celestedaylightapp.R;
-import com.celeste.celestedaylightapp.data.Tools;
+import com.celeste.celestedaylightapp.fragment.InternetDialog;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateModel;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResponse;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
 import com.celeste.celestedaylightapp.utils.Constants;
+import com.celeste.celestedaylightapp.utils.Tools;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
 import com.iamhabib.easy_preference.EasyPreference;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -37,11 +41,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
-    FirebaseAuth mAuth;
-    FirebaseAuth.AuthStateListener mAuthListener;
     AttemptLoginTask loginTask = null;
-    Api apiService = ApiClient.getInstance().create(Api.class);
-    private AppCompatEditText editEmail, editPassword;
+    Api apiService = ApiClient.getInstance(this).create(Api.class);
+    private EditText editEmail, editPassword;
     private TextInputLayout textInputEmail;
     private TextInputLayout textInputPassword;
     private Button btnLogin;
@@ -59,24 +61,15 @@ public class LoginActivity extends AppCompatActivity {
         //  ButterKnife.bind(this);
         setContentView(R.layout.logins_layout);
         setupUI();
-        AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
-        if (response != null) {
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-        }
+       AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
+       Log.d("TAG", "onCreate: "+response);
+       if (response != null) {
+           startActivity(new Intent(getApplicationContext(), MainActivity.class));
+       }
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!validateEmail()) {
-                    return;
-                }
-                if (!validatePassword()) {
-                    return;
-                }
-                loginTask = new AttemptLoginTask(editEmail.getText().toString(), editPassword.getText().toString());
-                loginTask.execute();
-                // submitForm();
-                //               startActivity(new Intent(LoginActivity.this, MainActivity.class));
-//                hideKeyboard();
+                login();
             }
         });
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -141,25 +134,28 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-//        mAuth.removeAuthStateListener(mAuthListener);
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        //      mAuth.addAuthStateListener(mAuthListener);
+
     }
 
-    //    private void login() {
-//        if (!validateEmail()) {
-//            return;
-//        }
-//        if (!validatePassword()) {
-//            return;
-//        }
-//        loginTask = new AttemptLoginTask(editEmail.getText().toString(), editPassword.getText().toString());
-//        loginTask.execute();
-//    }
+    private void login() {
+        if (!validateEmail()) {
+            return;
+        }
+        if (!validatePassword()) {
+            return;
+        }
+        loginTask = new AttemptLoginTask(editEmail.getText().toString().trim(), editPassword.getText().toString().trim());
+        loginTask.execute();
+    }
+
+
+    @SuppressLint("StaticFieldLeak")
     private class AttemptLoginTask extends AsyncTask<String, String, String> {
 
         private String usernameOrEmailAddress;
@@ -172,8 +168,8 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-//            progressBar.setVisibility(View.VISIBLE);
-            btnLogin.setVisibility(View.GONE);
+            hideKeyboard();
+            progressBar.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
 
@@ -182,32 +178,53 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 AuthenticateModel userLogin = new AuthenticateModel(usernameOrEmailAddress, password);
                 userLogin.setRememberClient(true);
+                //          String name = userLogin.getUserNameOrEmailAddress().toString();
                 Call<AuthenticateResult> call = apiService.authenticateUser(userLogin);
                 call.enqueue(new Callback<AuthenticateResult>() {
                     @Override
                     public void onResponse(Call<AuthenticateResult> call, Response<AuthenticateResult> response) {
                         if (response.code() == 500) {
+
                             Toast.makeText(getApplicationContext(), "username or password incorrect", Toast.LENGTH_LONG).show();
-                            //   progressBar.setVisibility(View.GONE);
-                        } else if (response.code() == 200) {
-                            if (response.body() != null) {
-                                EasyPreference.with(getApplicationContext()).addObject(Constants.CREDENTIALS, response.body().getResult()).save();
+                            Log.d("TAG", "index" + response.errorBody());
+                            progressBar.setVisibility(View.GONE);
+                        } else if (response.body() != null && response.code() == 200) {
+                            Toast.makeText(getApplicationContext(), "" + response.body().getResult().getUserId(), Toast.LENGTH_LONG).show();
+                            try {
+                                EasyPreference.with(getApplicationContext()).addObject(Constants.CREDENTIALS, Objects.requireNonNull(response.body()).getResult()).save();
+                                EasyPreference.with(getApplicationContext()).addInt(Constants.USERID, response.body().getResult().getUserId());
+                                setPreferences(usernameOrEmailAddress, password, response.body().getResult().getAccessToken());
                                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                //     progressBar.setVisibility(View.GONE);
                                 finish();
+
+                            } catch (GeneralSecurityException | IOException ex) {
+                                ex.printStackTrace();
+                                Toast.makeText(getApplicationContext(), "" + ex.getMessage(), Toast.LENGTH_LONG).show();
                             }
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AuthenticateResult> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
+                        final InternetDialog dialog = new InternetDialog(LoginActivity.this);
+                        dialog.showNoInternetDialog();
+                        progressBar.setVisibility(View.GONE);
                     }
                 });
             } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        private void setPreferences(String userName, String password, String accessToken) throws GeneralSecurityException, IOException {
+            Tools.getEncryptedSharedPreferences(getApplicationContext()).edit()
+                    .putString(Constants.USERNAME, userName)
+                    .putString(Constants.PASSWORD, password)
+                    .putString(Constants.ACCESS_TOKEN, accessToken)
+                    .apply();
         }
 
         @Override

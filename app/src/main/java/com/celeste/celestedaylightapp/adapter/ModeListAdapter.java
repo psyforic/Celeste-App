@@ -1,5 +1,6 @@
 package com.celeste.celestedaylightapp.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.view.LayoutInflater;
@@ -64,7 +65,7 @@ public class ModeListAdapter extends RecyclerView.Adapter<ModeListAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         // Update image
       //  Mode myMode = modes.get(position);
-        TypedArray m_icons = mContext.getApplicationContext().getResources().obtainTypedArray(R.array.default_modes_icons);
+        @SuppressLint("Recycle") TypedArray m_icons = mContext.getApplicationContext().getResources().obtainTypedArray(R.array.default_modes_icons);
         String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
         String[] times = {"04:00-6:45", "6:45-11:00", "12:00-13:00", "17:30-18:30", "", ""};
         int[] myIcons={R.drawable.ic_automatic,R.drawable.ic_sunny,R.drawable.ic_happy,R.drawable.ic_night,R.drawable.ic_hospital,R.drawable.ic_do_not_disturb};

@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'io.fabric'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -8,7 +9,7 @@ android {
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         applicationId "com.celeste.celestedaylightapp"
-        minSdkVersion 18
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -62,6 +63,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
 //    implementation 'com.github.ksughosh:Flexible-Circular-Seekbar:1.0'
     implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
+    implementation 'androidx.security:security-crypto:1.1.0-alpha02'
     //butterknife
     annotationProcessor 'com.jakewharton:butterknife:10.2.3'
     implementation 'com.jakewharton:butterknife:10.2.3'

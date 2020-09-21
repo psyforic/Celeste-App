@@ -12,7 +12,7 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.balysv.materialripple.MaterialRippleLayout;
 import com.celeste.celestedaylightapp.R;
-import com.celeste.celestedaylightapp.data.Tools;
+import com.celeste.celestedaylightapp.utils.Tools;
 import com.celeste.celestedaylightapp.model.Mode;
 
 import java.util.List;

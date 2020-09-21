@@ -26,7 +26,6 @@ import androidx.fragment.app.FragmentTransaction;
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.UARTInterface;
 import com.celeste.celestedaylightapp.UARTService;
-import com.celeste.celestedaylightapp.data.Tools;
 import com.celeste.celestedaylightapp.database.DatabaseHelper;
 import com.celeste.celestedaylightapp.domain.Command;
 import com.celeste.celestedaylightapp.domain.UartConfiguration;
@@ -36,6 +35,7 @@ import com.celeste.celestedaylightapp.fragment.SettingsFragment;
 import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.profile.BleProfileService;
 import com.celeste.celestedaylightapp.profile.BleProfileServiceReadyActivity;
+import com.celeste.celestedaylightapp.utils.Tools;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -345,10 +345,9 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     private void logout() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setMessage(R.string.logout_message);
-
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                mAuth.getInstance().signOut();
+             //   mAuth.getInstance().signOut();
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
@@ -366,7 +365,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
 
     private void initComponent() {
         search_bar = (View) findViewById(R.id.search_bar);
-//        mTextMessage = (TextView) findViewById(R.id.search_text);
         navigation = findViewById(R.id.navigation);
         navigation.setSelectedItemId(R.id.navigation_dashboard);
         navigation.setItemRippleColor(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
@@ -386,10 +384,10 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                     fragment = new SettingsFragment();
                     actionBar.setTitle("Settings");
                     break;
-//                case R.id.navigation_profile:
-//                //    fragment = new ModesFragment();
-//                    actionBar.setTitle("More");
-//                    break;
+                case R.id.navigation_profile:
+                    fragment = new FragmentUserModes();
+                    actionBar.setTitle("More");
+                    break;
                 default:
                     fragment = new Frag_Dashboard();
                     break;
@@ -411,11 +409,11 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 if (scrollY < oldScrollY) { // up
                     animateNavigation(false);
-//                    animateSearchBar(false);
+
                 }
                 if (scrollY > oldScrollY) { // down
                     animateNavigation(true);
-//                    animateSearchBar(true);
+
                 }
             }
         });
@@ -434,57 +432,58 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_profile:
-                //add the function to perform here
-               break;
+                startActivity(new Intent(this, ActivityProfile.class));
+                break;
             case R.id.action_about:
                 //add the function to perform here
+                startActivity(new Intent(this, ActivityAbout.class));
                 break;
             case R.id.action_logout:
-                //add the function to perform here
+                logout();
                 break;
         }
-            return super.onOptionsItemSelected(item);
-        }
+        return super.onOptionsItemSelected(item);
+    }
 
-        private void animateNavigation ( final boolean hide){
-            if (isNavigationHide && hide || !isNavigationHide && !hide) return;
-            isNavigationHide = hide;
-            int moveY = hide ? (2 * navigation.getHeight()) : 0;
-            navigation.animate().translationY(moveY).setStartDelay(100).setDuration(300).start();
-        }
+    private void animateNavigation(final boolean hide) {
+        if (isNavigationHide && hide || !isNavigationHide && !hide) return;
+        isNavigationHide = hide;
+        int moveY = hide ? (2 * navigation.getHeight()) : 0;
+        navigation.animate().translationY(moveY).setStartDelay(100).setDuration(300).start();
+    }
 
+
+    @Override
+    public void send(String text) {
+        if (mServiceBinder != null)
+            mServiceBinder.send(text);
+    }
+
+    public interface ConfigurationListener {
+        void onConfigurationModified();
+
+        void onConfigurationChanged(final UartConfiguration configuration);
+
+        //void setEditMode(final boolean editMode);
+    }
+
+    private class CommentVisitor implements Visitor {
+        @Override
+        public void read(final Type type, final NodeMap<InputNode> node) throws Exception {
+            // do nothing
+        }
 
         @Override
-        public void send (String text){
-            if (mServiceBinder != null)
-                mServiceBinder.send(text);
-        }
+        public void write(final Type type, final NodeMap<OutputNode> node) throws Exception {
+            if (type.getType().equals(Command[].class)) {
+                OutputNode element = node.getNode();
 
-        public interface ConfigurationListener {
-            void onConfigurationModified();
-
-            void onConfigurationChanged(final UartConfiguration configuration);
-
-            //void setEditMode(final boolean editMode);
-        }
-
-        private class CommentVisitor implements Visitor {
-            @Override
-            public void read(final Type type, final NodeMap<InputNode> node) throws Exception {
-                // do nothing
-            }
-
-            @Override
-            public void write(final Type type, final NodeMap<OutputNode> node) throws Exception {
-                if (type.getType().equals(Command[].class)) {
-                    OutputNode element = node.getNode();
-
-                    StringBuilder builder = new StringBuilder("A configuration must have 9 commands, one for each button.\n        Possible icons are:");
-                    for (Command.Icon icon : Command.Icon.values())
-                        builder.append("\n          - ").append(icon.toString());
-                    element.setComment(builder.toString());
-                }
+                StringBuilder builder = new StringBuilder("A configuration must have 9 commands, one for each button.\n        Possible icons are:");
+                for (Command.Icon icon : Command.Icon.values())
+                    builder.append("\n          - ").append(icon.toString());
+                element.setComment(builder.toString());
             }
         }
-
     }
+
+}

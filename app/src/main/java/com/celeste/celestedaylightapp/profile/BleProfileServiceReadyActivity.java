@@ -433,7 +433,7 @@ public abstract class BleProfileServiceReadyActivity<E extends BleProfileService
                 mService.disconnect();
             }
         } else {
-            showBLEDialog();
+           showBLEDialog();
         }
     }
 

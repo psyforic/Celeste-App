@@ -50,7 +50,7 @@
     <dimen name="tab_indicator_height">4dp</dimen>
 
     <dimen name="recycler_item_size">100dp</dimen>
-
+    <dimen name="contentTextSize">16dp</dimen>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
 <!--    <dimen name="headerTextSize">25sp</dimen>-->

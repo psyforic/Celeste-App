@@ -3,6 +3,7 @@
     package="com.celeste.celestedaylightapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -17,20 +18,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.AddUser"/>
+        <activity android:name=".activity.ActivityEditUser"></activity>
+        <activity android:name=".activity.ActivityAbout" />
+        <activity android:name=".activity.ActivityProfile" />
+        <activity android:name=".activity.AddUser" />
         <activity android:name=".activity.AutomaticModesActivity" />
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.Modes" />
         <activity android:name=".activity.Login" />
         <activity android:name=".activity.AddModeActivity" /> <!-- <activity android:name=".activity.LoginActivity" /> -->
         <activity android:name=".activity.MainActivity" />
-        <activity android:name=".activity.LoginActivity">
+        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.TenantLogin">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.android.fileprovider"
@@ -40,6 +46,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

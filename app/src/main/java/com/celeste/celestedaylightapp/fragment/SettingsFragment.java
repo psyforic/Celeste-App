@@ -1,12 +1,14 @@
 package com.celeste.celestedaylightapp.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -25,6 +27,7 @@ public class SettingsFragment extends Fragment {
     private View view;
     private LinearLayout lytAutomaticModes, lytSyncData;
     private SwitchCompat switchCompatBluetooth, switchCompatConnect;
+    private boolean isTouched = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,15 +44,16 @@ public class SettingsFragment extends Fragment {
     }
 
     private void setupUI() {
-       lytAutomaticModes = view.findViewById(R.id.lyt_automatic_modes);
-       lytSyncData = view.findViewById(R.id.lyt_sync);
-       switchCompatBluetooth = view.findViewById(R.id.switch_compat_bluetooth);
-       switchCompatConnect = view.findViewById(R.id.switch_compat_connect);
+        lytAutomaticModes = view.findViewById(R.id.lyt_automatic_modes);
+        lytSyncData = view.findViewById(R.id.lyt_sync);
+        switchCompatBluetooth = view.findViewById(R.id.switch_compat_bluetooth);
+        switchCompatConnect = view.findViewById(R.id.switch_compat_connect);
         if (mBluetoothAdapter.isEnabled()) {
             switchCompatBluetooth.setChecked(true);
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void bindClickListeners() {
         lytAutomaticModes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +74,7 @@ public class SettingsFragment extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (!b) {
                     mBluetoothAdapter.disable();
+                    switchCompatConnect.setChecked(false);
                 } else {
                     if (!mBluetoothAdapter.isEnabled()) {
                         mBluetoothAdapter.enable();
@@ -78,11 +83,24 @@ public class SettingsFragment extends Fragment {
                 switchBluetooth();
             }
         });
-
+        switchCompatConnect.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                isTouched = true;
+                return false;
+            }
+        });
         switchCompatConnect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
+                if (isTouched) {
+                    isTouched = false;
+                    if (switchCompatBluetooth.isChecked()) {
+                        switchCompatConnect.setChecked(true);
+                    } else {
+                        switchCompatConnect.setChecked(false);
+                    }
+                }
             }
         });
     }

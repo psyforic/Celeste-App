@@ -5,23 +5,11 @@
     android:layout_height="match_parent"
     android:background="#f6f6f6"
     android:orientation="vertical">
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-<!--        <android.support.v7.widget.Toolbar-->
-<!--            android:id="@+id/toolbar"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="?attr/actionBarSize"-->
-<!--            app:layout_collapseMode="pin"-->
-<!--            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />-->
-    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:id="@+id/lyt_parent"
         app:cardCornerRadius="12dp"
         app:cardElevation="2dp"
         app:contentPadding="20dp">

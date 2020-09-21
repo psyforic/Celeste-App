@@ -461,7 +461,13 @@ public abstract class BleProfileExpandableListActivity extends ExpandableListAct
     }
 
     protected void showBLEDialog() {
-        final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        if(isBLEEnabled())
+        {
+            final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        }else {
+            Toast.makeText(this, R.string.no_ble, Toast.LENGTH_LONG).show();
+        }
+
     }
 }

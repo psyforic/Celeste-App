@@ -13,7 +13,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.skumar.flexibleciruclarseekbar.CircularSeekBar;
 import com.celeste.celestedaylightapp.R;
-import com.celeste.celestedaylightapp.data.Tools;
+import com.celeste.celestedaylightapp.utils.Tools;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.Calendar;

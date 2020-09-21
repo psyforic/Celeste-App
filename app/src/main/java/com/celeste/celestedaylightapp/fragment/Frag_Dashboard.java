@@ -1,5 +1,6 @@
 package com.celeste.celestedaylightapp.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -23,7 +24,7 @@ import com.celeste.celestedaylightapp.UARTInterface;
 import com.celeste.celestedaylightapp.activity.MainActivity;
 import com.celeste.celestedaylightapp.adapter.DashboardModeAdapter;
 import com.celeste.celestedaylightapp.adapter.IconLabelAdapter;
-import com.celeste.celestedaylightapp.data.Tools;
+import com.celeste.celestedaylightapp.utils.Tools;
 import com.celeste.celestedaylightapp.database.DatabaseHelper;
 import com.celeste.celestedaylightapp.domain.Command;
 import com.celeste.celestedaylightapp.domain.UartConfiguration;
@@ -35,6 +36,8 @@ import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.stream.Format;
 import org.simpleframework.xml.stream.HyphenStyle;
 
+import java.util.Objects;
+
 import butterknife.BindView;
 
 
@@ -45,7 +48,6 @@ import butterknife.BindView;
 public class Frag_Dashboard extends Fragment implements MainActivity.ConfigurationListener{
 
     private View view;
-    private float progressValue = 10f;
     private static final float multiplier = 100f;
 
     private CircularSeekBar mCircularSeekBar;
@@ -53,8 +55,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
 
     private TextView mSeekBarValue;
 
-    private RecyclerView recyclerView;
-//    @BindView(R.id.iconRecycler)
+    //    @BindView(R.id.iconRecycler)
 //    RecyclerView iconRecycler;
     private DashboardModeAdapter mAdapter;
     public static final String ACTIVEMODE = "ACTIVEMODE";
@@ -92,8 +93,8 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         view = inflater.inflate(R.layout.fragment_frag__dashboard, container, false);
 
         mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs, key) -> getActivity().runOnUiThread(() -> {
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(prefs.getString(MDEVICE_NAME, "Not Connected"));
+        SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs, key) -> Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+            Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setTitle(prefs.getString(MDEVICE_NAME, "Not Connected"));
             selectedMode.setText(mPreferences.getString(ACTIVEMODE, "No Mode Selected"));
         });
         mPreferences.registerOnSharedPreferenceChangeListener(listener);
@@ -104,6 +105,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         setupUI();
         return view;
     }
+    @SuppressLint("SetTextI18n")
     private void initCircularSeekBar() {
         mCircularSeekBar = view.findViewById(R.id.mCircularSeekBar);
         mSeekBarValue = view.findViewById(R.id.mSeekBarValue);
@@ -111,7 +113,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         mCircularSeekBar.setDotMarkers(false);
         mCircularSeekBar.setShader();
         mCircularSeekBar.getDotMarkers();
-        // mCircularSeekBar.setArcColor(R.color.colorPrimary);
         mCircularSeekBar.setProgressColor(R.color.colorPrimary);
         mCircularSeekBar.setRoundedEdges(true);
         mCircularSeekBar.setIsGradient(true);
@@ -121,7 +122,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         mCircularSeekBar.setArcRotation(225);
         mCircularSeekBar.setMin(0);
         mCircularSeekBar.setMax(70);
-        //mCircularSeekBar.setEnabled(false);
+        float progressValue = 10f;
         mCircularSeekBar.setProgress(progressValue);
         mCircularSeekBar.setIncreaseCenterNeedle(20);
         mCircularSeekBar.setValueStep(2);
@@ -136,6 +137,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     }
     private void setCircularSeekBarListener() {
         mCircularSeekBar.setOnCircularSeekBarChangeListener(new CircularSeekBar.OnCircularSeekBarChangeListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onProgressChanged(CircularSeekBar circularSeekBar, float progress, boolean b) {
                 mCircularSeekBar.setMinimumAndMaximumNeedleScale(progress - 2.5f, progress + 2.5f);
@@ -177,7 +179,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
             selectedMode.setText(mPreferences.getString(ACTIVEMODE, "No Mode Selected"));
         });
 
-        recyclerView = view.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         LinearLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), Tools.getGridSpanCount(getActivity()));
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(true);
@@ -226,20 +228,12 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                 }
 
                 mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
-                // Toast.makeText(getContext(), "Clicked " + obj.getCommandName(), Toast.LENGTH_LONG).show();
-                uart.send(text);
+                Objects.requireNonNull(uart).send(text);
             }
         });
         recyclerView.setAdapter(mAdapter);
        fabSwitch = view.findViewById(R.id.fab_switch);
 
-       // iconRecycler = view.findViewById(R.id.icon_recycler);
-//        LinearLayoutManager iconLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-//        iconRecycler.setLayoutManager(iconLayoutManager);
-//        iconRecycler.setHasFixedSize(true);
-//        List<Icon> icons = Constants.getDeafaultModeIcon(getActivity());
-//        iconAdapter = new IconLabelAdapter(getActivity(), icons);
-//        iconRecycler.setAdapter(iconAdapter);
     }
     @Override
     public void onResume() {
@@ -252,8 +246,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         super.onPause();
         mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
     }
-
-
 
    @Override
    public void onAttach(Context context) {
@@ -268,7 +260,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
 @Override
 public void onDestroy() {
     super.onDestroy();
-    ((MainActivity) getActivity()).setConfigurationListener(null);
+    ((MainActivity) Objects.requireNonNull(getActivity())).setConfigurationListener(null);
     mPreferences.edit().putString(ACTIVEMODE, "No Mode Selected").apply();
 }
 

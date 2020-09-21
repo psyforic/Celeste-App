@@ -368,6 +368,7 @@
     <color name="primaryTextColor">#00a5ff</color>
     <color name="loginBkColor">#f0f0f0</color>
 
+    <color name="df_transparent_black_background">#80000000</color>
     <!--colros for card-->
     <color name="whiteCardColor">#fff</color>
     <color name="profilePrimaryDark">#00605b</color>

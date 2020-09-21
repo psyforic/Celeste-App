@@ -35,15 +35,16 @@
                 android:id="@+id/linearLayout"
                 android:background="@drawable/profile_bk">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/profile_round" />
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    app:srcCompat="@drawable/ic_profile" />
 
                 <TextView
+                    android:id="@+id/tvUsername"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="\@appsnippuser"
+                    android:text="User"
                     android:textSize="28dp"
                     android:textStyle="bold"/>
 
@@ -57,20 +58,29 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:layout_gravity="bottom"
                     android:layout_marginTop="20dp"
-                    android:background="@color/profileBackground">
+                    android:background="@color/profileBackground"
+                    android:gravity="center">
 
                     <View
-                        android:layout_alignParentTop="true"
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
-                        android:background="@drawable/profile_bk"/>
+                        android:layout_alignParentTop="true"
+                        android:background="@drawable/login_shape_bk" />
 
                     <TextView
-                        android:text="Back to\nHome"
-                        style="@style/profileStyledBackButton" />
+                        style="@style/loginButton"
+                        android:layout_width="wrap_content"
+                        android:layout_alignWithParentIfMissing="true"
+                        android:layout_centerInParent="true"
+                        android:autoText="true"
+                        android:drawableLeft="@drawable/back_to_home_button"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:text="Back"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/textInputHintStyle" />
                 </RelativeLayout>
 
             </LinearLayout>
