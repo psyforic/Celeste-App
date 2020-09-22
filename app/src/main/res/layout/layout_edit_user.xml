@@ -33,12 +33,14 @@
             android:layout_marginTop="@dimen/loginViewsMargin">
 
             <EditText
+                android:editable="false"
+                android:enabled="false"
                 android:id="@+id/edit_username"
                 style="@style/modifiedEditText"
                 android:layout_marginLeft="-4dp"
                 android:layout_marginRight="-4dp"
                 android:hint="@string/str_username"
-                android:inputType="textEmailAddress"
+                android:inputType="none"
                 android:maxLength="50"
                 android:maxLines="1"
                 android:singleLine="true"
@@ -57,7 +59,7 @@
                 android:layout_marginLeft="-4dp"
                 android:layout_marginRight="-4dp"
                 android:hint="@string/str_txt_name"
-                android:inputType="textPassword"
+                android:inputType="text"
                 android:maxLength="50"
                 android:maxLines="1"
                 android:singleLine="true"
@@ -76,7 +78,7 @@
                 android:layout_marginLeft="-4dp"
                 android:layout_marginRight="-4dp"
                 android:hint="@string/str_txt_surname"
-                android:inputType="textPassword"
+                android:inputType="text"
                 android:maxLength="50"
                 android:maxLines="1"
                 android:singleLine="true"
@@ -84,6 +86,24 @@
                 android:textSize="14sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputCellphone"
+            style="@style/parent"
+            android:layout_marginTop="@dimen/loginViewsMargin">
+
+            <EditText
+                android:id="@+id/edit_cellphone"
+                style="@style/modifiedEditText"
+                android:layout_marginLeft="-4dp"
+                android:layout_marginRight="-4dp"
+                android:hint="@string/str_cellphone"
+                android:inputType="phone"
+                android:maxLength="50"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
+                android:textSize="14sp" />
+        </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputEmail"
             style="@style/parent"
@@ -120,26 +140,6 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
                 android:textSize="14sp" />
         </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputPassword"
-            style="@style/parent"
-            android:layout_marginTop="@dimen/loginViewsMargin">
-
-            <EditText
-                android:id="@+id/edit_password"
-                style="@style/modifiedEditText"
-                android:layout_marginLeft="-4dp"
-                android:layout_marginRight="-4dp"
-                android:hint="@string/str_txt_password"
-                android:inputType="textPassword"
-                android:maxLength="50"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
-                android:textSize="14sp" />
-        </com.google.android.material.textfield.TextInputLayout>
-
 
         <Button
             android:id="@+id/btn_update"

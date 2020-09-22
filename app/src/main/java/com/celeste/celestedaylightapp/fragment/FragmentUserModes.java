@@ -6,11 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.adapter.UserModesAdapter;
 import com.celeste.celestedaylightapp.model.modes.Mode;
@@ -19,16 +17,10 @@ import com.celeste.celestedaylightapp.model.modes.ModeResult;
 import com.celeste.celestedaylightapp.model.usermode.UserMode;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
-import com.celeste.celestedaylightapp.utils.Constants;
-import com.iamhabib.easy_preference.EasyPreference;
-
 import java.util.List;
-import java.util.Objects;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 public class FragmentUserModes extends Fragment {
     public RecyclerView recyclerView;
@@ -40,7 +32,7 @@ public class FragmentUserModes extends Fragment {
     ModeResult modeResult;
     List<Mode> modes;
     UserModesAdapter modesAdapter;
-    private int userID;
+    private int userId;
 
     public FragmentUserModes() {
         // Required empty public constructor
@@ -51,7 +43,7 @@ public class FragmentUserModes extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_user_modes, container, false);
-        userID = EasyPreference.with(Objects.requireNonNull(getActivity())).getInt(Constants.TENANT_ID, 0);
+    //    userID = EasyPreference.with(Objects.requireNonNull(getActivity())).getInt(Constants.TENANT_ID, 0);
         progressBar = view.findViewById(R.id.progressBar);
         getUserModes();
         return view;

@@ -23,7 +23,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.fragment.InternetDialog;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateModel;
-import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResponse;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
@@ -61,11 +60,11 @@ public class LoginActivity extends AppCompatActivity {
         //  ButterKnife.bind(this);
         setContentView(R.layout.logins_layout);
         setupUI();
-       AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
-       Log.d("TAG", "onCreate: "+response);
-       if (response != null) {
-           startActivity(new Intent(getApplicationContext(), MainActivity.class));
-       }
+//        AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
+//        Log.d("TAG", "onCreate: " + response);
+//        if (response != null) {
+//            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+//        }
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -192,11 +191,12 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "" + response.body().getResult().getUserId(), Toast.LENGTH_LONG).show();
                             try {
                                 EasyPreference.with(getApplicationContext()).addObject(Constants.CREDENTIALS, Objects.requireNonNull(response.body()).getResult()).save();
-                                EasyPreference.with(getApplicationContext()).addInt(Constants.USERID, response.body().getResult().getUserId());
+                                //   EasyPreference.with(getApplicationContext()).addInt(Constants.USERID, response.body().getResult().getUserId());
                                 setPreferences(usernameOrEmailAddress, password, response.body().getResult().getAccessToken());
-                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.putExtra("userId", response.body().getResult().getUserId());
+                                startActivity(intent);
                                 finish();
-
                             } catch (GeneralSecurityException | IOException ex) {
                                 ex.printStackTrace();
                                 Toast.makeText(getApplicationContext(), "" + ex.getMessage(), Toast.LENGTH_LONG).show();

@@ -5,12 +5,15 @@ import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
 import com.celeste.celestedaylightapp.model.modes.ModeGetResponse;
 import com.celeste.celestedaylightapp.model.tenant.TenantLoginModel;
 import com.celeste.celestedaylightapp.model.tenant.TenantResponse;
+import com.celeste.celestedaylightapp.model.user.UpdateUserResponse;
+import com.celeste.celestedaylightapp.model.user.UpdateUserResult;
 import com.celeste.celestedaylightapp.model.user.UserGetResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 public interface Api {
@@ -39,6 +42,9 @@ public interface Api {
 
     @GET("/api/services/app/User/GetUserandModes")
     Call<UserGetResponse> getUser(@Query("id") int id);
+
+    @PUT("/api/services/app/User/UpdateUser")
+    Call<UpdateUserResponse> updateUser(@Query("id") int id, @Body() UpdateUserResult userModel);
 
     @POST("/api/services/app/Account/IsTenantAvailable")
     Call<TenantResponse> tenantLogin(@Body() TenantLoginModel tenantLoginModel);

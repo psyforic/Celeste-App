@@ -5,8 +5,25 @@ import android.graphics.drawable.Drawable;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    private String userId;
     public Drawable imageDrw;
+    private String userId;
+    private String firstName;
+    private String lastName;
+    private String userEmail;
+    private int userProfileImage;
+
+    public User() {
+    }
+
+
+    public User(String userId, String userFirstName, String userLastName, String userEmail, int userProfileImage) {
+        this.userId = userId;
+        this.firstName = userFirstName;
+        this.lastName = userLastName;
+        this.userEmail = userEmail;
+        this.userProfileImage = userProfileImage;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -14,10 +31,6 @@ public class User implements Serializable {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-
-    private String firstName;
-    private String lastName;
-    private String userEmail;
 
     public String getUserId() {
         return userId;
@@ -49,19 +62,6 @@ public class User implements Serializable {
 
     public void setUserProfileImage(int userProfileImage) {
         this.userProfileImage = userProfileImage;
-    }
-
-    private int userProfileImage;
-
-    public User() {
-    }
-
-    public User(String userId, String userFirstName, String userLastName, String userEmail, int userProfileImage) {
-        this.userId = userId;
-        this.firstName = userFirstName;
-        this.lastName = userLastName;
-        this.userEmail = userEmail;
-        this.userProfileImage=userProfileImage;
     }
 
 

@@ -33,9 +33,9 @@ public class ActivityProfile extends AppCompatActivity {
     TextView tvCellphone;
     ProgressBar progressBar;
     FloatingActionButton floatingActionButton;
-    int userID;
     Api api = ApiClient.getInstance(this).create(Api.class);
     UserModel userModel;
+    private int userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,30 +44,29 @@ public class ActivityProfile extends AppCompatActivity {
         initToolbar();
         ButterKnife.bind(this);
         initComponent();
-        //userID = Integer.parseInt(EasyPreference.with(getApplicationContext()).getString(Constants.USERID, ""));
+        userId = getIntent().getIntExtra("userId", 0);
         initProfile();
-
-        //tvUsername.setText(userID + "");
 
     }
 
     private void initProfile() {
         progressBar.setVisibility(View.VISIBLE);
-        Call<UserGetResponse> call = api.getUser(25);
+        Call<UserGetResponse> call = api.getUser(userId);
         call.enqueue(new Callback<UserGetResponse>() {
             @Override
             public void onResponse(Call<UserGetResponse> call, Response<UserGetResponse> response) {
                 if (response.body() != null && response.code() == 200) {
-//                    if (response.body().getResult() != null) {
-//                        userModel = response.body().getResult();
-//                        tvUsername.setText(userModel.getSurname());
-//                        tvEmail.setText(userModel.getEmailAddress());
-//                        tvCellphone.setText(userModel.getCellphoneNumber());
-//                        tvTenant.setText(userModel.getUserName());
-//                        tvAddress.setText(userModel.getAddress());
-//                    } else {
-//                        Toast.makeText(getApplicationContext(), "User has no modes", Toast.LENGTH_LONG).show();
-//                    }
+                    if (response.body().getResult() != null) {
+                        userModel = response.body().getResult();
+                        tvUsername.setText(userModel.getSurname());
+                        tvNames.setText(userModel.getFullName());
+                        tvEmail.setText(userModel.getEmailAddress());
+                        tvCellphone.setText(userModel.getCellphoneNumber());
+                        tvTenant.setText(userModel.getUserName());
+                        tvAddress.setText(userModel.getAddress());
+                    } else {
+                        Toast.makeText(getApplicationContext(), "User has no modes", Toast.LENGTH_LONG).show();
+                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "" + response.code(), Toast.LENGTH_LONG).show();
                 }
@@ -83,7 +82,10 @@ public class ActivityProfile extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), ActivityEditUser.class));
+                Intent intent=new Intent(ActivityProfile.this,ActivityEditUser.class);
+                intent.putExtra("userId",userId);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -93,7 +95,7 @@ public class ActivityProfile extends AppCompatActivity {
         tvTenant = findViewById(R.id.tvTenant);
         tvAddress = findViewById(R.id.tvAddress);
         tvEmail = findViewById(R.id.tvEmail);
-        tvNames = findViewById(R.id.tvName);
+        tvNames = findViewById(R.id.fullNames);
         tvCellphone = findViewById(R.id.tvCellphone);
         floatingActionButton = findViewById(R.id.fab);
         progressBar = findViewById(R.id.progressBar);
@@ -115,7 +117,20 @@ public class ActivityProfile extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        initProfile();
         super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initProfile();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        initProfile();
     }
 
     @Override
