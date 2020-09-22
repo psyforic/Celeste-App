@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,14 +13,27 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.activity.AddUser;
+import com.celeste.celestedaylightapp.adapter.UserModesAdapter;
 import com.celeste.celestedaylightapp.adapter.UsersAdapter;
 import com.celeste.celestedaylightapp.data.DataGenerator;
 import com.celeste.celestedaylightapp.model.User;
+import com.celeste.celestedaylightapp.model.Users;
+import com.celeste.celestedaylightapp.model.modes.Mode;
+import com.celeste.celestedaylightapp.model.modes.ModeGetResponse;
+import com.celeste.celestedaylightapp.model.user.UserGetResponse;
+import com.celeste.celestedaylightapp.model.user.UserModel;
+import com.celeste.celestedaylightapp.model.user.UserResult;
+import com.celeste.celestedaylightapp.retrofit.ApiClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.celeste.celestedaylightapp.retrofit.Api;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,10 +41,12 @@ import java.util.Objects;
  */
 public class UsersFragment extends Fragment {
     private View parent_view;
-    private UsersAdapter mAdapter;
+    private UsersAdapter usersAdapter;
     private RecyclerView recyclerView;
     private List<User> items = new ArrayList<>();
+    private UserResult userResult;
     private FloatingActionButton addUser;
+    Api api = ApiClient.getInstance(getContext()).create(Api.class);
 
     public UsersFragment() {
         // Required empty public constructor
@@ -40,32 +56,38 @@ public class UsersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        parent_view = inflater.inflate(R.layout.activity_automatic_modes2, container, false);
-        initComponent();
+        parent_view = inflater.inflate(R.layout.activity_users, container, false);
+        getUsers();
         return parent_view;
     }
+    public void getUsers() {
+        Call<UserGetResponse> call = api.getUsers("",true,0, 100);
+        call.enqueue(new Callback<UserGetResponse>() {
 
-    private void initComponent() {
-        recyclerView = (RecyclerView) parent_view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setHasFixedSize(true);
-        addUser = parent_view.findViewById(R.id.fab);
-        addUser.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), AddUser.class));
+            public void onResponse(Call<UserGetResponse> call, Response<UserGetResponse> response) {
+                if (response.body() != null && response.code() == 200) {
+                    userResult = response.body().getResult();
+                    initRecyclerView(userResult.getItems());
+                }
+                else {
+                    Toast.makeText(getContext(), "Not found",Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserGetResponse> call, Throwable t) {
+                Toast.makeText(getContext(), "" + t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
-        items = DataGenerator.getPeopleData(Objects.requireNonNull(getContext()));
-        items.addAll(DataGenerator.getPeopleData(Objects.requireNonNull(getContext())));
-        setAdapter();
-        //    showSingleChoiceDialog();
     }
 
-    private void setAdapter() {
-        //set data and list adapter
-        mAdapter = new UsersAdapter(getActivity(), items);
-        recyclerView.setAdapter(mAdapter);
+    public void initRecyclerView(List<UserModel> userList) {
+        recyclerView = parent_view.findViewById(R.id.usersRecyclerView);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+        usersAdapter = new UsersAdapter(getContext(), userList);
+        recyclerView.setAdapter(usersAdapter);
     }
 
 }

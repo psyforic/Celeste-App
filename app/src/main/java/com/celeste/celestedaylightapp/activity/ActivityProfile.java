@@ -58,16 +58,16 @@ public class ActivityProfile extends AppCompatActivity {
             @Override
             public void onResponse(Call<UserGetResponse> call, Response<UserGetResponse> response) {
                 if (response.body() != null && response.code() == 200) {
-                    if (response.body().getResult() != null) {
-                        userModel = response.body().getResult();
-                        tvUsername.setText(userModel.getSurname());
-                        tvEmail.setText(userModel.getEmailAddress());
-                        tvCellphone.setText(userModel.getCellphoneNumber());
-                        tvTenant.setText(userModel.getUserName());
-                        tvAddress.setText(userModel.getAddress());
-                    } else {
-                        Toast.makeText(getApplicationContext(), "User has no modes", Toast.LENGTH_LONG).show();
-                    }
+//                    if (response.body().getResult() != null) {
+//                        userModel = response.body().getResult();
+//                        tvUsername.setText(userModel.getSurname());
+//                        tvEmail.setText(userModel.getEmailAddress());
+//                        tvCellphone.setText(userModel.getCellphoneNumber());
+//                        tvTenant.setText(userModel.getUserName());
+//                        tvAddress.setText(userModel.getAddress());
+//                    } else {
+//                        Toast.makeText(getApplicationContext(), "User has no modes", Toast.LENGTH_LONG).show();
+//                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "" + response.code(), Toast.LENGTH_LONG).show();
                 }

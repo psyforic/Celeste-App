@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.model.User;
+import com.celeste.celestedaylightapp.model.user.UserModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +21,11 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> {
-    private List<User> users = new ArrayList<>();
+    private List<UserModel> users = new ArrayList<>();
     private Context ctx;
 
-    public UsersAdapter(Context context, List<User> usersList) {
+
+    public UsersAdapter(Context context, List<UserModel> usersList) {
         this.users = usersList;
         ctx = context;
     }
@@ -41,10 +43,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        User user = users.get(position);
-        holder.name.setText(user.getFirstName());
-        holder.email.setText(user.getUserEmail());
-        holder.image.setImageDrawable(user.imageDrw);
+        UserModel user = users.get(position);
+        holder.name.setText(users.get(position).getName() + " " + users.get(position).getSurname());
+        holder.email.setText(users.get(position).getEmailAddress());
+//        holder.image.setImageDrawable(user.imageDrw);
 //       Glide.with(ctx)
 //               .load(imagePath)
 //               .placeholder(R.drawable.unknown_avatar)
@@ -53,7 +55,13 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return users.size();
+        if (users != null) {
+
+            return users.size();
+        }
+        else {
+            return 0;
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

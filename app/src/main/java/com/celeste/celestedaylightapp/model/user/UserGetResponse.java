@@ -21,7 +21,7 @@ import java.util.Map;
 })
 public class UserGetResponse {
     @JsonProperty("result")
-    private UserModel result;
+    private UserResult result;
     @JsonProperty("targetUrl")
     private String targetUrl;
     @JsonProperty("success")
@@ -36,12 +36,12 @@ public class UserGetResponse {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("result")
-    public UserModel getResult() {
+    public UserResult getResult() {
         return result;
     }
 
     @JsonProperty("result")
-    public void setResult(UserModel result) {
+    public void setResult(UserResult result) {
         this.result = result;
     }
 

@@ -18,7 +18,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.ActivityEditUser"></activity>
+        <activity android:name=".activity.ActivityUsers"></activity>
+        <activity android:name=".activity.ActivityEditUser" />
         <activity android:name=".activity.ActivityAbout" />
         <activity android:name=".activity.ActivityProfile" />
         <activity android:name=".activity.AddUser" />

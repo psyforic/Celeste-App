@@ -32,6 +32,7 @@ import com.celeste.celestedaylightapp.domain.UartConfiguration;
 import com.celeste.celestedaylightapp.fragment.Frag_Dashboard;
 import com.celeste.celestedaylightapp.fragment.FragmentUserModes;
 import com.celeste.celestedaylightapp.fragment.SettingsFragment;
+import com.celeste.celestedaylightapp.fragment.UsersFragment;
 import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.profile.BleProfileService;
 import com.celeste.celestedaylightapp.profile.BleProfileServiceReadyActivity;
@@ -385,7 +386,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                     actionBar.setTitle("Settings");
                     break;
                 case R.id.navigation_profile:
-                    fragment = new FragmentUserModes();
+                    fragment = new UsersFragment();
                     actionBar.setTitle("More");
                     break;
                 default:
