@@ -35,6 +35,9 @@ public interface Api {
     @GET("/api/services/app/Mode/GetAll")
     Call<ModeGetResponse> getModes(@Query("MaxResultCount") int MaxResultCount, @Query("SkipCount") int SkipCount);
 
+  @GET("/api/services/app/Mode/Get")
+    Call<ModeGetResponse> getMode(@Query("Id") String Id);
+
     @GET("/api/services/app/UserModes/Get")
     Call<ModeGetResponse> getUserMode(@Query("Id") String Id);
 

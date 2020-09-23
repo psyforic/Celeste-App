@@ -25,7 +25,9 @@
             <ImageView
                 android:id="@+id/organization"
 
-                style="@style/profileDetailsImage" />
+                style="@style/profileDetailsImage"
+                android:padding="5dp"
+                app:srcCompat="@drawable/ic_home" />
 
             <TextView
                 style="@style/profileDetailsTextMain"
@@ -46,8 +48,10 @@
 
             <ImageView
                 android:id="@+id/nameImageView"
+                style="@style/profileDetailsImage"
+                android:padding="5dp"
                 android:src="@drawable/ic_person"
-                style="@style/profileDetailsImage" />
+                app:srcCompat="@drawable/ic_person" />
 
             <TextView
                 android:id="@+id/nameTextView"
@@ -69,8 +73,11 @@
 
             <ImageView
                 android:id="@+id/mobileImageView"
-                android:src="@drawable/ic_phone"
-                style="@style/profileDetailsImage" />
+                style="@style/profileDetailsImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:src="@drawable/ic_phone" />
 
             <TextView
                 style="@style/profileDetailsTextMain"
@@ -91,8 +98,9 @@
 
             <ImageView
                 android:id="@+id/emailImageView"
-
-                style="@style/profileDetailsImage" />
+                style="@style/profileDetailsImage"
+                android:padding="5dp"
+                android:src="@drawable/ic_email" />
 
             <TextView
                 style="@style/profileDetailsTextMain"
@@ -114,6 +122,7 @@
             <ImageView
                 android:id="@+id/addressImageView"
                 style="@style/profileDetailsImage"
+                android:padding="5dp"
                 app:srcCompat="@drawable/ic_location" />
 
             <TextView

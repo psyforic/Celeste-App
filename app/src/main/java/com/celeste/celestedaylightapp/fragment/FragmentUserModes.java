@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.adapter.UserModesAdapter;
 import com.celeste.celestedaylightapp.model.modes.Mode;
+import com.celeste.celestedaylightapp.model.modes.ModeGetResponse;
 import com.celeste.celestedaylightapp.model.modes.ModeResult;
 import com.celeste.celestedaylightapp.model.modes.UserModeModel;
 import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
@@ -68,10 +69,12 @@ public class FragmentUserModes extends Fragment {
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
-                        modes = userModel.getUserModes();
+                        if (userModel.getUserModes().size() != 0) {
+                            modes = userModel.getUserModes();
+                            getMode(modes.get(0).getModeId());
+                            //   Toast.makeText(getContext(), "" + modes.get(0).getModeId(), Toast.LENGTH_LONG).show();
+                        }
 
-                        //initRecyclerView(myModes);
-                        Toast.makeText(getContext(), "" +modes.get(0).getModeId(), Toast.LENGTH_LONG).show();
                         //  userModel = userResult;
                     } else {
                         Toast.makeText(getContext(), "User has no modes", Toast.LENGTH_LONG).show();
@@ -149,7 +152,26 @@ public class FragmentUserModes extends Fragment {
 //        });
     }
 
+    public void getMode(String modeId) {
+        Call<ModeGetResponse> call = api.getModes(100,0);
+        call.enqueue(new Callback<ModeGetResponse>() {
+            @Override
+            public void onResponse(Call<ModeGetResponse> call, Response<ModeGetResponse> response) {
+                if (response.body() != null && response.code() == 200) {
+                    List<Mode> modes = response.body().getResult().getItems();
+                    initRecyclerView(modes);
+                    Toast.makeText(getContext(), "Modes not found" + modeId, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getContext(), "Modes not found", Toast.LENGTH_LONG).show();
+                }
+            }
 
+            @Override
+            public void onFailure(Call<ModeGetResponse> call, Throwable t) {
+                Toast.makeText(getContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
     public void initRecyclerView(List<Mode> modeList) {
         recyclerView = view.findViewById(R.id.modesRecyclerView);
