@@ -94,6 +94,7 @@ public class ActivityEditUser extends AppCompatActivity {
         userUpdateModel.setUserName(etUsername.getText().toString());
         userUpdateModel.setAddress(etAddress.getText().toString());
         userUpdateModel.setCellphoneNumber(etCellphone.getText().toString());
+        userUpdateModel.setIsActive(true);
         Call<UpdateUserResponse> call = api.updateUser(userId, userUpdateModel);
         call.enqueue(new Callback<UpdateUserResponse>() {
             @Override

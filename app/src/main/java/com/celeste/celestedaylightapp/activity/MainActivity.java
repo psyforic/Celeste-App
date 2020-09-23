@@ -121,8 +121,13 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
                         List<String> roles = userModel.getRoleNames();
-                        Toast.makeText(getApplicationContext(), ""+roles.toString(), Toast.LENGTH_LONG).show();
-                        //  userModel = userResult;
+                        if(roles.stream().noneMatch(s->s.matches("ADMIN")))
+                        {
+                            Menu menu =navigation.getMenu();
+                            MenuItem target = menu.findItem(R.id.navigation_profile);
+                            target.setVisible(false);
+                        }
+                   //     Toast.makeText(getApplicationContext(), ""+roles.toString(), Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(getApplicationContext(), "User has no modes", Toast.LENGTH_LONG).show();
                     }

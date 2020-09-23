@@ -1,6 +1,6 @@
 package com.celeste.celestedaylightapp.model.user;
 
-import com.celeste.celestedaylightapp.model.usermode.UserMode;
+import com.celeste.celestedaylightapp.model.modes.UserModeModel;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -64,7 +64,7 @@ public class UserModel {
     @JsonProperty("cellphoneNumber")
     private String cellphoneNumber;
     @JsonProperty("userModes")
-    private List<UserMode> userModes = null;
+    private List<UserModeModel> userModes = null;
     @JsonProperty("id")
     private Integer id;
     @JsonIgnore
@@ -221,12 +221,12 @@ public class UserModel {
     }
 
     @JsonProperty("userModes")
-    public List<UserMode> getUserModes() {
+    public List<UserModeModel> getUserModes() {
         return userModes;
     }
 
     @JsonProperty("userModes")
-    public void setUserModes(List<UserMode> userModes) {
+    public void setUserModes(List<UserModeModel> userModes) {
         this.userModes = userModes;
     }
 

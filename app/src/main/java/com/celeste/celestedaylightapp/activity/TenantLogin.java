@@ -94,7 +94,6 @@ public class TenantLogin extends AppCompatActivity {
                                 ex.printStackTrace();
                                 Toast.makeText(getApplicationContext(), "Tenant ID " + response.body().getResult().getTenantId(), Toast.LENGTH_LONG).show();
                             }
-
                             progressBar.setVisibility(View.GONE);
                             break;
                         case IN_ACTIVE:

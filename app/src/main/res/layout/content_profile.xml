@@ -46,7 +46,7 @@
 
             <ImageView
                 android:id="@+id/nameImageView"
-
+                android:src="@drawable/ic_person"
                 style="@style/profileDetailsImage" />
 
             <TextView
@@ -69,7 +69,7 @@
 
             <ImageView
                 android:id="@+id/mobileImageView"
-
+                android:src="@drawable/ic_phone"
                 style="@style/profileDetailsImage" />
 
             <TextView

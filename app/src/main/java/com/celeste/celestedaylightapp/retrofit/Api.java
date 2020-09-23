@@ -35,14 +35,14 @@ public interface Api {
     @GET("/api/services/app/Mode/GetAll")
     Call<ModeGetResponse> getModes(@Query("MaxResultCount") int MaxResultCount, @Query("SkipCount") int SkipCount);
 
-    @GET("/api/services/app/User/GetUserandModes")
-    Call<ModeGetResponse> getUserMode(@Query("id") int id);
+    @GET("/api/services/app/UserModes/Get")
+    Call<ModeGetResponse> getUserMode(@Query("Id") String Id);
 
     @GET("/api/services/app/User/GetAll")
     Call<UserGetResponse> getUsers(@Query("Keyword") String Keyword, @Query("IsActive") boolean IsActive, @Query("SkipCount") int SkipCount, @Query("MaxResultCount") int MaxResultCount);
 
     @GET("/api/services/app/User/GetUserandModes")
-    Call<UserGetResponse> getUser(@Query("id") int id);
+    Call<GetSingleUserResponse> getUser(@Query("id") int id);
 
     @GET("/api/services/app/User/Get")
     Call<GetSingleUserResponse> getSingleUser(@Query("Id") int id);
