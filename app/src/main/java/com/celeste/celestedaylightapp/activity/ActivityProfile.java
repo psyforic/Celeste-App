@@ -11,8 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.celeste.celestedaylightapp.R;
-import com.celeste.celestedaylightapp.model.user.UserGetResponse;
+import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UserModel;
+import com.celeste.celestedaylightapp.model.user.UserResult;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -35,6 +36,7 @@ public class ActivityProfile extends AppCompatActivity {
     FloatingActionButton floatingActionButton;
     Api api = ApiClient.getInstance(this).create(Api.class);
     UserModel userModel;
+    UserResult userResult;
     private int userId;
 
     @Override
@@ -51,13 +53,15 @@ public class ActivityProfile extends AppCompatActivity {
 
     private void initProfile() {
         progressBar.setVisibility(View.VISIBLE);
-        Call<UserGetResponse> call = api.getUser(userId);
-        call.enqueue(new Callback<UserGetResponse>() {
+        Call<GetSingleUserResponse> call = api.getSingleUser(userId);
+        call.enqueue(new Callback<GetSingleUserResponse>() {
             @Override
-            public void onResponse(Call<UserGetResponse> call, Response<UserGetResponse> response) {
+            public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
+                        Toast.makeText(getApplicationContext(), "", Toast.LENGTH_LONG).show();
+                      //  userModel = userResult;
                         tvUsername.setText(userModel.getSurname());
                         tvNames.setText(userModel.getFullName());
                         tvEmail.setText(userModel.getEmailAddress());
@@ -74,7 +78,7 @@ public class ActivityProfile extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<UserGetResponse> call, Throwable t) {
+            public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -82,8 +86,8 @@ public class ActivityProfile extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(ActivityProfile.this,ActivityEditUser.class);
-                intent.putExtra("userId",userId);
+                Intent intent = new Intent(ActivityProfile.this, ActivityEditUser.class);
+                intent.putExtra("userId", userId);
                 startActivity(intent);
                 finish();
             }
@@ -117,20 +121,20 @@ public class ActivityProfile extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        initProfile();
+    //    initProfile();
         super.onStart();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        initProfile();
+   //     initProfile();
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        initProfile();
+    //    initProfile();
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -12,13 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.celeste.celestedaylightapp.R;
-import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.model.user.UserModel;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> {
     private List<UserModel> users = new ArrayList<>();
@@ -46,11 +44,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         UserModel user = users.get(position);
         holder.name.setText(users.get(position).getName() + " " + users.get(position).getSurname());
         holder.email.setText(users.get(position).getEmailAddress());
-//        holder.image.setImageDrawable(user.imageDrw);
-//       Glide.with(ctx)
-//               .load(imagePath)
-//               .placeholder(R.drawable.unknown_avatar)
-//               .into(holder.image);
+        holder.image.setImageResource(R.drawable.ic_profile);
+//        Picasso.get().load(R.drawable.ic_profile).resize(50, 50)
+//                .transform(new CircleTransform())
+//                .into(holder.image);
     }
 
     @Override
@@ -58,22 +55,21 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         if (users != null) {
 
             return users.size();
-        }
-        else {
+        } else {
             return 0;
         }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        public CircleImageView image;
+        public ImageView image;
         public TextView name;
         public TextView email;
         public LinearLayout lyt_parent;
 
         public ViewHolder(View v) {
             super(v);
-            image = (CircleImageView) v.findViewById(R.id.profile_image);
+            image = (ImageView) v.findViewById(R.id.profile_image);
             name = (TextView) v.findViewById(R.id.tvName);
             email = (TextView) v.findViewById(R.id.tvEmail);
             lyt_parent = (LinearLayout) v.findViewById(R.id.lyt_parent);

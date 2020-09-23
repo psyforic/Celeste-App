@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +33,8 @@ import com.celeste.celestedaylightapp.domain.UartConfiguration;
 import com.celeste.celestedaylightapp.fragment.Frag_Dashboard;
 import com.celeste.celestedaylightapp.fragment.FragmentUserModes;
 import com.celeste.celestedaylightapp.fragment.SettingsFragment;
-import com.celeste.celestedaylightapp.model.user.UserGetResponse;
+import com.celeste.celestedaylightapp.fragment.UsersFragment;
+import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.profile.BleProfileService;
 import com.celeste.celestedaylightapp.profile.BleProfileServiceReadyActivity;
@@ -43,8 +45,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -59,7 +59,6 @@ import org.simpleframework.xml.stream.NodeMap;
 import org.simpleframework.xml.stream.OutputNode;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -83,23 +82,62 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     boolean isSearchBarHide = false;
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthListener;
-    UserModel userModel;
-    Api api = ApiClient.getInstance(this).create(Api.class);
+    int userId;
+    Api api = ApiClient.getInstance(MainActivity.this).create(Api.class);
     private TextView mTextMessage;
-    private int userId;
     private BottomNavigationView navigation;
     private View search_bar;
     private Toolbar toolbar;
     private NavigationView navigationView;
     private AppBarLayout appBarLayout;
     private View mContainer;
-    private DatabaseReference userReference = FirebaseDatabase.getInstance().getReference().child("users");
     private UartConfiguration mConfiguration;
     private DatabaseHelper mDatabaseHelper;
     private SharedPreferences mPreferences;
     private UARTService.UARTBinder mServiceBinder;
     private ConfigurationListener mConfigurationListener;
-    private List<String> role = new ArrayList<>();
+    private UserModel userModel;
+    private ProgressBar progressBar;
+
+    @Override
+    protected void onCreateView(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_main);
+        initToolbar();
+        setDefaultFragment();
+        initComponent();
+        userId = getIntent().getIntExtra("userId", 0);
+        loadUserInfo();
+        // saveConfigs();
+        Tools.systemBarLolipop(this);
+    }
+
+    private void loadUserInfo() {
+     //   progressBar.setVisibility(View.VISIBLE);
+        Call<GetSingleUserResponse> call = api.getSingleUser(userId);
+        call.enqueue(new Callback<GetSingleUserResponse>() {
+            @Override
+            public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
+                if (response.body() != null && response.code() == 200) {
+                    if (response.body().getResult() != null) {
+                        userModel = response.body().getResult();
+                        List<String> roles = userModel.getRoleNames();
+                        Toast.makeText(getApplicationContext(), ""+roles.toString(), Toast.LENGTH_LONG).show();
+                        //  userModel = userResult;
+                    } else {
+                        Toast.makeText(getApplicationContext(), "User has no modes", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "" + response.code(), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
+          //      progressBar.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
     public void setConfigurationListener(final ConfigurationListener listener) {
         mConfigurationListener = listener;
@@ -122,11 +160,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         mDatabaseHelper = new DatabaseHelper(this);
         ensureFirstConfiguration(mDatabaseHelper);
         saveDefaultConfiguration(mDatabaseHelper);
-
         initializeDefaultConfiguration();
-
-        // mConfigurationsAdapter = new UARTConfigurationsAdapter(this, this, mDatabaseHelper.getConfigurationsNames());
-
     }
 
     @Override
@@ -137,7 +171,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     @Override
     protected void onStop() {
         super.onStop();
-//        mAuth.removeAuthStateListener(mAuthListener);
     }
 
     private void initToolbar() {
@@ -150,66 +183,8 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         Tools.setSystemBarColor(this);
     }
 
-    @Override
-    protected void onCreateView(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_main);
-        initToolbar();
-        setDefaultFragment();
-        initComponent();
-        userId = getIntent().getIntExtra("userId", 0);
-        loadUserInfo();
-        // Toast.makeText(getApplicationContext(), "userId" + userId, Toast.LENGTH_LONG).show();
-        //  displayContentView(R.id.navigation_dashboard);
-//        mAuthListener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                FirebaseUser user = firebaseAuth.getCurrentUser();
-//                if (user != null) {
-//
-//                } else {
-//                    //startActivity(new Intent(getApplicationContext(), HomeActivity.class));
-//                }
-//            }
-//        };
-        // loadUserInfo();
-        // saveConfigs();
-        Tools.systemBarLolipop(this);
-    }
-
     private void setDefaultFragment() {
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new Frag_Dashboard()).commit();
-    }
-
-    private void loadUserInfo() {
-        Call<UserGetResponse> call = api.getUser(userId);
-        call.enqueue(new Callback<UserGetResponse>() {
-            @Override
-            public void onResponse(Call<UserGetResponse> call, Response<UserGetResponse> response) {
-                if (response.body() != null && response.code() == 200) {
-                    if (response.body().getResult() != null) {
-                       // userModel = response.body().getResult();
-                        //Toast.makeText(getApplicationContext(), "" + userModel.getRoleNames().toString(), Toast.LENGTH_LONG).show();
-//                        if (response.body().getResult().getRoleNames().size() != 0) {
-//                            String roles = response.body().getResult().getRoleNames().get(0);
-//                            if (roles.toUpperCase().equals("ADMIN")) {
-//                                Toast.makeText(getApplicationContext(), "is admin", Toast.LENGTH_LONG).show();
-//                            } else {
-//                                Toast.makeText(getApplicationContext(), "is admin", Toast.LENGTH_LONG).show();
-//                            }
-//                        } else {
-//                            Toast.makeText(getApplicationContext(), "User has no role yet", Toast.LENGTH_LONG).show();
-//                        }
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "" + response.code(), Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserGetResponse> call, Throwable t) {
-//                Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
     @Override
@@ -339,7 +314,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
             final Format format = new Format(new HyphenStyle());
             final Serializer serializer = new Persister(format);
             mConfiguration = serializer.read(UartConfiguration.class, xml);
-            //mConfigurationListener.onConfigurationChanged(mConfiguration);
         } catch (final Exception e) {
             Log.e(TAG, "Selecting configuration failed", e);
 
@@ -361,6 +335,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         builder.setMessage(R.string.logout_message);
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                //   mAuth.getInstance().signOut();
                 Intent intent = new Intent(getApplicationContext(), TenantLogin.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
@@ -398,8 +373,8 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                     actionBar.setTitle("Settings");
                     break;
                 case R.id.navigation_profile:
-                    fragment = new FragmentUserModes();
-                    actionBar.setTitle("More");
+                    fragment = new UsersFragment();
+                    actionBar.setTitle("Users");
                     break;
                 default:
                     fragment = new Frag_Dashboard();
@@ -446,9 +421,8 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         switch (item.getItemId()) {
             case R.id.action_profile:
                 Intent intent = new Intent(MainActivity.this, ActivityProfile.class);
-                intent.putExtra("userId", getIntent().getIntExtra("userId", 0));
+                intent.putExtra("userId", userId);
                 startActivity(intent);
-                Toast.makeText(getApplicationContext(), "userId" + userId, Toast.LENGTH_LONG).show();
                 break;
             case R.id.action_about:
                 //add the function to perform here
@@ -467,6 +441,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         int moveY = hide ? (2 * navigation.getHeight()) : 0;
         navigation.animate().translationY(moveY).setStartDelay(100).setDuration(300).start();
     }
+
 
     @Override
     public void send(String text) {

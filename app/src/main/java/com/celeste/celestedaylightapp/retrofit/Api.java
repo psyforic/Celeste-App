@@ -5,6 +5,7 @@ import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
 import com.celeste.celestedaylightapp.model.modes.ModeGetResponse;
 import com.celeste.celestedaylightapp.model.tenant.TenantLoginModel;
 import com.celeste.celestedaylightapp.model.tenant.TenantResponse;
+import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UpdateUserResponse;
 import com.celeste.celestedaylightapp.model.user.UpdateUserResult;
 import com.celeste.celestedaylightapp.model.user.UserGetResponse;
@@ -42,6 +43,9 @@ public interface Api {
 
     @GET("/api/services/app/User/GetUserandModes")
     Call<UserGetResponse> getUser(@Query("id") int id);
+
+    @GET("/api/services/app/User/Get")
+    Call<GetSingleUserResponse> getSingleUser(@Query("Id") int id);
 
     @PUT("/api/services/app/User/UpdateUser")
     Call<UpdateUserResponse> updateUser(@Query("id") int id, @Body() UpdateUserResult userModel);

@@ -11,9 +11,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.celeste.celestedaylightapp.R;
+import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UpdateUserResponse;
 import com.celeste.celestedaylightapp.model.user.UpdateUserResult;
-import com.celeste.celestedaylightapp.model.user.UserGetResponse;
 import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
@@ -38,7 +38,7 @@ public class ActivityEditUser extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_user);
         userId = getIntent().getIntExtra("userId", 0);
-        Toast.makeText(getApplicationContext(), "userId" + userId, Toast.LENGTH_LONG).show();
+       //Toast.makeText(getApplicationContext(), "userId" + userId, Toast.LENGTH_LONG).show();
         initComponent();
         initProfile();
         onClick();
@@ -54,19 +54,11 @@ public class ActivityEditUser extends AppCompatActivity {
     }
 
     private void initProfile() {
-        //       userModel = new UserModel();
-//        userUpdateModel.setEmailAddress(etEmail.getText().toString());
-//        userUpdateModel.setName(etName.getText().toString());
-//        userUpdateModel.setSurname(etSurname.getText().toString());
-//        userUpdateModel.setUserName(etUsername.getText().toString());
-//        userUpdateModel.setAddress(etAddress.getText().toString());
-//        userUpdateModel.setAddress(etAddress.getText().toString());
-//        userUpdateModel.setCellphoneNumber(etCellphone.getText().toString());
         progressBar.setVisibility(View.VISIBLE);
-        Call<UserGetResponse> call = api.getUser(userId);
-        call.enqueue(new Callback<UserGetResponse>() {
+        Call<GetSingleUserResponse> call = api.getSingleUser(userId);
+        call.enqueue(new Callback<GetSingleUserResponse>() {
             @Override
-            public void onResponse(Call<UserGetResponse> call, Response<UserGetResponse> response) {
+            public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
@@ -86,7 +78,7 @@ public class ActivityEditUser extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<UserGetResponse> call, Throwable t) {
+            public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
             }
