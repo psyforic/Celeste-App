@@ -6,11 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.adapter.UserModesAdapter;
 import com.celeste.celestedaylightapp.model.modes.Mode;
@@ -22,10 +20,8 @@ import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.model.usermode.UserMode;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
-
 import java.util.List;
 import java.util.Objects;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

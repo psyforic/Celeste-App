@@ -9,6 +9,8 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,11 +42,13 @@ import com.celeste.celestedaylightapp.profile.BleProfileService;
 import com.celeste.celestedaylightapp.profile.BleProfileServiceReadyActivity;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
+import com.celeste.celestedaylightapp.utils.Constants;
 import com.celeste.celestedaylightapp.utils.Tools;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.iamhabib.easy_preference.EasyPreference;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -66,7 +70,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UARTBinder> implements UARTInterface {
+public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UARTBinder> implements UARTInterface, TextWatcher {
     private final static String TAG = "MainActivity";
     /**
      * This preference keeps the ID of the selected configuration.
@@ -76,6 +80,10 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     private final static String PREFS_BUTTON_COMMAND = "prefs_uart_command_";
     private final static String PREFS_BUTTON_ICON = "prefs_uart_icon_";
     private static final String UTILS_CATEGORY = "com.celeste.celestedaylightapp.UTILS";
+    private static final String PREF_NAME = "prefs";
+    private static final String KEY_REMEMBER = "remember";
+    private static final String KEY_USERNAME = "username";
+    private static final String KEY_PASS = "username";
     // final ModesFragment modes = new ModesFragment();
     public ActionBar actionBar;
     boolean isNavigationHide = false;
@@ -84,6 +92,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     FirebaseAuth.AuthStateListener mAuthListener;
     int userId;
     Api api = ApiClient.getInstance(MainActivity.this).create(Api.class);
+    SharedPreferences.Editor editor;
     private TextView mTextMessage;
     private BottomNavigationView navigation;
     private View search_bar;
@@ -105,14 +114,12 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         initToolbar();
         setDefaultFragment();
         initComponent();
-        userId = getIntent().getIntExtra("userId", 0);
         loadUserInfo();
-        // saveConfigs();
         Tools.systemBarLolipop(this);
     }
 
     private void loadUserInfo() {
-     //   progressBar.setVisibility(View.VISIBLE);
+        //   progressBar.setVisibility(View.VISIBLE);
         Call<GetSingleUserResponse> call = api.getSingleUser(userId);
         call.enqueue(new Callback<GetSingleUserResponse>() {
             @Override
@@ -121,13 +128,12 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
                         List<String> roles = userModel.getRoleNames();
-                        if(roles.stream().noneMatch(s->s.matches("ADMIN")))
-                        {
-                            Menu menu =navigation.getMenu();
+                        if (roles.stream().noneMatch(s -> s.matches("ADMIN"))) {
+                            Menu menu = navigation.getMenu();
                             MenuItem target = menu.findItem(R.id.navigation_profile);
                             target.setVisible(false);
                         }
-                   //     Toast.makeText(getApplicationContext(), ""+roles.toString(), Toast.LENGTH_LONG).show();
+                        //     Toast.makeText(getApplicationContext(), ""+roles.toString(), Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(getApplicationContext(), "User has no modes", Toast.LENGTH_LONG).show();
                     }
@@ -138,7 +144,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
 
             @Override
             public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
-          //      progressBar.setVisibility(View.GONE);
+                //      progressBar.setVisibility(View.GONE);
                 Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
@@ -158,7 +164,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         // do nothing
     }
 
-    // final Fragment settingsFragment = new SettingsFragment();
     @Override
     protected void onInitialize(Bundle savedInstanceState) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -340,7 +345,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         builder.setMessage(R.string.logout_message);
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                //   mAuth.getInstance().signOut();
+                EasyPreference.with(getApplicationContext()).remove(Constants.CREDENTIALS).save();
                 Intent intent = new Intent(getApplicationContext(), TenantLogin.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
@@ -452,6 +457,21 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     public void send(String text) {
         if (mServiceBinder != null)
             mServiceBinder.send(text);
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 
     public interface ConfigurationListener {

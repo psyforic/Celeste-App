@@ -3,6 +3,7 @@ package com.celeste.celestedaylightapp.activity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -23,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.fragment.InternetDialog;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateModel;
+import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResponse;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
@@ -40,15 +43,19 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final String PREFS_NAME = "Celeste_PrefsFile";
     AttemptLoginTask loginTask = null;
     Api apiService = ApiClient.getInstance(this).create(Api.class);
+    SharedPreferences.Editor editor;
     private EditText editEmail, editPassword;
     private TextInputLayout textInputEmail;
     private TextInputLayout textInputPassword;
     private Button btnLogin;
+    private CheckBox chkRememberMe;
     private TextView btnRegister;
     private ProgressBar progressBar;
     private View parentView;
+    private SharedPreferences mSharedPrefs;
 
     private static boolean isValidEmail(String email) {
         return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
@@ -57,14 +64,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //  ButterKnife.bind(this);
         setContentView(R.layout.logins_layout);
         setupUI();
-//        AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
-//        Log.d("TAG", "onCreate: " + response);
-//        if (response != null) {
-//            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-//        }
+        AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
+        if (response != null) {
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        }
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,6 +83,17 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         Tools.systemBarLolipop(this);
+        getPreferencesData();
+    }
+
+    private void getPreferencesData() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        if (sharedPreferences.contains("prefs_name") && sharedPreferences.contains("pref_password")) {
+            String username = sharedPreferences.getString("pref_username", "not found");
+            String password = sharedPreferences.getString("pref_password", "invalid");
+            editEmail.setText(username);
+            editPassword.setText(password);
+        }
     }
 
     private void setupUI() {
@@ -90,6 +106,9 @@ public class LoginActivity extends AppCompatActivity {
         textInputEmail = findViewById(R.id.textInputEmail);
         textInputPassword = findViewById(R.id.textInputPassword);
         btnRegister = findViewById(R.id.createAccount);
+        chkRememberMe = findViewById(R.id.chckRemeberMe);
+
+        mSharedPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
     }
 
     private void hideKeyboard() {
@@ -153,7 +172,6 @@ public class LoginActivity extends AppCompatActivity {
         loginTask.execute();
     }
 
-
     @SuppressLint("StaticFieldLeak")
     private class AttemptLoginTask extends AsyncTask<String, String, String> {
 
@@ -177,7 +195,6 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 AuthenticateModel userLogin = new AuthenticateModel(usernameOrEmailAddress, password);
                 userLogin.setRememberClient(true);
-                //          String name = userLogin.getUserNameOrEmailAddress().toString();
                 Call<AuthenticateResult> call = apiService.authenticateUser(userLogin);
                 call.enqueue(new Callback<AuthenticateResult>() {
                     @Override
@@ -190,9 +207,13 @@ public class LoginActivity extends AppCompatActivity {
                         } else if (response.body() != null && response.code() == 200) {
                             Toast.makeText(getApplicationContext(), "" + response.body().getResult().getUserId(), Toast.LENGTH_LONG).show();
                             try {
-                                EasyPreference.with(getApplicationContext()).addObject(Constants.CREDENTIALS, Objects.requireNonNull(response.body()).getResult()).save();
-                                //   EasyPreference.with(getApplicationContext()).addInt(Constants.USERID, response.body().getResult().getUserId());
+                                EasyPreference.with(getApplicationContext()).addObject(Constants.CREDENTIALS, response.body().getResult()).save();
                                 setPreferences(usernameOrEmailAddress, password, response.body().getResult().getAccessToken());
+                                editor = mSharedPrefs.edit();
+                                editor.putString("pref_username", editEmail.getText().toString().trim());
+                                editor.putString("pref_password", editPassword.getText().toString().trim());
+                                editor.putString("pref_token", response.body().getResult().getAccessToken());
+                                editor.apply();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 intent.putExtra("userId", response.body().getResult().getUserId());
                                 startActivity(intent);

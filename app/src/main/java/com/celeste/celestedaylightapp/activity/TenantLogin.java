@@ -31,7 +31,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class TenantLogin extends AppCompatActivity {
-
+    private static final String PREFS_NAME = "Celeste_PrefsFile";
     Api api = ApiClient.getInstance(this).create(Api.class);
     TenantLoginModel tenantLoginModel = new TenantLoginModel();
     EditText edit_tenancyName;
@@ -47,6 +47,7 @@ public class TenantLogin extends AppCompatActivity {
         setContentView(R.layout.tenant_layout);
         initComponents();
         login();
+
         AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
         if (response != null) {
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
@@ -86,7 +87,7 @@ public class TenantLogin extends AppCompatActivity {
                     switch (response.body().getResult().getState()) {
                         case AVAILABLE:
                             try {
-                                EasyPreference.with(getApplicationContext()).addInt(Constants.TENANT_ID, response.body().getResult().getTenantId()).save();
+                                EasyPreference.with(getApplicationContext()).addObject(Constants.TENANT_ID, response.body().getResult().getTenantId()).save();
                                 setPreferences(response.body().getResult().getTenantId(), response.body().getResult().getState().ordinal());
                                 startActivity(new Intent(TenantLogin.this, LoginActivity.class));
                                 finish();

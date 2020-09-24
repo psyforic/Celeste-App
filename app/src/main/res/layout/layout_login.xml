@@ -94,6 +94,13 @@
                 android:textSize="@dimen/newsMoreTextSize" />
         </LinearLayout>
 
+        <CheckBox
+            android:id="@+id/chckRemeberMe"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_gravity="end"
+            android:text="Remember Me?"
+            android:textSize="12sp" />
         <Button
             android:id="@+id/btn_login"
             style="@style/loginButton"

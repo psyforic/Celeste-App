@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/loginCard"
     android:id="@+id/tenant_login_layout"
-    app:cardCornerRadius="@dimen/loginCardRadius"
-    android:elevation="5dp"
+    style="@style/loginCard"
     android:layout_gravity="center"
     android:layout_marginTop="35dp"
     android:layout_marginBottom="@dimen/loginViewsMargin"
-    android:background="@color/whiteCardColor">
+    android:background="@color/whiteCardColor"
+    android:elevation="5dp"
+    app:cardCornerRadius="@dimen/loginCardRadius">
 
     <LinearLayout
         style="@style/linearParent"
@@ -79,9 +78,9 @@
         <Button
             android:id="@+id/btn_login"
             style="@style/loginButton"
-            android:text="Proceed"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/loginViewsMargin"/>
+            android:layout_marginTop="@dimen/loginViewsMargin"
+            android:text="Proceed" />
 
 
     </LinearLayout>
