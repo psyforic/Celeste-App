@@ -21,7 +21,7 @@ import java.util.Map;
 })
 public class ModeGetResponse {
     @JsonProperty("result")
-    private ModeResult result;
+    private Mode result;
     @JsonProperty("targetUrl")
     private String targetUrl;
     @JsonProperty("success")
@@ -36,12 +36,12 @@ public class ModeGetResponse {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("result")
-    public ModeResult getResult() {
+    public Mode getResult() {
         return result;
     }
 
     @JsonProperty("result")
-    public void setResult(ModeResult result) {
+    public void setResult(Mode result) {
         this.result = result;
     }
 

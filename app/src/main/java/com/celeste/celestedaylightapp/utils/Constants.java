@@ -9,4 +9,5 @@ public class Constants {
     public static final String PASSWORD = "Password";
     public static final String USERID = "UserId";
 
+    public static final String MODE="Mode";
 }

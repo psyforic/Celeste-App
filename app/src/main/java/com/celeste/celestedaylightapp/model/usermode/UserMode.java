@@ -47,11 +47,11 @@ public class UserMode {
     @JsonProperty("fullName")
     private String fullName;
     @JsonProperty("lastLoginTime")
-    private Object lastLoginTime;
+    private String lastLoginTime;
     @JsonProperty("creationTime")
     private String creationTime;
     @JsonProperty("roleNames")
-    private Object roleNames;
+    private String roleNames;
     @JsonProperty("address")
     private String address;
     @JsonProperty("city")
@@ -137,7 +137,7 @@ public class UserMode {
     }
 
     @JsonProperty("lastLoginTime")
-    public void setLastLoginTime(Object lastLoginTime) {
+    public void setLastLoginTime(String lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
     }
 
@@ -157,7 +157,7 @@ public class UserMode {
     }
 
     @JsonProperty("roleNames")
-    public void setRoleNames(Object roleNames) {
+    public void setRoleNames(String roleNames) {
         this.roleNames = roleNames;
     }
 

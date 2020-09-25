@@ -16,7 +16,9 @@ import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.model.user.UserResult;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
+import com.celeste.celestedaylightapp.utils.Constants;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.iamhabib.easy_preference.EasyPreference;
 
 import butterknife.ButterKnife;
 import retrofit2.Call;
@@ -37,7 +39,7 @@ public class ActivityProfile extends AppCompatActivity {
     Api api = ApiClient.getInstance(this).create(Api.class);
     UserModel userModel;
     UserResult userResult;
-    private int userId;
+    private int Id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +48,14 @@ public class ActivityProfile extends AppCompatActivity {
         initToolbar();
         ButterKnife.bind(this);
         initComponent();
-        userId = getIntent().getIntExtra("userId", 0);
+        Id = EasyPreference.with(getApplicationContext()).getInt(Constants.USERID, 0);
         initProfile();
 
     }
 
     private void initProfile() {
         progressBar.setVisibility(View.VISIBLE);
-        Call<GetSingleUserResponse> call = api.getSingleUser(userId);
+        Call<GetSingleUserResponse> call = api.getSingleUser(Id);
         call.enqueue(new Callback<GetSingleUserResponse>() {
             @Override
             public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
@@ -87,7 +89,7 @@ public class ActivityProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ActivityProfile.this, ActivityEditUser.class);
-                intent.putExtra("userId", userId);
+                intent.putExtra("userId", Id);
                 startActivity(intent);
                 finish();
             }

@@ -106,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
         textInputEmail = findViewById(R.id.textInputEmail);
         textInputPassword = findViewById(R.id.textInputPassword);
         btnRegister = findViewById(R.id.createAccount);
-        chkRememberMe = findViewById(R.id.chckRemeberMe);
+
 
         mSharedPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
     }
@@ -216,6 +216,8 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.apply();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 intent.putExtra("userId", response.body().getResult().getUserId());
+                                intent.putExtra("userId", response.body().getResult().getUserId());
+                                EasyPreference.with(getApplicationContext()).addInt(Constants.USERID, response.body().getResult().getUserId()).save();
                                 startActivity(intent);
                                 finish();
                             } catch (GeneralSecurityException | IOException ex) {

@@ -30,6 +30,9 @@ import com.celeste.celestedaylightapp.profile.BleProfileServiceReadyActivity;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
 import com.celeste.celestedaylightapp.sqllitedb.DBManager;
+import com.celeste.celestedaylightapp.sqllitedb.MainAdapter;
+import com.celeste.celestedaylightapp.sqllitedb.MainData;
+import com.celeste.celestedaylightapp.sqllitedb.RoomDB;
 import com.celeste.celestedaylightapp.widget.LineItemDecoration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -62,6 +65,8 @@ public class ModesFragment extends BleProfileServiceReadyActivity<UARTService.UA
     private DBManager dbManager;
     private List<UserMode> assessments = new ArrayList<>();
     private Api api = ApiClient.getInstance(this).create(Api.class);
+
+
     public ModesFragment() {
         // Required empty public constructor
     }

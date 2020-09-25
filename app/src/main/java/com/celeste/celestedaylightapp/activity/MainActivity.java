@@ -36,6 +36,7 @@ import com.celeste.celestedaylightapp.fragment.Frag_Dashboard;
 import com.celeste.celestedaylightapp.fragment.FragmentUserModes;
 import com.celeste.celestedaylightapp.fragment.SettingsFragment;
 import com.celeste.celestedaylightapp.fragment.UsersFragment;
+import com.celeste.celestedaylightapp.model.modes.UserModeModel;
 import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.profile.BleProfileService;
@@ -93,6 +94,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     int userId;
     Api api = ApiClient.getInstance(MainActivity.this).create(Api.class);
     SharedPreferences.Editor editor;
+    int Id;
     private TextView mTextMessage;
     private BottomNavigationView navigation;
     private View search_bar;
@@ -111,6 +113,8 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
+        Id = EasyPreference.with(getApplicationContext()).getInt(Constants.USERID, 0);
+        Toast.makeText(getApplicationContext(), "" + Id, Toast.LENGTH_LONG).show();
         initToolbar();
         setDefaultFragment();
         initComponent();
@@ -120,7 +124,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
 
     private void loadUserInfo() {
         //   progressBar.setVisibility(View.VISIBLE);
-        Call<GetSingleUserResponse> call = api.getSingleUser(userId);
+        Call<GetSingleUserResponse> call = api.getUser(Id);
         call.enqueue(new Callback<GetSingleUserResponse>() {
             @Override
             public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
@@ -128,12 +132,14 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
                         List<String> roles = userModel.getRoleNames();
+                        List<UserModeModel> modes = userModel.getUserModes();
+                        EasyPreference.with(getApplicationContext()).addObject(Constants.MODE, modes).save();
+
                         if (roles.stream().noneMatch(s -> s.matches("ADMIN"))) {
                             Menu menu = navigation.getMenu();
                             MenuItem target = menu.findItem(R.id.navigation_profile);
                             target.setVisible(false);
                         }
-                        //     Toast.makeText(getApplicationContext(), ""+roles.toString(), Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(getApplicationContext(), "User has no modes", Toast.LENGTH_LONG).show();
                     }
@@ -400,7 +406,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
             }
             return true;
         });
-
         NestedScrollView nested_content = (NestedScrollView) findViewById(R.id.nested_scroll_view);
         nested_content.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
@@ -415,9 +420,9 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                 }
             }
         });
-
         Tools.setSystemBarColor(this, R.color.grey_5);
         Tools.setSystemBarLight(this);
+
     }
 
     @Override
