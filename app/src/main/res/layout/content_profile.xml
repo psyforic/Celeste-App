@@ -8,6 +8,9 @@
     tools:showIn="@layout/fragment_profile">
 
     <LinearLayout
+
+        android:id="@+id/profile_layout"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -79,9 +82,9 @@
                 android:src="@drawable/ic_phone" />
 
             <TextView
+                android:paddingLeft="40dp"
                 style="@style/profileDetailsTextMain"
-                android:layout_toRightOf="@id/mobileImageView"
-                android:text="Mobile" />
+                android:text="@string/mobile" />
 
             <TextView
                 android:id="@+id/tvCellphone"

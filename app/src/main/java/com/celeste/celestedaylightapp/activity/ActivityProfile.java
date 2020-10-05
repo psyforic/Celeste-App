@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
@@ -37,6 +39,7 @@ public class ActivityProfile extends AppCompatActivity {
     TextView tvAddress;
     TextView tvNames;
     TextView tvCellphone;
+    LinearLayout profile_layout;
     ProgressBar progressBar;
     LinearLayout lyt_not_found;
     FloatingActionButton floatingActionButton;
@@ -67,6 +70,9 @@ public class ActivityProfile extends AppCompatActivity {
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
                         //  userModel = userResult;
+                        profile_layout.setVisibility(View.VISIBLE);
+                        lyt_not_found.setVisibility(View.GONE);
+                        floatingActionButton.setVisibility(View.VISIBLE);
                         tvUsername.setText(userModel.getSurname());
                         tvNames.setText(userModel.getFullName());
                         tvEmail.setText(userModel.getEmailAddress());
@@ -75,9 +81,13 @@ public class ActivityProfile extends AppCompatActivity {
                         tvAddress.setText(userModel.getAddress());
                     } else {
                         lyt_not_found.setVisibility(View.VISIBLE);
+                        profile_layout.setVisibility(View.GONE);
+                        floatingActionButton.setVisibility(View.GONE);
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "" + response.code(), Toast.LENGTH_LONG).show();
+                    lyt_not_found.setVisibility(View.VISIBLE);
+                    floatingActionButton.setVisibility(View.GONE);
                 }
                 progressBar.setVisibility(View.GONE);
             }
@@ -108,6 +118,7 @@ public class ActivityProfile extends AppCompatActivity {
     }
 
     private void initComponent() {
+        profile_layout = findViewById(R.id.profile_layout);
         lyt_not_found = findViewById(R.id.lyt_not_found);
         tvUsername = findViewById(R.id.tvUsername);
         tvTenant = findViewById(R.id.tvTenant);
@@ -138,9 +149,7 @@ public class ActivityProfile extends AppCompatActivity {
         //    initProfile();
         if (isNetworkAvailable()) {
             initProfile();
-        }
-        else
-        {
+        } else {
 
         }
         super.onStart();

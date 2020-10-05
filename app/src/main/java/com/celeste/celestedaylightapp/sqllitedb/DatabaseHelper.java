@@ -13,10 +13,14 @@ import com.celeste.celestedaylightapp.model.modes.Mode;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+import static android.icu.text.MessagePattern.ArgType.SELECT;
+import static com.google.common.net.HttpHeaders.FROM;
+import static com.google.firestore.v1.Precondition.ConditionTypeCase.EXISTS;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_NAME = "USER_MODES";
     public static final String TABLE_USER = "USER_INFO";
-    private static final String DATABASE_NAME = "UserManager.db";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_MODE_ID = "mode_id";
     public static final String COLUMN_DESC = "description";
@@ -26,6 +30,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_END_TIME = "end_time";
     static final String DB_NAME = "USER_MODES.DB";
     static final int DB_VERSION = 1;
+    private static final String DATABASE_NAME = "UserManager.db";
     private static final String CREATE_TABLE = "create table " + TABLE_NAME + "(" + COLUMN_ID
             + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_START_TIME + " TEXT, " +
@@ -53,10 +58,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean isFieldExists(SQLiteDatabase db, String tableName, String fieldName) {
-        if (tableName == null || db == null || fieldName == null || !db.isOpen()) return false;
+        if (tableName == null || db == null || fieldName == null || !db.isOpen())
+            return false;
         Cursor cursor = null;
         try {
-            cursor = db.rawQuery("SELECT * FROM " + tableName + " LIMIT 0", null);
+            cursor = db.rawQuery("SELECT * FROM " + tableName + "  LIMIT 0", null);
             return cursor != null && cursor.getColumnIndex(fieldName) != -1;
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,6 +78,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE);
     }
+
     public void addUser(User user) {
 //        SQLiteDatabase db = this.getWritableDatabase();
 //        ContentValues values = new ContentValues();
@@ -154,35 +161,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean recordExists(String desc) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT EXISTS(SELECT 1 FROM USER_MODES WHERE COLUMN_DESC  = " + desc + "", null);
-        if (cursor.getCount() <= 0) {
+        String sql = "SELECT EXISTS (SELECT * FROM USER_MODES WHERE description='" + desc + "' LIMIT 1)";
+        Cursor cursor = db.rawQuery(sql, null);
+        cursor.moveToFirst();
+        // cursor.getInt(0) is 1 if column with value exists
+        if (cursor.getInt(0) == 1) {
+            cursor.close();
+            return true;
+        } else {
             cursor.close();
             return false;
         }
-        cursor.close();
-        return true;
-    }
-
-    public boolean fieldExists(SQLiteDatabase db, String tableName, String fieldName) {
-        boolean doesExist = false;
-        Cursor cursor = null;
-        try {
-            cursor = db.rawQuery("Select * from " + tableName + "limit 1", null);
-            int colIndex = cursor.getColumnIndex(fieldName);
-            if (colIndex != -1) {
-                doesExist = true;
-            }
-        } catch (Exception e) {
-        } finally {
-            try {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            } catch (Exception ex) {
-
-            }
-        }
-        return doesExist;
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        Cursor cursor = db.rawQuery("select 1 from USER_MODES where description=" + desc + "", null);
+//        if (cursor.getCount() <= 0) {
+//            cursor.close();
+//            return false;
+//        }
+//        cursor.close();
+//        return true;
     }
 
     @Override

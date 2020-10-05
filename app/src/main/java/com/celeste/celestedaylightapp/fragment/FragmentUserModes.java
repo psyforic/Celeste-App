@@ -81,9 +81,8 @@ public class FragmentUserModes extends Fragment {
 
         dbHelper = new DatabaseHelper(getActivity());
         sqLiteDatabase = dbHelper.getReadableDatabase();
-        Toast.makeText(getContext(), "User ID" + Id, Toast.LENGTH_LONG).show();
         progressBar = view.findViewById(R.id.progressBar);
-        //getUserModes();
+        getUserModes();
         initArrayLists();
         storeDataInArrays();
         //displayModes();
@@ -104,8 +103,8 @@ public class FragmentUserModes extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         Cursor cursor = dbHelper.readAllData();
         if (!(cursor.moveToFirst()) || cursor.getCount() == 0) {
-            TastyToast.makeText(getActivity(), "No data, please sync database", TastyToast.LENGTH_LONG,
-                    TastyToast.INFO);
+//            TastyToast.makeText(getActivity(), "No data, please sync database", TastyToast.LENGTH_LONG,
+//                    TastyToast.INFO);
         } else {
             _id.add(cursor.getString(0));
             start_time.add(cursor.getString(1));
@@ -132,7 +131,7 @@ public class FragmentUserModes extends Fragment {
         progressBar.setVisibility(View.GONE);
     }
 
-    public void getUserModes() {
+    private void getUserModes() {
         progressBar.setVisibility(View.VISIBLE);
         Call<GetSingleUserResponse> call = api.getUser(Id);
         call.enqueue(new Callback<GetSingleUserResponse>() {
@@ -146,12 +145,12 @@ public class FragmentUserModes extends Fragment {
                             for (UserModeModel modes : modeList) {
                                 mode = modes.getMode();
                             }
-                            if (!dbHelper.isFieldExists(sqLiteDatabase, "USER_MODES", mode.getName())) {
-                                boolean inserted = dbHelper.insertUserMode(mode.getStartTime(), mode.getEndTime(), mode.getName(), mode.getCommand(), mode.getIcon(), mode.getId());
+                            if (!dbHelper.recordExists(mode.getName().trim())) {
+                                boolean inserted = dbHelper.insertUserMode(mode.getStartTime().trim(), mode.getEndTime(), mode.getName().trim(), mode.getCommand().trim(), mode.getIcon().trim(), mode.getId().trim());
                                 if (inserted) {
-                                    Toast.makeText(getContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
+                                  //  Toast.makeText(getContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
                                 } else {
-                                    Toast.makeText(getContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
+                                 //   Toast.makeText(getContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
                                 }
                             }
                         } else {
@@ -170,41 +169,7 @@ public class FragmentUserModes extends Fragment {
                 Toast.makeText(getContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-//        String id = "25";
-//        Call<UserGetResponse> call = api.getUser(id);
-//        call.enqueue(new Callback<UserGetResponse>() {
-//            @Override
-//            public void onResponse(Call<UserGetResponse> call, Response<UserGetResponse> response) {
-//                if (response.body() != null && response.code() == 200) {
-//                    String modes = response.body().getResult().getUserModes() + ""+response.body().getResult().getSurname();
-//                    Toast.makeText(getContext(), modes, Toast.LENGTH_LONG).show();
-//                    Call<UserModeGetResponse> call1 = api.getUserMode(modes);
-//                    call1.enqueue(new Callback<UserModeGetResponse>() {
-//                        @Override
-//                        public void onResponse(Call<UserModeGetResponse> call, Response<UserModeGetResponse> response) {
-//                            if (response.body() != null && response.code() == 200) {
-//                             //   modesList = response.body().getResult().getUserModes();
-//                               // Toast.makeText(getContext(), "ID FIRST" + modesList.get(0).getUserName(), Toast.LENGTH_LONG).show();
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onFailure(Call<UserModeGetResponse> call, Throwable t) {
-//                            Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-//                        }
-//                    });
-//                    //   modesList = response.body().getResult().getUserModes();
-//                    //   Toast.makeText(getContext(), "ID FIRST" + modesList.get(0).getUserModes(), Toast.LENGTH_LONG).show();
-//                } else {
-//                    Toast.makeText(getContext(), "" + response.code(), Toast.LENGTH_LONG).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<UserGetResponse> call, Throwable t) {
-//                Toast.makeText(getContext(), "Error responsible onFAILURE" + t.getMessage(), Toast.LENGTH_LONG).show();
-//            }
-//        });
+
     }
 
     private boolean isNetworkAvailable() {
@@ -224,47 +189,8 @@ public class FragmentUserModes extends Fragment {
         }
         super.onStart();
     }
-//
-//    public void getMode(Mode modes) {
-//        Call<ModeGetResponse> call = api.getMode(modes.getId());
-//        call.enqueue(new Callback<ModeGetResponse>() {
-//            @Override
-//            public void onResponse(Call<ModeGetResponse> call, Response<ModeGetResponse> response) {
-//                if (response.body() != null && response.code() == 200) {
-//                    mode = response.body().getResult();
-//                    modeList.add(mode);
-//                    initRecyclerView(modeList);
-//                    if (mode != null) {
-//                        if (!dbHelper.isFieldExists(sqLiteDatabase, "USER_MODES", mode.getName())) {
-//                            boolean inserted = dbHelper.insertUserMode(mode.getStartTime(), mode.getEndTime(), mode.getName(), mode.getCommand(), mode.getIcon(), mode.getId());
-//                            if (inserted) {
-//                                Toast.makeText(getContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
-//                            } else {
-//                                Toast.makeText(getContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
-//                            }
-//                        } else {
-//                            Toast.makeText(getContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
-//                        }
-//                    }
-//                    // String sText = editText.getText().toString().trim();
-//                    if (mode != null) {//   initRecyclerView(modes);
-//                        Toast.makeText(getContext(), "Modes found" + mode, Toast.LENGTH_LONG).show();
-//                    } else {
-//                        Toast.makeText(getContext(), "Modes not found", Toast.LENGTH_LONG).show();
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ModeGetResponse> call, Throwable t) {
-//                Toast.makeText(getContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
-//            }
-//        });
-//    }
 
-    public void initRecyclerView(List<UserModeModel> modesList) {
-        //List<Mode> mode = dbHelper.getAllModes();
-        Toast.makeText(getContext(), "Modes size " + modesList.size(), Toast.LENGTH_LONG).show();
+    private void initRecyclerView(List<UserModeModel> modesList) {
         recyclerView = view.findViewById(R.id.modesRecyclerView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
