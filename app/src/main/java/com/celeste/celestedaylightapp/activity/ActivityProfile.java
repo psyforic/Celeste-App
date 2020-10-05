@@ -150,7 +150,7 @@ public class ActivityProfile extends AppCompatActivity {
         if (isNetworkAvailable()) {
             initProfile();
         } else {
-
+       //load from database
         }
         super.onStart();
     }
