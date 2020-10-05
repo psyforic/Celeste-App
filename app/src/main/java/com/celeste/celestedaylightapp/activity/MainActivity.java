@@ -2,11 +2,14 @@ package com.celeste.celestedaylightapp.activity;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -19,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
@@ -43,6 +47,7 @@ import com.celeste.celestedaylightapp.profile.BleProfileService;
 import com.celeste.celestedaylightapp.profile.BleProfileServiceReadyActivity;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
+import com.celeste.celestedaylightapp.utils.CelesteService;
 import com.celeste.celestedaylightapp.utils.Constants;
 import com.celeste.celestedaylightapp.utils.Tools;
 import com.google.android.material.appbar.AppBarLayout;
@@ -109,12 +114,12 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     private ConfigurationListener mConfigurationListener;
     private UserModel userModel;
     private ProgressBar progressBar;
+    private CelesteService celesteService;
 
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
         Id = EasyPreference.with(getApplicationContext()).getInt(Constants.USERID, 0);
-        Toast.makeText(getApplicationContext(), "" + Id, Toast.LENGTH_LONG).show();
         initToolbar();
         setDefaultFragment();
         initComponent();
@@ -124,6 +129,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
 
     private void loadUserInfo() {
         //   progressBar.setVisibility(View.VISIBLE);
+     //   startService(new Intent(this, CelesteService.class));
         Call<GetSingleUserResponse> call = api.getUser(Id);
         call.enqueue(new Callback<GetSingleUserResponse>() {
             @Override
@@ -131,17 +137,18 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
-                        List<String> roles = userModel.getRoleNames();
                         List<UserModeModel> modes = userModel.getUserModes();
                         EasyPreference.with(getApplicationContext()).addObject(Constants.MODE, modes).save();
-
-                        if (roles.stream().noneMatch(s -> s.matches("ADMIN"))) {
-                            Menu menu = navigation.getMenu();
-                            MenuItem target = menu.findItem(R.id.navigation_profile);
-                            target.setVisible(false);
+                        if (response.body().getResult().getRoleNames() != null) {
+                            List<String> roles = userModel.getRoleNames();
+                            if (roles.stream().noneMatch(s -> s.matches("ADMIN"))) {
+                                Menu menu = navigation.getMenu();
+                                MenuItem target = menu.findItem(R.id.navigation_profile);
+                                target.setVisible(false);
+                            }
                         }
                     } else {
-                        Toast.makeText(getApplicationContext(), "User has no modes", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "" + response.code(), Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "" + response.code(), Toast.LENGTH_LONG).show();
@@ -168,6 +175,16 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     @Override
     public void onServicesDiscovered(BluetoothDevice device, boolean optionalServicesFound) {
         // do nothing
+    }
+
+    @Override
+    public boolean shouldEnableBatteryLevelNotifications(@NonNull BluetoothDevice device) {
+        return false;
+    }
+
+    @Override
+    public void onBatteryValueReceived(@NonNull BluetoothDevice device, int value) {
+
     }
 
     @Override
@@ -450,13 +467,19 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     private void animateNavigation(final boolean hide) {
         if (isNavigationHide && hide || !isNavigationHide && !hide) return;
         isNavigationHide = hide;
         int moveY = hide ? (2 * navigation.getHeight()) : 0;
         navigation.animate().translationY(moveY).setStartDelay(100).setDuration(300).start();
     }
-
 
     @Override
     public void send(String text) {
@@ -476,6 +499,11 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
 
     @Override
     public void afterTextChanged(Editable s) {
+
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
 

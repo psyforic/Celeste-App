@@ -28,6 +28,7 @@ import org.simpleframework.xml.Text;
 
 @Root
 public class Command {
+
     public enum Icon {
         LEFT(0),
         UP(1),
@@ -89,9 +90,7 @@ public class Command {
     @Attribute(required = false)
     private Icon icon = Icon.LEFT;
 
-
     private int iconIndex;
-
 
     private String commandName;
 

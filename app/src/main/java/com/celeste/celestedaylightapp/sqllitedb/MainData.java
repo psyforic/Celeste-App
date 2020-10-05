@@ -19,7 +19,50 @@ public class MainData implements Serializable {
     @ColumnInfo(name = "text")
     private String text;
 
-    //Generate getter and setter
+    @ColumnInfo(name = "userId")
+    private String userId;
+
+    @ColumnInfo(name = "tenantId")
+    private String tenantId;
+
+    @ColumnInfo(name = "username")
+    private String username;
+
+    @ColumnInfo(name = "password")
+    private String password;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+//Generate getter and setter
 
     public int getID() {
         return ID;

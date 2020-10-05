@@ -1,5 +1,6 @@
 package com.celeste.celestedaylightapp.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.celeste.celestedaylightapp.R;
+import com.celeste.celestedaylightapp.activity.AddUser;
 import com.celeste.celestedaylightapp.adapter.UsersAdapter;
 import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.model.user.UserGetResponse;
@@ -52,7 +54,9 @@ public class UsersFragment extends Fragment {
         // Inflate the layout for this fragment
         parent_view = inflater.inflate(R.layout.activity_users, container, false);
         progressBar = parent_view.findViewById(R.id.progressBar);
+        addUser = parent_view.findViewById(R.id.addUser);
         getUsers();
+        addUser();
         return parent_view;
     }
 
@@ -76,6 +80,15 @@ public class UsersFragment extends Fragment {
             public void onFailure(Call<UserGetResponse> call, Throwable t) {
                 Toast.makeText(getContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
                 progressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void addUser() {
+        addUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), AddUser.class));
             }
         });
     }

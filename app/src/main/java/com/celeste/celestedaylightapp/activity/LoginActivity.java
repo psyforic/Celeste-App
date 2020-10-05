@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -33,6 +35,7 @@ import com.celeste.celestedaylightapp.utils.Constants;
 import com.celeste.celestedaylightapp.utils.Tools;
 import com.google.android.material.textfield.TextInputLayout;
 import com.iamhabib.easy_preference.EasyPreference;
+import com.sdsmdg.tastytoast.TastyToast;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -47,6 +50,8 @@ public class LoginActivity extends AppCompatActivity {
     AttemptLoginTask loginTask = null;
     Api apiService = ApiClient.getInstance(this).create(Api.class);
     SharedPreferences.Editor editor;
+    String username;
+    String password;
     private EditText editEmail, editPassword;
     private TextInputLayout textInputEmail;
     private TextInputLayout textInputPassword;
@@ -56,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private View parentView;
     private SharedPreferences mSharedPrefs;
-
+    String user;
     private static boolean isValidEmail(String email) {
         return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
@@ -66,9 +71,23 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.logins_layout);
         setupUI();
-        AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
-        if (response != null) {
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+//        AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
+//        if (response != null) {
+//            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+//        } else {
+//
+//        }
+        if (isNetworkAvailable()) {
+            AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
+            if (response != null) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            }
+        } else {
+            user = EasyPreference.with(getApplicationContext()).getString(Constants.USERNAME, "");
+            if (user != null) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            }
         }
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,16 +102,16 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         Tools.systemBarLolipop(this);
-        getPreferencesData();
     }
 
     private void getPreferencesData() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        if (sharedPreferences.contains("prefs_name") && sharedPreferences.contains("pref_password")) {
-            String username = sharedPreferences.getString("pref_username", "not found");
-            String password = sharedPreferences.getString("pref_password", "invalid");
+        if (sharedPreferences.contains("pref_username") && sharedPreferences.contains("pref_password")) {
+            username = sharedPreferences.getString("pref_username", "not found");
+            password = sharedPreferences.getString("pref_password", "invalid");
             editEmail.setText(username);
             editPassword.setText(password);
+            //  TastyToast.makeText(getApplicationContext(), "Credentials" + username, TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
         }
     }
 
@@ -162,14 +181,34 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login() {
-        if (!validateEmail()) {
-            return;
+        if (isNetworkAvailable()) {
+            if (!validateEmail()) {
+                return;
+            }
+            if (!validatePassword()) {
+                return;
+            }
+            loginTask = new AttemptLoginTask(editEmail.getText().toString().trim(), editPassword.getText().toString().trim());
+            loginTask.execute();
+        } else {
+            getPreferencesData();
+            if (editEmail.getText().toString().trim().equals(username) && editPassword.getText().toString().trim().equals(password)) {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                TastyToast.makeText(getApplicationContext(), "", TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
+            }
+
         }
-        if (!validatePassword()) {
-            return;
-        }
-        loginTask = new AttemptLoginTask(editEmail.getText().toString().trim(), editPassword.getText().toString().trim());
-        loginTask.execute();
+
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -205,7 +244,6 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d("TAG", "index" + response.errorBody());
                             progressBar.setVisibility(View.GONE);
                         } else if (response.body() != null && response.code() == 200) {
-                            Toast.makeText(getApplicationContext(), "" + response.body().getResult().getUserId(), Toast.LENGTH_LONG).show();
                             try {
                                 EasyPreference.with(getApplicationContext()).addObject(Constants.CREDENTIALS, response.body().getResult()).save();
                                 setPreferences(usernameOrEmailAddress, password, response.body().getResult().getAccessToken());
@@ -215,7 +253,6 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.putString("pref_token", response.body().getResult().getAccessToken());
                                 editor.apply();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                intent.putExtra("userId", response.body().getResult().getUserId());
                                 intent.putExtra("userId", response.body().getResult().getUserId());
                                 EasyPreference.with(getApplicationContext()).addInt(Constants.USERID, response.body().getResult().getUserId()).save();
                                 startActivity(intent);
@@ -253,6 +290,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             btnLogin.setVisibility(View.VISIBLE);
+
             hideKeyboard();
             super.onPostExecute(s);
         }

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
@@ -25,6 +26,7 @@ import java.util.Objects;
 public class SettingsFragment extends Fragment {
     private BluetoothAdapter mBluetoothAdapter;
     private View view;
+    private TextView txt_connect;
     private LinearLayout lytAutomaticModes, lytSyncData;
     private SwitchCompat switchCompatBluetooth, switchCompatConnect;
     private boolean isTouched = false;
@@ -44,6 +46,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void setupUI() {
+        txt_connect = view.findViewById(R.id.txt_connect);
         lytAutomaticModes = view.findViewById(R.id.lyt_automatic_modes);
         lytSyncData = view.findViewById(R.id.lyt_sync);
         switchCompatBluetooth = view.findViewById(R.id.switch_compat_bluetooth);
@@ -97,6 +100,7 @@ public class SettingsFragment extends Fragment {
                     isTouched = false;
                     if (switchCompatBluetooth.isChecked()) {
                         switchCompatConnect.setChecked(true);
+                        txt_connect.setClickable(true);
                     } else {
                         switchCompatConnect.setChecked(false);
                     }

@@ -1,8 +1,12 @@
 package com.celeste.celestedaylightapp.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,9 +29,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
 public class ActivityProfile extends AppCompatActivity {
-    //   @BindView(R.id.tvUsername)
+
     TextView tvUsername;
     TextView tvTenant;
     TextView tvEmail;
@@ -35,6 +38,7 @@ public class ActivityProfile extends AppCompatActivity {
     TextView tvNames;
     TextView tvCellphone;
     ProgressBar progressBar;
+    LinearLayout lyt_not_found;
     FloatingActionButton floatingActionButton;
     Api api = ApiClient.getInstance(this).create(Api.class);
     UserModel userModel;
@@ -62,8 +66,7 @@ public class ActivityProfile extends AppCompatActivity {
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
-                        Toast.makeText(getApplicationContext(), "", Toast.LENGTH_LONG).show();
-                      //  userModel = userResult;
+                        //  userModel = userResult;
                         tvUsername.setText(userModel.getSurname());
                         tvNames.setText(userModel.getFullName());
                         tvEmail.setText(userModel.getEmailAddress());
@@ -71,7 +74,7 @@ public class ActivityProfile extends AppCompatActivity {
                         tvTenant.setText(userModel.getUserName());
                         tvAddress.setText(userModel.getAddress());
                     } else {
-                        Toast.makeText(getApplicationContext(), "User has no modes", Toast.LENGTH_LONG).show();
+                        lyt_not_found.setVisibility(View.VISIBLE);
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "" + response.code(), Toast.LENGTH_LONG).show();
@@ -82,6 +85,7 @@ public class ActivityProfile extends AppCompatActivity {
             @Override
             public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
+                lyt_not_found.setVisibility(View.VISIBLE);
                 Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
@@ -96,7 +100,15 @@ public class ActivityProfile extends AppCompatActivity {
         });
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     private void initComponent() {
+        lyt_not_found = findViewById(R.id.lyt_not_found);
         tvUsername = findViewById(R.id.tvUsername);
         tvTenant = findViewById(R.id.tvTenant);
         tvAddress = findViewById(R.id.tvAddress);
@@ -123,20 +135,27 @@ public class ActivityProfile extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-    //    initProfile();
+        //    initProfile();
+        if (isNetworkAvailable()) {
+            initProfile();
+        }
+        else
+        {
+
+        }
         super.onStart();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-   //     initProfile();
+        //     initProfile();
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-    //    initProfile();
+        //    initProfile();
     }
 
     @Override

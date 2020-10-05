@@ -1,5 +1,6 @@
 package com.celeste.celestedaylightapp.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -38,7 +39,7 @@ public class ActivityEditUser extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_user);
         userId = getIntent().getIntExtra("userId", 0);
-       //Toast.makeText(getApplicationContext(), "userId" + userId, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "userId" + userId, Toast.LENGTH_LONG).show();
         initComponent();
         initProfile();
         onClick();
@@ -101,14 +102,12 @@ public class ActivityEditUser extends AppCompatActivity {
             public void onResponse(Call<UpdateUserResponse> call, Response<UpdateUserResponse> response) {
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
-                        Toast.makeText(getApplicationContext(), "Updated" + response.code(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Profile Updated Successfully", Toast.LENGTH_LONG).show();
                         onBackPressed();
                         finish();
-                    } else {
-                        Toast.makeText(getApplicationContext(), "User has no modes", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), "" + response.message(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Response code error" + response.message(), Toast.LENGTH_LONG).show();
                 }
                 progressBar.setVisibility(View.GONE);
                 Log.d("USER RESPONSE", "onResponse: " + response.code());
@@ -125,7 +124,8 @@ public class ActivityEditUser extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        startActivity(new Intent(getApplicationContext(), ActivityProfile.class));
+        finish();
     }
 
     private void initComponent() {

@@ -3,6 +3,7 @@ package com.celeste.celestedaylightapp.utils;
 public class Constants {
     public static final String CREDENTIALS = "Credentials";
     public static final String STATE = "Sate";
+    public static final String TENANT_NAME = "TenantName";
     public static final String TENANT_ID = "TenantId";
     public static final String ACCESS_TOKEN = "AccessToken";
     public static final String USERNAME= "Username";

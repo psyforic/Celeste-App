@@ -2,6 +2,8 @@ package com.celeste.celestedaylightapp.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -37,6 +39,7 @@ public class TenantLogin extends AppCompatActivity {
     EditText edit_tenancyName;
     Button btnLogin;
     ProgressBar progressBar;
+    String tenantId;
     //   SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.CREDENTIALS, 0); // 0 - for private mode
 //    SharedPreferences.Editor editor = pref.edit();
     private View view;
@@ -47,7 +50,6 @@ public class TenantLogin extends AppCompatActivity {
         setContentView(R.layout.tenant_layout);
         initComponents();
         login();
-
         AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
         if (response != null) {
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
@@ -65,10 +67,19 @@ public class TenantLogin extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 hideKeyboard();
-                isTenantAvailable();
+                if (isNetworkAvailable()) {
+                    isTenantAvailable();
+                } else {
+                    tenantId = EasyPreference.with(getApplicationContext()).getString(Constants.CREDENTIALS, "");
+                    if (tenantId != null) {
+                        Toast.makeText(getApplicationContext(), "Tenant ID yakho yile " + tenantId, Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    }
+                }
             }
         });
     }
+
     private void hideKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
@@ -76,6 +87,7 @@ public class TenantLogin extends AppCompatActivity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
     private void isTenantAvailable() {
         tenantLoginModel.setTenancyName(edit_tenancyName.getText().toString().trim());
         Call<TenantResponse> call = api.tenantLogin(tenantLoginModel);
@@ -88,7 +100,7 @@ public class TenantLogin extends AppCompatActivity {
                         case AVAILABLE:
                             try {
                                 EasyPreference.with(getApplicationContext()).addObject(Constants.TENANT_ID, response.body().getResult().getTenantId()).save();
-                                setPreferences(response.body().getResult().getTenantId(), response.body().getResult().getState().ordinal());
+                                setPreferences(response.body().getResult().getTenantId(), edit_tenancyName.getText().toString(), response.body().getResult().getState().ordinal());
                                 startActivity(new Intent(TenantLogin.this, LoginActivity.class));
                                 finish();
                             } catch (GeneralSecurityException | IOException ex) {
@@ -112,18 +124,25 @@ public class TenantLogin extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<TenantResponse> call, Throwable t) {
-              //  Toast.makeText(getApplicationContext(), "Tenant Not Found" + t.getMessage(), Toast.LENGTH_LONG).show();
-                final InternetDialog dialog=new InternetDialog(TenantLogin.this);
+                //  Toast.makeText(getApplicationContext(), "Tenant Not Found" + t.getMessage(), Toast.LENGTH_LONG).show();
+                final InternetDialog dialog = new InternetDialog(TenantLogin.this);
                 dialog.showNoInternetDialog();
                 progressBar.setVisibility(View.GONE);
             }
         });
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
-    private void setPreferences(int tenantId, int state) throws GeneralSecurityException, IOException {
+    private void setPreferences(int tenantId, String tenantName, int state) throws GeneralSecurityException, IOException {
         Tools.getEncryptedSharedPreferences(getApplicationContext()).edit()
                 .putInt(Constants.TENANT_ID, tenantId).putInt(Constants.STATE, state)
+                .putString(Constants.TENANT_NAME, tenantName)
                 .apply();
     }
 

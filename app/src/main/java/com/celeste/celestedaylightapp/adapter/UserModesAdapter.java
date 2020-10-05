@@ -1,5 +1,6 @@
 package com.celeste.celestedaylightapp.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,17 +13,29 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.balysv.materialripple.MaterialRippleLayout;
 import com.celeste.celestedaylightapp.R;
-import com.celeste.celestedaylightapp.model.modes.Mode;
+import com.celeste.celestedaylightapp.model.modes.UserModeModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserModesAdapter extends RecyclerView.Adapter<UserModesAdapter.ViewHolder> {
-    private List<Mode> modes;
+    private List<UserModeModel> modes;
     private Context context;
+    private ArrayList<String> mode_id, description, command, icon, start_time, end_time;
 
-    public UserModesAdapter(Context ctx, List<Mode> modeList) {
+    public UserModesAdapter(Context ctx, List<UserModeModel> modeList) {
         this.context = ctx;
         this.modes = modeList;
+    }
+
+    public UserModesAdapter(Context ctx, ArrayList start_time, ArrayList end_time, ArrayList description, ArrayList command, ArrayList icon, ArrayList mode_id) {
+        this.context = ctx;
+        this.mode_id = mode_id;
+        this.description = description;
+        this.command = command;
+        this.icon = icon;
+        this.start_time = start_time;
+        this.end_time = end_time;
     }
 
     @NonNull
@@ -34,26 +47,35 @@ public class UserModesAdapter extends RecyclerView.Adapter<UserModesAdapter.View
         return vh;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Mode userModes = modes.get(position);
-        String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
-        String[] times = {"04:00-6:45", "6:45-11:00", "12:00-13:00", "17:30-18:30", "", ""};
+        UserModeModel userModes = modes.get(position);
+//        String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
+//        String[] times = {"04:00-6:45", "6:45-11:00", "12:00-13:00", "17:30-18:30", "", ""};
         int[] myIcons = {R.drawable.ic_automatic, R.drawable.ic_sunny, R.drawable.ic_happy, R.drawable.ic_night, R.drawable.ic_hospital, R.drawable.ic_do_not_disturb};
-        holder.mode.setText(modes.get(position).getName());
-        // holder.time.setText(modes.get(position).getStartTime() + " - " + modes.get(position).getEndTime());
-//        holder.time.setText(times[position]);
-//        holder.image.setImageResource(myIcons[position]);
+
+      //  holder.mode.setText(String.valueOf(description.get(position)));
+      //  holder.time.setText(start_time.get(position) + "-" + end_time.get(position));
+         holder.mode.setText(userModes.getMode().getName());
+         holder.time.setText(userModes.getMode().getStartTime() + " - " + userModes.getMode().getEndTime());
+
+      //   holder.time.setText(modes.get(position).getStartTime() + " - " + modes.get(position).getEndTime());
+        /*
+         Set images using a switch,check mode names and assign images appropriately
+        */
+      //    holder.image.setImageResource(myIcons[position]);
     }
 
     @Override
     public int getItemCount() {
         if (modes != null) {
             return modes.size();
+        } else if (mode_id != null) {
+            return mode_id.size();
         } else {
             return 0;
         }
-
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

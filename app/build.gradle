@@ -93,4 +93,8 @@ dependencies {
     implementation "androidx.room:room-rxjava2:2.2.5"
     implementation "androidx.room:room-guava:2.2.5"
     testImplementation "androidx.room:room-testing:2.2.5"
+    implementation 'com.sdsmdg.tastytoast:tastytoast:0.1.1'
+    //WIZARD
+    implementation 'com.github.TechFreak:WizardPager:1.0.3'
+    implementation 'ivb.com.materialstepper:material-stepper:0.0.2'
 }

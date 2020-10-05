@@ -23,8 +23,8 @@ public interface MainDao {
     void reset(List<MainData> mainData);
 
     //Update query
-    @Query("UPDATE table_name SET text=:sText WHERE ID=:sID")
-    void update(int sID, String sText);
+    @Query("UPDATE table_name SET text=:tenantId,text=:userId,text=:role,text=:mode WHERE ID=:sID")
+    void update(int sID, String tenantId, String userId, String role, String mode);
 
     //Get all data query
     @Query("SELECT * FROM table_name")

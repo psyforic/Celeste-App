@@ -118,8 +118,8 @@ public class Tools {
     }
 
     public static SharedPreferences getEncryptedSharedPreferences(Context context) throws GeneralSecurityException, IOException {
-       MasterKey masterKey=  new MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS).
-               setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
+        MasterKey masterKey = new MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS).
+                setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
         return EncryptedSharedPreferences.create(context,
                 "shared_preferences_user_file",
                 masterKey,
@@ -128,4 +128,10 @@ public class Tools {
         );
     }
 
+//    private boolean isNetworkAvailable() {
+//        ConnectivityManager connectivityManager
+//                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+//        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+//    }
 }

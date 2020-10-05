@@ -15,6 +15,7 @@ import java.util.Map;
         "tenantId",
         "modeId",
         "userId",
+        "mode",
         "id"
 })
 public class UserModeModel {
@@ -24,6 +25,8 @@ public class UserModeModel {
     private String modeId;
     @JsonProperty("userId")
     private Integer userId;
+    @JsonProperty("mode")
+    private Mode mode;
     @JsonProperty("id")
     private String id;
     @JsonIgnore
@@ -57,6 +60,16 @@ public class UserModeModel {
     @JsonProperty("userId")
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    @JsonProperty("mode")
+    public Mode getMode() {
+        return mode;
+    }
+
+    @JsonProperty("mode")
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 
     @JsonProperty("id")

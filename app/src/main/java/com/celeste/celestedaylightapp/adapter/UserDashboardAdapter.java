@@ -1,7 +1,6 @@
 package com.celeste.celestedaylightapp.adapter;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,28 +12,31 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.domain.Command;
-import com.celeste.celestedaylightapp.domain.UartConfiguration;
+import com.celeste.celestedaylightapp.model.modes.Mode;
 
-public class DashboardModeAdapter extends RecyclerView.Adapter<DashboardModeAdapter.ViewHolder> {
+import java.util.List;
 
-    private OnItemClickListener mOnItemClickListener;
-    private UartConfiguration mConfiguration;
+public class UserDashboardAdapter extends RecyclerView.Adapter<UserDashboardAdapter.ViewHolder> {
+
+    private UserDashboardAdapter.OnItemClickListener mOnItemClickListener;
+    private List<Mode> mConfiguration;
     private Context mContext;
-    private boolean mEditMode;
+  //  private List<Mode> modes;
 
-    public DashboardModeAdapter(final UartConfiguration configuration, Context context, OnItemClickListener onItemClickListener) {
+    public UserDashboardAdapter(final List<Mode> configuration, Context context, UserDashboardAdapter.OnItemClickListener onItemClickListener) {
         mConfiguration = configuration;
         mContext = context;
         this.mOnItemClickListener = onItemClickListener;
     }
 
-    public void setConfiguration(final UartConfiguration configuration) {
+    public void setConfiguration(final List<Mode> configuration) {
         mConfiguration = configuration;
         notifyDataSetChanged();
     }
 
     public Object getItem(final int position) {
-        return mConfiguration.getCommands()[position];
+        return mConfiguration.get(position).getCommand();
+      //  return mConfiguration.getCommands()[position];
     }
 
     @Override
@@ -44,47 +46,42 @@ public class DashboardModeAdapter extends RecyclerView.Adapter<DashboardModeAdap
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_dashboard_mode, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-        // Update image
-        TypedArray m_icons = mContext.getApplicationContext().getResources().obtainTypedArray(R.array.default_modes_icons);
-        int[] myIcons = {R.drawable.ic_automatic, R.drawable.ic_sunny, R.drawable.ic_happy, R.drawable.ic_night};
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Mode userModes = mConfiguration.get(position);
         String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
+   //     String[] times = {"04:00-6:45", "6:45-11:00", "12:00-13:00", "17:30-18:30", "", ""};
+        int[] myIcons = {R.drawable.ic_automatic, R.drawable.ic_sunny, R.drawable.ic_happy, R.drawable.ic_night, R.drawable.ic_hospital, R.drawable.ic_do_not_disturb};
         final Command command = (Command) getItem(position);
+        command.setCommandName(userModes.getName());
         final boolean active = command != null && command.isActive();
         if (active) {
             int icon = command.getIconIndex();
-            viewHolder.image.setImageResource(myIcons[position]);
-            viewHolder.mode.setText(names[position]);
-
+            holder.image.setImageResource(myIcons[position]);
+            holder.mode.setText(userModes.getName());
         } else
-            viewHolder.image.setImageDrawable(null);
-        viewHolder.card_parent.setOnClickListener(new View.OnClickListener() {
+            holder.image.setImageDrawable(null);
+        holder.card_parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnItemClickListener.onItemClick(command, position);
+                mOnItemClickListener.onItemClick(userModes, position);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return mConfiguration != null ? mConfiguration.getCommands().length - 5 : 0;
-    }
-
-    public void setEditMode(final boolean editMode) {
-        mEditMode = editMode;
-        notifyDataSetChanged();
+        return 0;
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Command obj, int position);
+        void onItemClick(Mode obj, int position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

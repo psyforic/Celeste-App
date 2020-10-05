@@ -32,6 +32,8 @@
     <string name="logout_message">Are you sure you want to Logout?</string>
     <string name="not_available">n/a</string>
     <string name="ok">Ok</string>
+    <string name="lbl_image">Image</string>
+    <string name="str_no_data">Could not load the requested data</string>
     <string name="cancel">Cancel</string>
     <string name="err_msg_name">Firstname cannot be empty</string>
     <string name="err_msg_lastname">Lastname cannot be empty</string>
@@ -149,4 +151,10 @@
     <string name="channel_proximity_warnings_title">Proximity warnings</string>
     <string name="channel_proximity_warnings_description">Shows notifications when a proximity device got out of range.</string>
     <string name="str_cellphone">CELLPHONE</string>
+    <string name="step_of">Step %1$d of %2$d</string>
+    <string name="str_next">NEXT</string>
+    <string name="SAVE">SAVE</string>
+    <string name="NEXT">NEXT</string>
+    <string name="BACK">BACK</string>
+    <string name="str_done">DONE</string>
 </resources>

@@ -47,6 +47,9 @@ public interface Api {
     @GET("/api/services/app/User/GetUserandModes")
     Call<GetSingleUserResponse> getUser(@Query("id") int id);
 
+    @GET("/api/services/app/Mode/GetAll")
+    Call<GetSingleUserResponse> getAllModes(@Query("SkipCount") int SkipCount, @Query("MaxResultCount") int MaxResultCount);
+
     @GET("/api/services/app/User/Get")
     Call<GetSingleUserResponse> getSingleUser(@Query("Id") int id);
 

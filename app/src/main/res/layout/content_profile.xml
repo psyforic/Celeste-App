@@ -50,8 +50,7 @@
                 android:id="@+id/nameImageView"
                 style="@style/profileDetailsImage"
                 android:padding="5dp"
-                android:src="@drawable/ic_person"
-                app:srcCompat="@drawable/ic_person" />
+                app:srcCompat="@drawable/ic_usernames" />
 
             <TextView
                 android:id="@+id/nameTextView"

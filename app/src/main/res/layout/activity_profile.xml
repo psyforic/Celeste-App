@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="@color/profileBackground">
+    android:background="@color/profileBackground"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -20,26 +19,26 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="@color/profilePrimaryDark"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:toolbarId="@+id/toolbar"
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="48dp"
-            app:expandedTitleTextAppearance="@style/TransparentText">
+            app:expandedTitleTextAppearance="@style/TransparentText"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:toolbarId="@+id/toolbar">
 
             <LinearLayout
+                android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
+                android:background="@drawable/profile_bk"
                 android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:id="@+id/linearLayout"
-                android:background="@drawable/profile_bk">
+                android:orientation="vertical">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/cicrle_img"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:elevation="5dp"
+                    android:elevation="15dp"
                     app:srcCompat="@drawable/ic_profile" />
 
                 <TextView
@@ -48,14 +47,14 @@
                     android:layout_height="wrap_content"
                     android:text="User"
                     android:textSize="28dp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="celeste@dev.com"-->
-<!--                    android:textSize="12dp"-->
-<!--                    android:textStyle="bold"/>-->
+                <!--                <TextView-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:text="celeste@dev.com"-->
+                <!--                    android:textSize="12dp"-->
+                <!--                    android:textStyle="bold"/>-->
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -79,14 +78,38 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
                 app:contentInsetStartWithNavigation="0dp"
-                app:popupTheme="@style/AppTheme.PopupOverlay"/>
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <include layout="@layout/content_profile" />
+
+    <LinearLayout
+        android:id="@+id/lyt_not_found"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:contentDescription="@string/lbl_image"
+            android:src="@drawable/ic_not_found" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/str_no_data"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -98,13 +121,14 @@
         android:clickable="true"
         android:elevation="5dp"
         app:srcCompat="@drawable/ic_edit" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="50dp"
         android:layout_gravity="center"
+        android:paddingTop="50dp"
         android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
