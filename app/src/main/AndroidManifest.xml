@@ -12,6 +12,10 @@
     <uses-permission android:name="no.nordicsemi.android.LOG" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -30,6 +34,7 @@
         <activity android:name=".activity.MainActivity" />
         <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.TenantLogin" />
+
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,7 +42,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <service
+            android:name=".UARTService"
+            android:label="@string/uart_feature_title" />
         <service android:name=".utils.CelesteService" />
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -49,9 +56,8 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
+
+
     </application>
 
 </manifest>

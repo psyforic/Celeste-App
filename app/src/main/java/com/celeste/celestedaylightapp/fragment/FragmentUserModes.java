@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static androidx.constraintlayout.motion.widget.MotionScene.TAG;
+
 public class FragmentUserModes extends Fragment {
     public RecyclerView recyclerView;
     public View view;
@@ -64,7 +67,7 @@ public class FragmentUserModes extends Fragment {
     private UserModel userModel;
     private DatabaseHelper dbHelper;
     private ArrayList<String> _id, mode_id, description, command, start_time, end_time, icon;
-    private Mode mode;
+    private Mode mode = new Mode();
     private SQLiteDatabase sqLiteDatabase;
 
     public FragmentUserModes() {
@@ -82,7 +85,7 @@ public class FragmentUserModes extends Fragment {
         dbHelper = new DatabaseHelper(getActivity());
         sqLiteDatabase = dbHelper.getReadableDatabase();
         progressBar = view.findViewById(R.id.progressBar);
-        getUserModes();
+        //  getUserModes();
         initArrayLists();
         storeDataInArrays();
         //displayModes();
@@ -116,7 +119,7 @@ public class FragmentUserModes extends Fragment {
         }
     }
 
-    public void displayModes() {
+    private void displayModes() {
         List<Mode> helperAllModes = dbHelper.getAllModes();
         UserModeModel userModeModel = new UserModeModel();
         for (Mode mode : helperAllModes) {
@@ -145,20 +148,26 @@ public class FragmentUserModes extends Fragment {
                             for (UserModeModel modes : modeList) {
                                 mode = modes.getMode();
                             }
-                            if (!dbHelper.recordExists(mode.getName().trim())) {
-                                boolean inserted = dbHelper.insertUserMode(mode.getStartTime().trim(), mode.getEndTime(), mode.getName().trim(), mode.getCommand().trim(), mode.getIcon().trim(), mode.getId().trim());
-                                if (inserted) {
-                                  //  Toast.makeText(getContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
-                                } else {
-                                 //   Toast.makeText(getContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
+                            Log.d("TAG", "onResponse: " + mode.getName());
+                            if (mode.getName() != null) {
+                                if (!dbHelper.recordExists(mode.getName())) {
+                                    boolean inserted = dbHelper.insertUserMode(mode.getStartTime().trim(), mode.getEndTime(), mode.getName().trim(), mode.getCommand().trim(), mode.getIcon().trim(), mode.getId().trim());
+                                    if (inserted) {
+                                        //  Toast.makeText(getContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
+                                    } else {
+                                        //   Toast.makeText(getContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
+                                    }
                                 }
+                            } else {
+                                TastyToast.makeText(getContext(), "It appears you have not been assigned any modes yet", TastyToast.LENGTH_LONG, TastyToast.CONFUSING).show();
                             }
+
                         } else {
-                            Toast.makeText(getContext(), "User has no modes", Toast.LENGTH_LONG).show();
+                            TastyToast.makeText(getContext(), "It appears you have not been assigned any modes yet", TastyToast.LENGTH_LONG, TastyToast.CONFUSING).show();
                         }
                     }
                 } else {
-                    Toast.makeText(getContext(), "Response code error " + response.code(), Toast.LENGTH_LONG).show();
+                    TastyToast.makeText(getContext(), "Response code error " + response.code(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
                 }
                 progressBar.setVisibility(View.GONE);
             }
@@ -166,7 +175,7 @@ public class FragmentUserModes extends Fragment {
             @Override
             public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
+                TastyToast.makeText(getContext(), "" + t.getMessage(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
             }
         });
 

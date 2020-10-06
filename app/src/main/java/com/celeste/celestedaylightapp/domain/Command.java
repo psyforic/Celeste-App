@@ -28,25 +28,24 @@ import org.simpleframework.xml.Text;
 
 @Root
 public class Command {
-
     @Text(required = false)
     private String command;
     @Attribute(required = false)
     private boolean active = false;
+
+   /* public Command(String command, boolean active, Eol eol, Icon icon, String commandName) {
+        this.command = command;
+        this.active = active;
+        this.eol = eol;
+        this.icon = icon;
+        this.commandName = commandName;
+    }*/
     @Attribute(required = false)
     private Eol eol = Eol.LF;
     @Attribute(required = false)
     private Icon icon = Icon.LEFT;
     private int iconIndex;
     private String commandName;
-
-//    public Command(String command, boolean active, Eol eol, Icon icon, String commandName) {
-//        this.command = command;
-//        this.active = active;
-//        this.eol = eol;
-//        this.icon = icon;
-//        this.commandName = commandName;
-//    }
 
     /**
      * Returns the command that will be sent to UART device.

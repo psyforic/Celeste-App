@@ -57,7 +57,6 @@ public class ActivityProfile extends AppCompatActivity {
         initComponent();
         Id = EasyPreference.with(getApplicationContext()).getInt(Constants.USERID, 0);
         initProfile();
-
     }
 
     private void initProfile() {

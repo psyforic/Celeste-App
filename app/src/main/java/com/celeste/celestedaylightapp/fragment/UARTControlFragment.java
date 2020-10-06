@@ -48,7 +48,7 @@ public class UARTControlFragment extends Fragment implements MainActivity.Config
             mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
             ((MainActivity) context).setConfigurationListener(this);
         } catch (final ClassCastException e) {
-            Log.e(TAG, "The parent com.celeste.celestedaylightapp.activity must implement EditModeListener");
+            Log.e(TAG, "The parent activity must implement EditModeListener");
         }
     }
 

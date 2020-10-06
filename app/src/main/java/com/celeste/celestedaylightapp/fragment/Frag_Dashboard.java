@@ -12,11 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -61,7 +61,7 @@ import butterknife.BindView;
  * create an instance of this fragment.
  */
 public class Frag_Dashboard extends Fragment implements MainActivity.ConfigurationListener {
-
+    private float progressValue = 10f;
     public static final String ACTIVEMODE = "ACTIVEMODE";
     private static final float multiplier = 100f;
     private static final String UTILS_CATEGORY = "com.celeste.celestedaylghtapp.UTILS";
@@ -69,7 +69,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     private final static String TAG = "UARTControlFragment";
     private final static String SIS_EDIT_MODE = "sis_edit_mode";
     private final static String PREFS_CONFIGURATION = "configuration_id";
-    @BindView(R.id.text_mode_name)
+
     TextView selectedMode;
     String deviceName = "No Device";
     Api api = ApiClient.getInstance(getActivity()).create(Api.class);
@@ -104,7 +104,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (savedInstanceState != null) {
             mEditMode = savedInstanceState.getBoolean(SIS_EDIT_MODE);
             selectedMode.setText(savedInstanceState.getString(ACTIVEMODE));
@@ -118,6 +117,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         view = inflater.inflate(R.layout.fragment_frag__dashboard, container, false);
         Id = EasyPreference.with(getActivity()).getInt(Constants.USERID, 0);
         mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+      //  initToolbar();
         SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs, key) -> Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
             Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setTitle(prefs.getString(MDEVICE_NAME, "Not Connected"));
             selectedMode.setText(mPreferences.getString(ACTIVEMODE, "No Mode Selected"));
@@ -127,12 +127,17 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         sqLiteDatabase = dbHelper.getReadableDatabase();
         initCircularSeekBar();
         setCircularSeekBarListener();
-        //  setupUI();
-        getModes();
+        setupUI();
+       // getModes();
         return view;
     }
+    private void initToolbar() {
+    // Toolbar mToolbar = view.findViewById(R.id.dashboard_toolbar);
+    // ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mToolbar);
+     //((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(mPreferences.getString(MDEVICE_NAME, "Not Connected"));
+    }
 
-    @SuppressLint("SetTextI18n")
+
     private void initCircularSeekBar() {
         mCircularSeekBar = view.findViewById(R.id.mCircularSeekBar);
         mSeekBarValue = view.findViewById(R.id.mSeekBarValue);
@@ -149,7 +154,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         mCircularSeekBar.setArcRotation(225);
         mCircularSeekBar.setMin(0);
         mCircularSeekBar.setMax(70);
-        float progressValue = 10f;
         mCircularSeekBar.setProgress(progressValue);
         mCircularSeekBar.setIncreaseCenterNeedle(20);
         mCircularSeekBar.setValueStep(2);
@@ -287,6 +291,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                         break;
                 }
                 mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
+                Toast.makeText(getContext(), "Clicked " + obj.getCommand(), Toast.LENGTH_LONG).show();
                 uart.send(text);
             }
         });
@@ -393,6 +398,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                             break;
                     }
                     mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
+                   Toast.makeText(getContext(), "Clicked " + obj.getName(), Toast.LENGTH_LONG).show();
                     uart.send(text);
                 }
             });
@@ -443,7 +449,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
 
     @Override
     public void onConfigurationModified() {
-
     }
 
     @Override
