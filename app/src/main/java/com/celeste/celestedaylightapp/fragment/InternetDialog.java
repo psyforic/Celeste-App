@@ -10,7 +10,7 @@ import com.celeste.celestedaylightapp.R;
 
 public class InternetDialog {
     private Context context;
-
+    Dialog dialog1;
     public InternetDialog(){
 
     }
@@ -18,7 +18,7 @@ public class InternetDialog {
         this.context = context;
     }
     public void showNoInternetDialog(){
-        final Dialog dialog1 = new Dialog(context, R.style.df_dialog);
+        dialog1 = new Dialog(context, R.style.df_dialog);
         dialog1.setContentView(R.layout.dialog_no_internet);
         dialog1.setCancelable(true);
         dialog1.setCanceledOnTouchOutside(true);
@@ -43,5 +43,4 @@ public class InternetDialog {
         }
         return isConnected;
     }
-
 }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -78,7 +79,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     private CircularSeekBar mCircularSeekBar;
     private UartConfiguration mConfiguration;
     private TextView mSeekBarValue;
-//    @BindView(R.id.iconRecycler)
+    //    @BindView(R.id.iconRecycler)
 //    RecyclerView iconRecycler;
     private DashboardModeAdapter mAdapter;
     private FloatingActionButton fabSwitch;
@@ -92,6 +93,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     private RecyclerView recyclerView;
     private List<Mode> modeList = new ArrayList<>();
 
+
     public Frag_Dashboard() {
         // Required empty public constructor
     }
@@ -104,6 +106,14 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
             mEditMode = savedInstanceState.getBoolean(SIS_EDIT_MODE);
             selectedMode.setText(savedInstanceState.getString(ACTIVEMODE));
         }
+
+    }
+
+    private void initToolbar() {
+        Toolbar mToolbar = view.findViewById(R.id.dashboard_toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(mPreferences.getString(MDEVICE_NAME, "Not Connected"));
+
     }
 
     @Override
@@ -120,6 +130,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         mPreferences.registerOnSharedPreferenceChangeListener(listener);
         dbHelper = new com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper(getActivity());
         sqLiteDatabase = dbHelper.getReadableDatabase();
+        initToolbar();
         initCircularSeekBar();
         setCircularSeekBarListener();
         //    setupUI();
@@ -196,7 +207,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
             }
         });
     }
-
 //    private void loadUserInfo() {
 //        //   progressBar.setVisibility(View.VISIBLE);
 //        Call<GetSingleUserResponse> call = api.getUser(Id);
@@ -289,7 +299,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         fabSwitch = view.findViewById(R.id.fab_switch);
 
     }
-
 //    public void displayModes() {
 //        List<Mode> mode = dbHelper.getAllModes();
 //        recyclerView = view.findViewById(R.id.modesRecyclerView);
@@ -346,8 +355,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         try {
             //   mode = dbHelper.getAllModes();
             helperAllModes = dbHelper.getAllModes();
-            for(Mode mode:helperAllModes)
-            {
+            for (Mode mode : helperAllModes) {
                 TastyToast.makeText(getActivity(), "" + mode.getName(), TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
             }
 
@@ -396,7 +404,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                 uart.send(text);
             }
         });
-       // TastyToast.makeText(getActivity(), "" + mode.get(0).getName(), TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
+        // TastyToast.makeText(getActivity(), "" + mode.get(0).getName(), TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
         recyclerView.setAdapter(modedapter);
         fabSwitch = view.findViewById(R.id.fab_switch);
     }
