@@ -85,7 +85,9 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_profile" />
+
+        <include
+            layout="@layout/content_profile" />
 
     <LinearLayout
         android:id="@+id/lyt_not_found"
@@ -101,6 +103,7 @@
         <ImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:tint="@color/colorAccentDark"
             android:contentDescription="@string/lbl_image"
             android:src="@drawable/ic_not_found" />
 

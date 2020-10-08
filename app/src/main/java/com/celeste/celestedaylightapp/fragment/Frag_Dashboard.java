@@ -15,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,6 +31,7 @@ import com.celeste.celestedaylightapp.database.DatabaseHelper;
 import com.celeste.celestedaylightapp.domain.Command;
 import com.celeste.celestedaylightapp.domain.UartConfiguration;
 import com.celeste.celestedaylightapp.model.modes.Mode;
+import com.celeste.celestedaylightapp.model.modes.UserModeModel;
 import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
@@ -39,7 +39,6 @@ import com.celeste.celestedaylightapp.utils.Constants;
 import com.celeste.celestedaylightapp.utils.Tools;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.iamhabib.easy_preference.EasyPreference;
-import com.sdsmdg.tastytoast.TastyToast;
 import com.skumar.flexibleciruclarseekbar.CircularSeekBar;
 
 import org.simpleframework.xml.Serializer;
@@ -82,6 +81,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     //    @BindView(R.id.iconRecycler)
 //    RecyclerView iconRecycler;
     private DashboardModeAdapter mAdapter;
+    private UserDashboardAdapter modeAdapter;
     private FloatingActionButton fabSwitch;
     // private LineChartView lineChartView;
     private IconLabelAdapter iconAdapter;
@@ -92,8 +92,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     private UserModel userModel;
     private RecyclerView recyclerView;
     private List<Mode> modeList = new ArrayList<>();
-
-
+    private List<UserModeModel> arrayList = new ArrayList<>();
     public Frag_Dashboard() {
         // Required empty public constructor
     }
@@ -110,10 +109,9 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     }
 
     private void initToolbar() {
-        Toolbar mToolbar = view.findViewById(R.id.dashboard_toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(mPreferences.getString(MDEVICE_NAME, "Not Connected"));
-
+//        Toolbar mToolbar = view.findViewById(R.id.dashboard_toolbar);
+//        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(mPreferences.getString(MDEVICE_NAME, "Not Connected"));
     }
 
     @Override
@@ -133,12 +131,12 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         initToolbar();
         initCircularSeekBar();
         setCircularSeekBarListener();
-        //    setupUI();
+        // setupUI();
         getModes();
         return view;
     }
 
-    @SuppressLint("SetTextI18n")
+
     private void initCircularSeekBar() {
         mCircularSeekBar = view.findViewById(R.id.mCircularSeekBar);
         mSeekBarValue = view.findViewById(R.id.mSeekBarValue);
@@ -207,6 +205,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
             }
         });
     }
+
 //    private void loadUserInfo() {
 //        //   progressBar.setVisibility(View.VISIBLE);
 //        Call<GetSingleUserResponse> call = api.getUser(Id);
@@ -299,6 +298,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         fabSwitch = view.findViewById(R.id.fab_switch);
 
     }
+
 //    public void displayModes() {
 //        List<Mode> mode = dbHelper.getAllModes();
 //        recyclerView = view.findViewById(R.id.modesRecyclerView);
@@ -355,58 +355,60 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         try {
             //   mode = dbHelper.getAllModes();
             helperAllModes = dbHelper.getAllModes();
-            for (Mode mode : helperAllModes) {
-                TastyToast.makeText(getActivity(), "" + mode.getName(), TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
-            }
+            helperAllModes.forEach(el -> {
+                Log.d("Mode", "getModes: "+el.getName());
+            });
 
+            modeAdapter = new UserDashboardAdapter(helperAllModes, getContext(), new UserDashboardAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(Mode obj, int position) {
+                    Command comm = new Command();
+                    comm.setActive(true);
+                    comm.setCommand(obj.getCommand());
+                    comm.setEol(0);
+                    comm.setIconIndex(0);
+                    comm.setCommandName(obj.getName());
+                    final Command.Eol eol = comm.getEol();
+                    String text = comm.getCommand();
+                    if (text == null)
+                        text = "";
+                    switch (eol) {
+                        case CR_LF:
+                            text = text.replaceAll("\n", "\r\n");
+                            break;
+                        case CR:
+                            text = text.replaceAll("\n", "\r");
+                            break;
+                    }
+                    final UARTInterface uart = (UARTInterface) getActivity();
+                    String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
+                    selectedMode.setText(obj.getName());
+                    //selectedMode.setText(names[position]);
+                    switch (position) {
+                        case 0:
+                            mCircularSeekBar.setProgress(27f);
+                            break;
+                        case 1:
+                            mCircularSeekBar.setProgress(30f);
+                            break;
+                        case 2:
+                            mCircularSeekBar.setProgress(45f);
+                            break;
+                        case 3:
+                            mCircularSeekBar.setProgress(65f);
+                            break;
+                    }
+                    mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
+                    uart.send(text);
+                }
+            });
+            recyclerView.setAdapter(modeAdapter);
+            Log.d(TAG, "getModes: " + modeAdapter.getItemCount());
+            fabSwitch = view.findViewById(R.id.fab_switch);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        UserDashboardAdapter modedapter = new UserDashboardAdapter(helperAllModes, getContext(), new UserDashboardAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Mode obj, int position) {
-                Command comm = new Command();
-                comm.setActive(true);
-                comm.setCommand(obj.getCommand());
-                comm.setEol(0);
-                comm.setIconIndex(0);
-                comm.setCommandName(obj.getName());
-                final Command.Eol eol = comm.getEol();
-                String text = comm.getCommand();
-                if (text == null)
-                    text = "";
-                switch (eol) {
-                    case CR_LF:
-                        text = text.replaceAll("\n", "\r\n");
-                        break;
-                    case CR:
-                        text = text.replaceAll("\n", "\r");
-                        break;
-                }
-                final UARTInterface uart = (UARTInterface) getActivity();
-                String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
-                selectedMode.setText(obj.getName());
-                switch (position) {
-                    case 0:
-                        mCircularSeekBar.setProgress(27f);
-                        break;
-                    case 1:
-                        mCircularSeekBar.setProgress(30f);
-                        break;
-                    case 2:
-                        mCircularSeekBar.setProgress(45f);
-                        break;
-                    case 3:
-                        mCircularSeekBar.setProgress(65f);
-                        break;
-                }
-                mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
-                uart.send(text);
-            }
-        });
-        // TastyToast.makeText(getActivity(), "" + mode.get(0).getName(), TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
-        recyclerView.setAdapter(modedapter);
-        fabSwitch = view.findViewById(R.id.fab_switch);
+
     }
 
     @Override

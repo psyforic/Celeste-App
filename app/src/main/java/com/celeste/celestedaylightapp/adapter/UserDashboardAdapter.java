@@ -21,7 +21,8 @@ public class UserDashboardAdapter extends RecyclerView.Adapter<UserDashboardAdap
     private UserDashboardAdapter.OnItemClickListener mOnItemClickListener;
     private List<Mode> mConfiguration;
     private Context mContext;
-  //  private List<Mode> modes;
+    Mode userModes;
+    //  private List<Mode> modes;
 
     public UserDashboardAdapter(final List<Mode> configuration, Context context, UserDashboardAdapter.OnItemClickListener onItemClickListener) {
         mConfiguration = configuration;
@@ -34,9 +35,9 @@ public class UserDashboardAdapter extends RecyclerView.Adapter<UserDashboardAdap
         notifyDataSetChanged();
     }
 
-    public Object getItem(final int position) {
-        return mConfiguration.get(position).getCommand();
-      //  return mConfiguration.getCommands()[position];
+    private Object getItem(final int position) {
+        return mConfiguration.get(position);
+        //  return mConfiguration.getCommands()[position];
     }
 
     @Override
@@ -54,12 +55,13 @@ public class UserDashboardAdapter extends RecyclerView.Adapter<UserDashboardAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Mode userModes = mConfiguration.get(position);
+        userModes = mConfiguration.get(position);
         String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
-   //     String[] times = {"04:00-6:45", "6:45-11:00", "12:00-13:00", "17:30-18:30", "", ""};
         int[] myIcons = {R.drawable.ic_automatic, R.drawable.ic_sunny, R.drawable.ic_happy, R.drawable.ic_night, R.drawable.ic_hospital, R.drawable.ic_do_not_disturb};
-        final Command command = (Command) getItem(position);
+        final Command command = new Command();
         command.setCommandName(userModes.getName());
+        command.setCommand(userModes.getCommand());
+        command.setActive(true);
         final boolean active = command != null && command.isActive();
         if (active) {
             int icon = command.getIconIndex();
@@ -77,7 +79,7 @@ public class UserDashboardAdapter extends RecyclerView.Adapter<UserDashboardAdap
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mConfiguration.size();
     }
 
     public interface OnItemClickListener {

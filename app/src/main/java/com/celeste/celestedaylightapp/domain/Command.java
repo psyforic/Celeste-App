@@ -28,6 +28,130 @@ import org.simpleframework.xml.Text;
 
 @Root
 public class Command {
+    @Text(required = false)
+    private String command;
+    @Attribute(required = false)
+    private boolean active = false;
+
+   /* public Command(String command, boolean active, Eol eol, Icon icon, String commandName) {
+        this.command = command;
+        this.active = active;
+        this.eol = eol;
+        this.icon = icon;
+        this.commandName = commandName;
+    }*/
+    @Attribute(required = false)
+    private Eol eol = Eol.LF;
+    @Attribute(required = false)
+    private Icon icon = Icon.LEFT;
+    private int iconIndex;
+    private String commandName;
+
+    /**
+     * Returns the command that will be sent to UART device.
+     *
+     * @return the command
+     */
+    public String getCommand() {
+        return command;
+    }
+
+    /**
+     * Sets the command.
+     *
+     * @param command the command that will be sent to UART device
+     */
+    public void setCommand(final String command) {
+        this.command = command;
+    }
+
+    /**
+     * Returns whether the icon is active.
+     *
+     * @return true if it's active
+     */
+    public boolean isActive() {
+        return active;
+    }
+
+    /**
+     * Sets whether the command is active.
+     *
+     * @param active true to make it active
+     */
+    public void setActive(final boolean active) {
+        this.active = active;
+    }
+
+    /**
+     * Returns the new line type.
+     *
+     * @return end of line terminator
+     */
+    public Eol getEol() {
+        return eol;
+    }
+
+    /**
+     * Sets the new line type.
+     *
+     * @param eol end of line terminator
+     */
+    public void setEol(final int eol) {
+        this.eol = Eol.values()[eol];
+    }
+
+    /**
+     * Returns the icon index.
+     *
+     * @return the icon index
+     */
+    /*public int getIconIndex() {
+        return icon.index;
+    }*/
+    public int getIconIndex() {
+        return iconIndex;
+    }
+
+    /**
+     * Sets the icon index.
+     *
+     * @param index index of the icon.
+     */
+   /* public void setIconIndex(final int index) {
+        this.icon = Icon.values()[index];
+    }
+*/
+    public void setIconIndex(final int index) {
+        this.iconIndex = index;
+    }
+
+    /**
+     * Returns the EOL index.
+     *
+     * @return the EOL index
+     */
+    public int getEolIndex() {
+        return eol.index;
+    }
+
+    /**
+     * Returns the command Name
+     *
+     * @return the command Name
+     */
+    public String getCommandName() {
+        return commandName;
+    }
+
+    /**
+     * Sets The Command Name
+     *
+     * @param commandName name of the command
+     */
+    public void setCommandName(final String commandName) {
+        this.commandName = commandName;
+    }
 
     public enum Icon {
         LEFT(0),
@@ -68,134 +192,6 @@ public class Command {
         Eol(final int index) {
             this.index = index;
         }
-    }
-
-   /* public Command(String command, boolean active, Eol eol, Icon icon, String commandName) {
-        this.command = command;
-        this.active = active;
-        this.eol = eol;
-        this.icon = icon;
-        this.commandName = commandName;
-    }*/
-
-    @Text(required = false)
-    private String command;
-
-    @Attribute(required = false)
-    private boolean active = false;
-
-    @Attribute(required = false)
-    private Eol eol = Eol.LF;
-
-    @Attribute(required = false)
-    private Icon icon = Icon.LEFT;
-
-    private int iconIndex;
-
-    private String commandName;
-
-    /**
-     * Sets the command.
-     *
-     * @param command the command that will be sent to UART device
-     */
-    public void setCommand(final String command) {
-        this.command = command;
-    }
-
-    /**
-     * Sets whether the command is active.
-     *
-     * @param active true to make it active
-     */
-    public void setActive(final boolean active) {
-        this.active = active;
-    }
-
-    /**
-     * Sets the new line type.
-     *
-     * @param eol end of line terminator
-     */
-    public void setEol(final int eol) {
-        this.eol = Eol.values()[eol];
-    }
-
-    /**
-     * Sets the icon index.
-     *
-     * @param index index of the icon.
-     */
-   /* public void setIconIndex(final int index) {
-        this.icon = Icon.values()[index];
-    }
-*/
-    public void setIconIndex(final int index) {
-        this.iconIndex = index;
-    }
-    /**
-     * Sets The Command Name
-     *
-     * @param commandName name of the command
-     */
-    public void setCommandName(final String commandName) {
-        this.commandName = commandName;
-    }
-    /**
-     * Returns the command that will be sent to UART device.
-     *
-     * @return the command
-     */
-    public String getCommand() {
-        return command;
-    }
-
-    /**
-     * Returns whether the icon is active.
-     *
-     * @return true if it's active
-     */
-    public boolean isActive() {
-        return active;
-    }
-
-    /**
-     * Returns the new line type.
-     *
-     * @return end of line terminator
-     */
-    public Eol getEol() {
-        return eol;
-    }
-
-    /**
-     * Returns the icon index.
-     *
-     * @return the icon index
-     */
-    /*public int getIconIndex() {
-        return icon.index;
-    }*/
-    public int getIconIndex() {
-        return iconIndex;
-    }
-
-    /**
-     * Returns the EOL index.
-     *
-     * @return the EOL index
-     */
-    public int getEolIndex() {
-        return eol.index;
-    }
-
-    /**
-     * Returns the command Name
-     *
-     * @return the command Name
-     */
-    public String getCommandName() {
-        return commandName;
     }
 
 
