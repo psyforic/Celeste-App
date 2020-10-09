@@ -98,10 +98,13 @@ public class FragmentUserModes extends Fragment {
     private void displayModes() {
         List<Mode> helperAllModes = dbHelper.getAllModes();
         UserModeModel userModeModel = new UserModeModel();
-        for (Mode mode : helperAllModes) {
-            userModeModel.setMode(mode);
+        if(helperAllModes.size()!=0)
+        {
+            for (Mode mode : helperAllModes) {
+                userModeModel.setMode(mode);
+            }
+            modeList.add(userModeModel);
         }
-        modeList.add(userModeModel);
         recyclerView = view.findViewById(R.id.modesRecyclerView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);

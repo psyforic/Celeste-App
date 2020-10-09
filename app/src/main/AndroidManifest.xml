@@ -26,7 +26,6 @@
         <activity android:name=".activity.ActivityEditUser" />
         <activity android:name=".activity.ActivityAbout" />
         <activity android:name=".activity.ActivityProfile" />
-        <activity android:name=".activity.AddUser" />
         <activity android:name=".activity.AutomaticModesActivity" />
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.Modes" />

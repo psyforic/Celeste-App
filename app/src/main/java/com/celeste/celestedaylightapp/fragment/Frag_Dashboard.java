@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -114,7 +115,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
 
     private void initToolbar() {
 //        Toolbar mToolbar = view.findViewById(R.id.dashboard_toolbar);
-//        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+//        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mToolbar);
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(mPreferences.getString(MDEVICE_NAME, "Not Connected"));
     }
 
@@ -474,9 +475,10 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     @Override
     public void onStart() {
         super.onStart();
-        if (isNetworkAvailable()) {
-           getModes();
-          //  setupUI();
+        if (!isNetworkAvailable()) {
+            getModes();
+        } else {
+            setupUI();
         }
     }
 }
