@@ -73,7 +73,6 @@ public class ActivityProfile extends AppCompatActivity {
                         tvUsername.setText(userModel.getSurname());
                         tvNames.setText(userModel.getFullName());
                         tvEmail.setText(userModel.getEmailAddress());
-                        tvCellphone.setText(userModel.getCellphoneNumber());
                         tvTenant.setText(userModel.getUserName());
                         tvAddress.setText(userModel.getAddress());
                     } else {
@@ -122,7 +121,6 @@ public class ActivityProfile extends AppCompatActivity {
         tvAddress = findViewById(R.id.tvAddress);
         tvEmail = findViewById(R.id.tvEmail);
         tvNames = findViewById(R.id.fullNames);
-        tvCellphone = findViewById(R.id.tvCellphone);
         floatingActionButton = findViewById(R.id.fab);
         progressBar = findViewById(R.id.progressBar);
     }

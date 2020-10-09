@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -39,6 +41,7 @@ import com.celeste.celestedaylightapp.utils.Constants;
 import com.celeste.celestedaylightapp.utils.Tools;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.iamhabib.easy_preference.EasyPreference;
+import com.sdsmdg.tastytoast.TastyToast;
 import com.skumar.flexibleciruclarseekbar.CircularSeekBar;
 
 import org.simpleframework.xml.Serializer;
@@ -93,6 +96,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     private RecyclerView recyclerView;
     private List<Mode> modeList = new ArrayList<>();
     private List<UserModeModel> arrayList = new ArrayList<>();
+
     public Frag_Dashboard() {
         // Required empty public constructor
     }
@@ -132,7 +136,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         initCircularSeekBar();
         setCircularSeekBarListener();
         // setupUI();
-        getModes();
+        // getModes();
         return view;
     }
 
@@ -350,13 +354,13 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         LinearLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), Tools.getGridSpanCount(getActivity()));
         recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setHasFixedSize(true);
+
         List<Mode> helperAllModes = null;
         try {
-            //   mode = dbHelper.getAllModes();
+            //mode = dbHelper.getAllModes();
             helperAllModes = dbHelper.getAllModes();
             helperAllModes.forEach(el -> {
-                Log.d("Mode", "getModes: "+el.getName());
+                Log.d("Mode", "getModes: " + el.getName());
             });
 
             modeAdapter = new UserDashboardAdapter(helperAllModes, getContext(), new UserDashboardAdapter.OnItemClickListener() {
@@ -400,6 +404,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                     }
                     mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
                     uart.send(text);
+                    TastyToast.makeText(getActivity(), "Selected mode " + selectedMode.getText(), TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                 }
             });
             recyclerView.setAdapter(modeAdapter);
@@ -457,5 +462,21 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         mConfiguration = configuration;
         mAdapter.setConfiguration(configuration);
 
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (isNetworkAvailable()) {
+           getModes();
+          //  setupUI();
+        }
     }
 }

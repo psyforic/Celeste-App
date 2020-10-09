@@ -207,13 +207,13 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     }
 
     private void initToolbar() {
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setTitle(R.string.str_Dashboard);
-        actionBar.setHomeButtonEnabled(true);
-        Tools.setSystemBarColor(this);
+       toolbar = findViewById(R.id.toolbar);
+       setSupportActionBar(toolbar);
+       actionBar = getSupportActionBar();
+       assert actionBar != null;
+       actionBar.setTitle(R.string.str_Dashboard);
+       actionBar.setHomeButtonEnabled(true);
+       Tools.setSystemBarColor(this);
     }
 
     private void setDefaultFragment() {

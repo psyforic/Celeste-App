@@ -71,28 +71,6 @@
 
         <View style="@style/proifleDetailsView" />
 
-        <RelativeLayout style="@style/profileDetailsLayout">
-
-            <ImageView
-                android:id="@+id/mobileImageView"
-                style="@style/profileDetailsImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:src="@drawable/ic_phone" />
-
-            <TextView
-                android:paddingLeft="40dp"
-                style="@style/profileDetailsTextMain"
-                android:text="@string/mobile" />
-
-            <TextView
-                android:id="@+id/tvCellphone"
-                style="@style/profileDetailsMiniText"
-                android:layout_toRightOf="@id/mobileImageView"
-                android:text="+27 71 995 3590" />
-
-        </RelativeLayout>
 
         <View style="@style/proifleDetailsView" />
 
