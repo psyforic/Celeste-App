@@ -19,20 +19,28 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.fragment.InternetDialog;
+import com.celeste.celestedaylightapp.fragment.UsersFragment;
+import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateModel;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResponse;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
+import com.celeste.celestedaylightapp.sqllitedb.SQLLiteOpenHelper;
 import com.celeste.celestedaylightapp.utils.Constants;
+import com.celeste.celestedaylightapp.utils.InputValidation;
 import com.celeste.celestedaylightapp.utils.Tools;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.iamhabib.easy_preference.EasyPreference;
 import com.sdsmdg.tastytoast.TastyToast;
@@ -47,12 +55,14 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "Celeste_PrefsFile";
+    private final AppCompatActivity activity = LoginActivity.this;
     AttemptLoginTask loginTask = null;
     Api apiService = ApiClient.getInstance(this).create(Api.class);
     SharedPreferences.Editor editor;
     String username;
     String password;
-    private EditText editEmail, editPassword;
+    String credentials;
+    private TextInputEditText editEmail, editPassword;
     private TextInputLayout textInputEmail;
     private TextInputLayout textInputPassword;
     private Button btnLogin;
@@ -61,7 +71,11 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private View parentView;
     private SharedPreferences mSharedPrefs;
-    String user;
+    private User user;
+    private SQLLiteOpenHelper databaseHelper;
+    private InputValidation inputValidation;
+    private RelativeLayout login;
+
     private static boolean isValidEmail(String email) {
         return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
@@ -71,28 +85,23 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.logins_layout);
         setupUI();
-
-//        AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
-//        if (response != null) {
-//            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        initObjects();
+//        if (isNetworkAvailable()) {
+//            AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
+//            if (response != null) {
+//                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+//            }
 //        } else {
-//
+//            credentials = EasyPreference.with(getApplicationContext()).getString(Constants.USERNAME, "");
+//            if (credentials != null) {
+//                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+//            }
 //        }
-        if (isNetworkAvailable()) {
-            AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
-            if (response != null) {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-            }
-        } else {
-            user = EasyPreference.with(getApplicationContext()).getString(Constants.USERNAME, "");
-            if (user != null) {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-            }
-        }
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 login();
+                verifyFromSQLite();
             }
         });
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -125,16 +134,48 @@ public class LoginActivity extends AppCompatActivity {
         textInputEmail = findViewById(R.id.textInputEmail);
         textInputPassword = findViewById(R.id.textInputPassword);
         btnRegister = findViewById(R.id.createAccount);
-
+        login = findViewById(R.id.login);
 
         mSharedPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+    }
+
+    private void initObjects() {
+        databaseHelper = new SQLLiteOpenHelper(activity);
+        inputValidation = new InputValidation(activity);
+    }
+
+    private void verifyFromSQLite() {
+        if (!inputValidation.isInputEditTextFilled(editEmail, textInputEmail, getString(R.string.error_message_email))) {
+            return;
+        }
+        if (!inputValidation.isInputEditTextEmail(editEmail, textInputEmail, getString(R.string.error_message_email))) {
+            return;
+        }
+        if (!inputValidation.isInputEditTextFilled(editPassword, textInputPassword, getString(R.string.error_message_email))) {
+            return;
+        }
+        if (databaseHelper.checkUser(editEmail.getText().toString().trim()
+                , editPassword.getText().toString().trim())) {
+            Intent accountsIntent = new Intent(activity, UsersFragment.class);
+            accountsIntent.putExtra("EMAIL", editEmail.getText().toString().trim());
+            emptyInputEditText();
+            startActivity(accountsIntent);
+        } else {
+            // Snack Bar to show success message that record is wrong
+            Snackbar.make(login, getString(R.string.error_valid_email_password), Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void emptyInputEditText() {
+        editEmail.setText(null);
+        editPassword.setText(null);
     }
 
     private void hideKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 

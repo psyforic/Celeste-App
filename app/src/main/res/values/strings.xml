@@ -8,9 +8,11 @@
     <string name="str_register_desc">To keep your settings and presets synced across all your devices</string>
     <string name="str_email">Email</string>
     <string name="str_password">Password</string>
-    <string name="str_first_name">First Name</string>
-    <string name="str_last_name">Last Name</string>
-    <string name="str_confirm_password">Confirm Password</string>
+    <string name="str_first_name">FIRST NAME</string>
+    <string name="str_last_name">LAST NAME</string>
+    <string name="success_message">Registration Successful</string>
+    <string name="error_message_name">Enter Full Name</string>
+    <string name="str_confirm_password">CONFIRM PASSWORD</string>
     <string name="str_sign_in">S I G N I N</string>
     <string name="str_sign_in_1">SIGN IN</string>
     <string name="str_txt_username">USERNAME</string>
@@ -99,6 +101,12 @@
     <string name="no_required_permission">Permission denied.</string>
     <string name="scanner_permission_rationale">Since Android 6.0 Marshmallow system requires granting access to device\'s location in order to scan for Bluetooth Smart devices. Bluetooth beacons may be used to determine the phone\'s and user\'s location.</string>
 
+    <string name="error_email_exists">Email Already Exists</string>
+    <string name="error_password_match">Password Does Not Matches</string>
+    <string name="error_valid_email_password">Wrong Email or Password</string>
+    <string name="error_message_age">Enter Age</string>
+    <string name="error_message_password">Enter Password</string>
+    <string name="error_message_email">Enter Valid Email</string>
 
     <string name="devices_list_title">Bluetooth devices</string>
     <string name="devices_list_scanning">Scanning for nearby devices…</string>
@@ -158,4 +166,6 @@
     <string name="BACK">BACK</string>
     <string name="str_done">DONE</string>
     <string name="mobile">Mobile</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="str_tenant_name">HOME/ORGANIZATION</string>
 </resources>

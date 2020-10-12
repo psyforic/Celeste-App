@@ -1,6 +1,9 @@
 package com.celeste.celestedaylightapp.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,13 +15,16 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.celeste.celestedaylightapp.R;
+import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UpdateUserResponse;
 import com.celeste.celestedaylightapp.model.user.UpdateUserResult;
 import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
+import com.celeste.celestedaylightapp.sqllitedb.SQLLiteOpenHelper;
 import com.google.android.material.textfield.TextInputLayout;
+import com.sdsmdg.tastytoast.TastyToast;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,7 +39,8 @@ public class ActivityEditUser extends AppCompatActivity {
     int userId;
     Api api = ApiClient.getInstance(this).create(Api.class);
     UserModel userModel;
-
+    private SQLLiteOpenHelper databaseHelper;
+    private User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +73,7 @@ public class ActivityEditUser extends AppCompatActivity {
                         etUsername.setText(userModel.getUserName());
                         etName.setText(userModel.getName());
                         etSurname.setText(userModel.getSurname());
-                        etCellphone.setText(userModel.getCellphoneNumber());
+//                        etCellphone.setText(userModel.getCellphoneNumber());
                         etEmail.setText(userModel.getEmailAddress());
                         etAddress.setText(userModel.getAddress());
                     } else {
@@ -81,7 +88,7 @@ public class ActivityEditUser extends AppCompatActivity {
             @Override
             public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
+                TastyToast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG, TastyToast.ERROR).show();
             }
         });
     }
@@ -126,6 +133,26 @@ public class ActivityEditUser extends AppCompatActivity {
     public void onBackPressed() {
         startActivity(new Intent(getApplicationContext(), ActivityProfile.class));
         finish();
+    }
+    private void getUserInfo()
+    {
+
+    }
+    @Override
+    protected void onStart() {
+        if (!isNetworkAvailable()) {
+            getUserInfo();
+        } else {
+            initProfile();
+        }
+        super.onStart();
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     private void initComponent() {

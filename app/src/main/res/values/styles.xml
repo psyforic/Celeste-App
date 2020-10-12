@@ -211,7 +211,7 @@
 <!--    </style>-->
     <style name="login">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">370dp</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
     <style name="parents">
         <item name="android:layout_width">match_parent</item>

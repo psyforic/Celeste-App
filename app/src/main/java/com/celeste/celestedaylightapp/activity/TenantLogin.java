@@ -10,6 +10,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.QuickContactBadge;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,6 +42,7 @@ public class TenantLogin extends AppCompatActivity {
     Button btnLogin;
     ProgressBar progressBar;
     String tenantId;
+    TextView createAccount, forgotPassword;
     //   SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.CREDENTIALS, 0); // 0 - for private mode
 //    SharedPreferences.Editor editor = pref.edit();
     private View view;
@@ -60,6 +63,8 @@ public class TenantLogin extends AppCompatActivity {
         edit_tenancyName = findViewById(R.id.edit_tenancyName);
         btnLogin = findViewById(R.id.btn_login);
         progressBar = findViewById(R.id.progressBar);
+        createAccount = findViewById(R.id.createAccount);
+        forgotPassword = findViewById(R.id.forgotPassword);
     }
 
     private void login() {
@@ -76,6 +81,12 @@ public class TenantLogin extends AppCompatActivity {
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                     }
                 }
+            }
+        });
+        createAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
             }
         });
     }

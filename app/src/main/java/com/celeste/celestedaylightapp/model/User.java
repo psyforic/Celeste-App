@@ -13,7 +13,17 @@ public class User implements Serializable {
     private String firstName;
     private String lastName;
     private String userEmail;
+    private String password;
     private List<Mode> userModes;
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
 
     public List<Mode> getUserModes() {
         return userModes;
@@ -28,13 +38,14 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String userId, String tenantName, String username, String userFirstName, String userLastName, String userEmail, int userProfileImage) {
+    public User(String userId, String tenantName, String username, String userFirstName, String userLastName, String userEmail,String password, int userProfileImage) {
         this.userId = userId;
         this.tenantName = tenantName;
         this.username = username;
         this.firstName = userFirstName;
         this.lastName = userLastName;
         this.userEmail = userEmail;
+        this.password = password;
         this.userProfileImage = userProfileImage;
     }
 

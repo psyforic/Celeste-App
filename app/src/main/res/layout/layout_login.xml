@@ -31,7 +31,7 @@
             style="@style/parent"
             android:layout_marginTop="@dimen/loginViewsMargin">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_email"
                 style="@style/modifiedEditText"
                 android:layout_marginLeft="-4dp"
@@ -50,7 +50,7 @@
             style="@style/parent"
             android:layout_marginTop="@dimen/loginViewsMargin">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_password"
                 style="@style/modifiedEditText"
                 android:layout_marginLeft="-4dp"
