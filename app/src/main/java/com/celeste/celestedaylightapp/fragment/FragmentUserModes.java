@@ -131,7 +131,7 @@ public class FragmentUserModes extends Fragment {
                     lyt_not_found.setVisibility(View.VISIBLE);
                 }
             }
-
+////
             @Override
             public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
                 if (t instanceof NoConnectivityException) {
