@@ -53,6 +53,7 @@
         android:layout_marginBottom="20dp"
         android:clickable="true"
         android:elevation="5dp"
+        android:visibility="gone"
         android:tint="@android:color/white"
         app:srcCompat="@drawable/ic_add" />
     <ProgressBar

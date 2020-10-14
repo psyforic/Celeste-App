@@ -5,25 +5,28 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.celeste.celestedaylightapp.R;
+import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.model.user.UserResult;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
+import com.celeste.celestedaylightapp.sqllitedb.SQLLiteOpenHelper;
 import com.celeste.celestedaylightapp.utils.Constants;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.iamhabib.easy_preference.EasyPreference;
+import com.sdsmdg.tastytoast.TastyToast;
+
+import java.util.Objects;
 
 import butterknife.ButterKnife;
 import retrofit2.Call;
@@ -67,7 +70,6 @@ public class ActivityProfile extends AppCompatActivity {
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
-                        //  userModel = userResult;
                         profile_layout.setVisibility(View.VISIBLE);
                         lyt_not_found.setVisibility(View.GONE);
                         floatingActionButton.setVisibility(View.VISIBLE);
@@ -76,15 +78,14 @@ public class ActivityProfile extends AppCompatActivity {
                         tvEmail.setText(userModel.getEmailAddress());
                         tvTenant.setText(userModel.getUserName());
                         tvAddress.setText(userModel.getAddress());
-                        Log.d("TAG", "onResponse: " + userModel.getUserModes().size());
-                        Toast.makeText(getApplicationContext(), "" + userModel.getUserModes(), Toast.LENGTH_LONG).show();
+                        addToDb(userModel);
                     } else {
                         lyt_not_found.setVisibility(View.VISIBLE);
                         profile_layout.setVisibility(View.GONE);
                         floatingActionButton.setVisibility(View.GONE);
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), "" + response.code(), Toast.LENGTH_LONG).show();
+                    TastyToast.makeText(getApplicationContext(), "" + response.code(), TastyToast.LENGTH_LONG, TastyToast.CONFUSING).show();
                     lyt_not_found.setVisibility(View.VISIBLE);
                     floatingActionButton.setVisibility(View.GONE);
                 }
@@ -95,7 +96,7 @@ public class ActivityProfile extends AppCompatActivity {
             public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 lyt_not_found.setVisibility(View.VISIBLE);
-                Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
+                TastyToast.makeText(getApplicationContext(), "" + t.getMessage(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
             }
         });
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +108,19 @@ public class ActivityProfile extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void addToDb(UserModel user) {
+        SQLLiteOpenHelper dbHelper = new SQLLiteOpenHelper(getApplicationContext());
+        User userProfileInfo = new User();
+        userProfileInfo.setFirstName(user.getName());
+        userProfileInfo.setLastName(user.getSurname());
+        userProfileInfo.setUsername(user.getUserName());
+        userProfileInfo.setUserEmail(user.getEmailAddress());
+        if(dbHelper.checkUser(userProfileInfo.getUserEmail()))
+        {
+            dbHelper.addUser(userProfileInfo);
+        }
     }
 
     private boolean isNetworkAvailable() {
@@ -131,7 +145,7 @@ public class ActivityProfile extends AppCompatActivity {
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.str_profile);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.str_profile);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
@@ -144,7 +158,6 @@ public class ActivityProfile extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        //    initProfile();
         if (isNetworkAvailable()) {
             initProfile();
         } else {

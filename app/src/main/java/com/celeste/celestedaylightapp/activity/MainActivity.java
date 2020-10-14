@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -119,11 +120,13 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     private CelesteService celesteService;
     private Mode mode = new Mode();
     private com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper dbHelper;
+
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
         Id = EasyPreference.with(getApplicationContext()).getInt(Constants.USERID, 0);
         dbHelper = new com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper(getApplicationContext());
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
         initToolbar();
         setDefaultFragment();
         initComponent();
@@ -133,7 +136,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
 
     private void loadUserInfo() {
         // progressBar.setVisibility(View.VISIBLE);
-     //startService(new Intent(this, CelesteService.class));
+        //startService(new Intent(this, CelesteService.class));
         Call<GetSingleUserResponse> call = api.getSingleUser(Id);
         call.enqueue(new Callback<GetSingleUserResponse>() {
             @Override
@@ -176,9 +179,9 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         Log.d("TAG", "onResponse: " + mode.getName());
         if (mode.getName() != null) {
             if (!dbHelper.recordExists(mode.getName())) {
-                boolean inserted = dbHelper.insertUserMode(mode.getStartTime(), mode.getEndTime(), mode.getName(), mode.getCommand(), mode.getIcon(), mode.getId());
+                boolean inserted = dbHelper.insertUserMode(mode);
                 if (inserted) {
-                     Toast.makeText(getApplicationContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
                 } else {
                     //   Toast.makeText(getContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
                 }
@@ -232,13 +235,13 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     }
 
     private void initToolbar() {
-       toolbar = findViewById(R.id.toolbar);
-       setSupportActionBar(toolbar);
-       actionBar = getSupportActionBar();
-       assert actionBar != null;
-       actionBar.setTitle(R.string.str_Dashboard);
-       actionBar.setHomeButtonEnabled(true);
-       Tools.setSystemBarColor(this);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setTitle(R.string.str_Dashboard);
+        actionBar.setHomeButtonEnabled(true);
+        Tools.setSystemBarColor(this);
     }
 
     private void setDefaultFragment() {

@@ -1,6 +1,5 @@
 package com.celeste.celestedaylightapp.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,6 @@ import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.model.user.UserResult;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +39,6 @@ public class UsersFragment extends Fragment {
     private List<User> items = new ArrayList<>();
     private UserResult userResult;
     private ProgressBar progressBar;
-    private FloatingActionButton addUser;
 
     public UsersFragment() {
         // Required empty public constructor
@@ -53,7 +50,6 @@ public class UsersFragment extends Fragment {
         // Inflate the layout for this fragment
         parent_view = inflater.inflate(R.layout.activity_users, container, false);
         progressBar = parent_view.findViewById(R.id.progressBar);
-        addUser = parent_view.findViewById(R.id.addUser);
         getUsers();
         return parent_view;
     }

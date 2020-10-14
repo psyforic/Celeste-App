@@ -6,16 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import androidx.annotation.Nullable;
-
-import com.celeste.celestedaylightapp.model.Mode;
 import com.celeste.celestedaylightapp.model.User;
-import com.celeste.celestedaylightapp.retrofit.Api;
-import com.celeste.celestedaylightapp.retrofit.ApiClient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListResourceBundle;
 
 public class SQLLiteOpenHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -113,7 +107,7 @@ public class SQLLiteOpenHelper extends SQLiteOpenHelper {
         return userList;
     }
 
-    private void updateUser(User user) {
+    public void updateUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_TENANCY_NAME, user.getTenantName());

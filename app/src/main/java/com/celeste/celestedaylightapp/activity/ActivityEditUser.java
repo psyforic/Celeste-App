@@ -41,6 +41,7 @@ public class ActivityEditUser extends AppCompatActivity {
     UserModel userModel;
     private SQLLiteOpenHelper databaseHelper;
     private User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +102,7 @@ public class ActivityEditUser extends AppCompatActivity {
         userUpdateModel.setSurname(etSurname.getText().toString());
         userUpdateModel.setUserName(etUsername.getText().toString());
         userUpdateModel.setAddress(etAddress.getText().toString());
-        userUpdateModel.setCellphoneNumber(etCellphone.getText().toString());
+//        userUpdateModel.setCellphoneNumber(etCellphone.getText().toString());
         userUpdateModel.setIsActive(true);
         Call<UpdateUserResponse> call = api.updateUser(userId, userUpdateModel);
         call.enqueue(new Callback<UpdateUserResponse>() {
@@ -110,6 +111,7 @@ public class ActivityEditUser extends AppCompatActivity {
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         Toast.makeText(getApplicationContext(), "Profile Updated Successfully", Toast.LENGTH_LONG).show();
+                        updateUserProfile();
                         onBackPressed();
                         finish();
                     }
@@ -128,16 +130,28 @@ public class ActivityEditUser extends AppCompatActivity {
         });
 
     }
+    private void updateUserProfile() {
+        SQLLiteOpenHelper dbHelper = new SQLLiteOpenHelper(getApplicationContext());
+        User userProfileInfo = new User();
+        userProfileInfo.setFirstName(etName.getText().toString());
+        userProfileInfo.setLastName(etSurname.getText().toString());
+        userProfileInfo.setUserEmail(etEmail.getText().toString());
 
+//        if(dbHelper.checkUser(userProfileInfo.getUserEmail()))
+//        {
+            dbHelper.updateUser(userProfileInfo);
+     //   }
+    }
     @Override
     public void onBackPressed() {
         startActivity(new Intent(getApplicationContext(), ActivityProfile.class));
         finish();
     }
-    private void getUserInfo()
-    {
+
+    private void getUserInfo() {
 
     }
+
     @Override
     protected void onStart() {
         if (!isNetworkAvailable()) {

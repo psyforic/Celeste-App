@@ -97,4 +97,5 @@ dependencies {
     //WIZARD
     implementation 'com.github.TechFreak:WizardPager:1.0.3'
     implementation 'ivb.com.materialstepper:material-stepper:0.0.2'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 }
