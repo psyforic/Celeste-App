@@ -10,9 +10,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.QuickContactBadge;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,6 +24,7 @@ import com.celeste.celestedaylightapp.retrofit.ApiClient;
 import com.celeste.celestedaylightapp.utils.Constants;
 import com.celeste.celestedaylightapp.utils.Tools;
 import com.iamhabib.easy_preference.EasyPreference;
+import com.sdsmdg.tastytoast.TastyToast;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -77,7 +76,6 @@ public class TenantLogin extends AppCompatActivity {
                 } else {
                     tenantId = EasyPreference.with(getApplicationContext()).getString(Constants.CREDENTIALS, "");
                     if (tenantId != null) {
-                        Toast.makeText(getApplicationContext(), "Tenant ID yakho yile " + tenantId, Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                     }
                 }
@@ -116,16 +114,16 @@ public class TenantLogin extends AppCompatActivity {
                                 finish();
                             } catch (GeneralSecurityException | IOException ex) {
                                 ex.printStackTrace();
-                                Toast.makeText(getApplicationContext(), "Tenant ID " + response.body().getResult().getTenantId(), Toast.LENGTH_LONG).show();
+                                TastyToast.makeText(getApplicationContext(), "Tenant ID " + response.body().getResult().getTenantId(), TastyToast.LENGTH_LONG,TastyToast.SUCCESS).show();
                             }
                             progressBar.setVisibility(View.GONE);
                             break;
                         case IN_ACTIVE:
-                            Toast.makeText(getApplicationContext(), "This user is not active yet, please contact admin", Toast.LENGTH_LONG).show();
+                            TastyToast.makeText(getApplicationContext(), "This user is not active yet, please contact admin", TastyToast.LENGTH_LONG,TastyToast.INFO).show();
                             progressBar.setVisibility(View.GONE);
                             break;
                         case NOT_FOUND:
-                            Toast.makeText(getApplicationContext(), "Tenant Not Found", Toast.LENGTH_LONG).show();
+                            TastyToast.makeText(getApplicationContext(), "User Not Found,Please make sure you are registered", TastyToast.LENGTH_LONG,TastyToast.INFO).show();
                             progressBar.setVisibility(View.GONE);
                             break;
                     }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -75,6 +76,8 @@ public class ActivityProfile extends AppCompatActivity {
                         tvEmail.setText(userModel.getEmailAddress());
                         tvTenant.setText(userModel.getUserName());
                         tvAddress.setText(userModel.getAddress());
+                        Log.d("TAG", "onResponse: " + userModel.getUserModes().size());
+                        Toast.makeText(getApplicationContext(), "" + userModel.getUserModes(), Toast.LENGTH_LONG).show();
                     } else {
                         lyt_not_found.setVisibility(View.VISIBLE);
                         profile_layout.setVisibility(View.GONE);
@@ -145,7 +148,7 @@ public class ActivityProfile extends AppCompatActivity {
         if (isNetworkAvailable()) {
             initProfile();
         } else {
-       //load from database
+            //load from database
         }
         super.onStart();
     }

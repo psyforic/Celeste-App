@@ -1,14 +1,10 @@
 package com.celeste.celestedaylightapp.activity;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -16,18 +12,22 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.model.User;
+import com.celeste.celestedaylightapp.model.registertenant.RegisterTenantResponse;
+import com.celeste.celestedaylightapp.model.registertenant.RegisterTenantResult;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
-import com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper;
 import com.celeste.celestedaylightapp.sqllitedb.SQLLiteOpenHelper;
 import com.celeste.celestedaylightapp.utils.InputValidation;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.sdsmdg.tastytoast.TastyToast;
 
 import java.util.Objects;
 
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
     private final AppCompatActivity activity = RegisterActivity.this;
@@ -41,6 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
             edit_password,
             edit_confirmPass;
     Button btn_signUp;
+    Api apiService = ApiClient.getInstance(this).create(Api.class);
     private RelativeLayout relativeLayout;
     private TextInputLayout textInputLayoutTenancyName;
     private TextInputLayout textInputLayoutFirstName;
@@ -51,8 +52,8 @@ public class RegisterActivity extends AppCompatActivity {
     private InputValidation inputValidation;
     private SQLLiteOpenHelper databaseHelper;
     private User user;
+    private ProgressBar progressBar;
 
-    Api apiService = ApiClient.getInstance(this).create(Api.class);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
         edit_confirmPass = findViewById(R.id.edit_confirm_password);
         btn_signUp = findViewById(R.id.btn_signUp);
         relativeLayout = findViewById(R.id.layout_register);
-
+        progressBar = findViewById(R.id.progressBar);
         textInputLayoutTenancyName = findViewById(R.id.textInputLayoutTenancyName);
         textInputLayoutFirstName = findViewById(R.id.textInputLayoutFirstName);
         textInputLayoutLastName = findViewById(R.id.textInputLayoutLastName);
@@ -95,8 +96,42 @@ public class RegisterActivity extends AppCompatActivity {
         btn_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                postDataToSQLite();
+                //postDataToSQLite();
+                registerTenant();
+            }
+        });
+    }
 
+    public void registerTenant() {
+        RegisterTenantResult registerTenantResult = new RegisterTenantResult();
+        registerTenantResult.setEmail(Objects.requireNonNull(edit_email.getText()).toString().trim());
+        registerTenantResult.setFirstName(Objects.requireNonNull(edit_firstName.getText()).toString());
+        registerTenantResult.setName(Objects.requireNonNull(edit_firstName.getText()).toString());
+        registerTenantResult.setLastName(Objects.requireNonNull(edit_lastName.getText()).toString().trim());
+        registerTenantResult.setTenancyName(Objects.requireNonNull(edit_tenancyName.getText()).toString());
+        registerTenantResult.setConnectionString("");
+        registerTenantResult.setAdminEmailAddress(edit_email.getText().toString());
+        registerTenantResult.setPassword(Objects.requireNonNull(edit_password.getText()).toString());
+        registerTenantResult.setIsActive(true);
+        progressBar.setVisibility(View.VISIBLE);
+        Call<RegisterTenantResponse> responseCall = apiService.registerTenant(registerTenantResult);
+        responseCall.enqueue(new Callback<RegisterTenantResponse>() {
+            @Override
+            public void onResponse(Call<RegisterTenantResponse> call, Response<RegisterTenantResponse> response) {
+                if (response.code() == 200 && response.body() != null) {
+                    startActivity(new Intent(getApplicationContext(), TenantLogin.class));
+                    emptyInputEditText();
+                    finish();
+                } else {
+                    TastyToast.makeText(getApplicationContext(), "" + response.errorBody(), TastyToast.LENGTH_LONG, TastyToast.CONFUSING).show();
+                }
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Call<RegisterTenantResponse> call, Throwable t) {
+                TastyToast.makeText(getApplicationContext(), "" + t.getMessage(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -140,6 +175,7 @@ public class RegisterActivity extends AppCompatActivity {
             Snackbar.make(relativeLayout, getString(R.string.error_email_exists), Snackbar.LENGTH_LONG).show();
         }
     }
+
     /**
      * This method is to empty all input edit text
      */

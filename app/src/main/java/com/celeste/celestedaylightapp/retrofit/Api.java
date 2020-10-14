@@ -3,6 +3,8 @@ package com.celeste.celestedaylightapp.retrofit;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateModel;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
 import com.celeste.celestedaylightapp.model.modes.ModeGetResponse;
+import com.celeste.celestedaylightapp.model.registertenant.RegisterTenantResponse;
+import com.celeste.celestedaylightapp.model.registertenant.RegisterTenantResult;
 import com.celeste.celestedaylightapp.model.tenant.TenantLoginModel;
 import com.celeste.celestedaylightapp.model.tenant.TenantResponse;
 import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
@@ -58,5 +60,8 @@ public interface Api {
 
     @POST("/api/services/app/Account/IsTenantAvailable")
     Call<TenantResponse> tenantLogin(@Body() TenantLoginModel tenantLoginModel);
+
+    @POST("/api/services/app/TenantRegistration/RegisterTenant")
+    Call<RegisterTenantResponse> registerTenant(@Body() RegisterTenantResult registerTenantResult);
 
 }

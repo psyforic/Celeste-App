@@ -40,6 +40,7 @@ import com.celeste.celestedaylightapp.fragment.Frag_Dashboard;
 import com.celeste.celestedaylightapp.fragment.FragmentUserModes;
 import com.celeste.celestedaylightapp.fragment.SettingsFragment;
 import com.celeste.celestedaylightapp.fragment.UsersFragment;
+import com.celeste.celestedaylightapp.model.modes.Mode;
 import com.celeste.celestedaylightapp.model.modes.UserModeModel;
 import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UserModel;
@@ -55,6 +56,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.iamhabib.easy_preference.EasyPreference;
+import com.sdsmdg.tastytoast.TastyToast;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -115,11 +117,13 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     private UserModel userModel;
     private ProgressBar progressBar;
     private CelesteService celesteService;
-
+    private Mode mode = new Mode();
+    private com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper dbHelper;
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
         Id = EasyPreference.with(getApplicationContext()).getInt(Constants.USERID, 0);
+        dbHelper = new com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper(getApplicationContext());
         initToolbar();
         setDefaultFragment();
         initComponent();
@@ -128,17 +132,21 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     }
 
     private void loadUserInfo() {
-        //   progressBar.setVisibility(View.VISIBLE);
-     //   startService(new Intent(this, CelesteService.class));
-        Call<GetSingleUserResponse> call = api.getUser(Id);
+        // progressBar.setVisibility(View.VISIBLE);
+     //startService(new Intent(this, CelesteService.class));
+        Call<GetSingleUserResponse> call = api.getSingleUser(Id);
         call.enqueue(new Callback<GetSingleUserResponse>() {
             @Override
             public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
-                        List<UserModeModel> modes = userModel.getUserModes();
-                        EasyPreference.with(getApplicationContext()).addObject(Constants.MODE, modes).save();
+                        List<UserModeModel> modesList = userModel.getUserModes();
+                        for (UserModeModel modes : modesList) {
+                            mode = modes.getMode();
+                            insertToDb(mode);
+                        }
+                        EasyPreference.with(getApplicationContext()).addObject(Constants.MODE, modesList).save();
                         if (response.body().getResult().getRoleNames() != null) {
                             List<String> roles = userModel.getRoleNames();
                             if (roles.stream().noneMatch(s -> s.matches("ADMIN"))) {
@@ -161,6 +169,23 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                 Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+
+    private void insertToDb(Mode mode) {
+        Log.d("TAG", "onResponse: " + mode.getName());
+        if (mode.getName() != null) {
+            if (!dbHelper.recordExists(mode.getName())) {
+                boolean inserted = dbHelper.insertUserMode(mode.getStartTime(), mode.getEndTime(), mode.getName(), mode.getCommand(), mode.getIcon(), mode.getId());
+                if (inserted) {
+                     Toast.makeText(getApplicationContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
+                } else {
+                    //   Toast.makeText(getContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
+                }
+            }
+        } else {
+            TastyToast.makeText(getApplicationContext(), "It appears you have not been assigned any modes yet", TastyToast.LENGTH_LONG, TastyToast.CONFUSING).show();
+        }
     }
 
     public void setConfigurationListener(final ConfigurationListener listener) {

@@ -17,14 +17,12 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.widget.NestedScrollView;
 
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.fragment.InternetDialog;
@@ -86,22 +84,22 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.logins_layout);
         setupUI();
         initObjects();
-//        if (isNetworkAvailable()) {
-//            AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
-//            if (response != null) {
-//                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-//            }
-//        } else {
-//            credentials = EasyPreference.with(getApplicationContext()).getString(Constants.USERNAME, "");
-//            if (credentials != null) {
-//                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-//            }
-//        }
+       if (isNetworkAvailable()) {
+           AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
+           if (response != null) {
+               startActivity(new Intent(getApplicationContext(), MainActivity.class));
+           }
+       } else {
+           credentials = EasyPreference.with(getApplicationContext()).getString(Constants.USERNAME, "");
+           if (credentials != null) {
+               startActivity(new Intent(getApplicationContext(), MainActivity.class));
+           }
+       }
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 login();
-                verifyFromSQLite();
+              //  verifyFromSQLite();
             }
         });
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -218,7 +216,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
     }
 
     private void login() {

@@ -77,7 +77,6 @@ public class FragmentUserModes extends Fragment {
         view = inflater.inflate(R.layout.fragment_user_modes, container, false);
         userId = Objects.requireNonNull(getActivity()).getIntent().getIntExtra("userId", 0);
         Id = EasyPreference.with(getActivity()).getInt(Constants.USERID, 0);
-
         dbHelper = new DatabaseHelper(getActivity());
         sqLiteDatabase = dbHelper.getReadableDatabase();
         progressBar = view.findViewById(R.id.progressBar);
@@ -98,8 +97,7 @@ public class FragmentUserModes extends Fragment {
     private void displayModes() {
         List<Mode> helperAllModes = dbHelper.getAllModes();
         UserModeModel userModeModel = new UserModeModel();
-        if(helperAllModes.size()!=0)
-        {
+        if (helperAllModes.size() != 0) {
             for (Mode mode : helperAllModes) {
                 userModeModel.setMode(mode);
             }
@@ -128,7 +126,6 @@ public class FragmentUserModes extends Fragment {
                                 mode = modes.getMode();
                                 insertToDb(mode);
                             }
-
                         } else {
                             TastyToast.makeText(getContext(), "It appears you have not been assigned any modes yet", TastyToast.LENGTH_LONG, TastyToast.CONFUSING).show();
                         }
@@ -145,7 +142,39 @@ public class FragmentUserModes extends Fragment {
                 TastyToast.makeText(getContext(), "" + t.getMessage(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
             }
         });
+    }
 
+    private void getAdminModes() {
+        progressBar.setVisibility(View.VISIBLE);
+        Call<GetSingleUserResponse> call = api.getSingleUser(Id);
+        call.enqueue(new Callback<GetSingleUserResponse>() {
+            @Override
+            public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
+                if (response.body() != null && response.code() == 200) {
+                    if (response.body().getResult() != null) {
+                        modeList = response.body().getResult().getUserModes();
+                        if (modeList.size() != 0) {
+                            initRecyclerView(response.body().getResult().getUserModes());
+                            for (UserModeModel modes : modeList) {
+                                mode = modes.getMode();
+                                insertToDb(mode);
+                            }
+                        } else {
+                            TastyToast.makeText(getContext(), "It appears you have not been assigned any modes yet", TastyToast.LENGTH_LONG, TastyToast.CONFUSING).show();
+                        }
+                    }
+                } else {
+                    TastyToast.makeText(getContext(), "Response code error " + response.code(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
+                }
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                TastyToast.makeText(getContext(), "" + t.getMessage(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
+            }
+        });
     }
 
     private void insertToDb(Mode mode) {
@@ -174,7 +203,7 @@ public class FragmentUserModes extends Fragment {
     @Override
     public void onStart() {
         if (isNetworkAvailable()) {
-            getUserModes();
+            getAdminModes();
         } else {
             displayModes();
         }

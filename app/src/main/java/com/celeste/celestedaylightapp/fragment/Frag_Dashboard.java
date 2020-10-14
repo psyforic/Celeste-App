@@ -17,7 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,12 +28,12 @@ import com.celeste.celestedaylightapp.activity.MainActivity;
 import com.celeste.celestedaylightapp.adapter.DashboardModeAdapter;
 import com.celeste.celestedaylightapp.adapter.IconLabelAdapter;
 import com.celeste.celestedaylightapp.adapter.UserDashboardAdapter;
-import com.celeste.celestedaylightapp.adapter.UserModesAdapter;
 import com.celeste.celestedaylightapp.database.DatabaseHelper;
 import com.celeste.celestedaylightapp.domain.Command;
 import com.celeste.celestedaylightapp.domain.UartConfiguration;
 import com.celeste.celestedaylightapp.model.modes.Mode;
 import com.celeste.celestedaylightapp.model.modes.UserModeModel;
+import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
@@ -55,6 +54,9 @@ import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -76,7 +78,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     Api api = ApiClient.getInstance(getActivity()).create(Api.class);
     int Id;
     List<Mode> modes;
-    UserModesAdapter modesAdapter;
+    UserDashboardAdapter modesAdapter;
     List<Mode> mode = new ArrayList<>();
     private View view;
     private CircularSeekBar mCircularSeekBar;
@@ -136,8 +138,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         initToolbar();
         initCircularSeekBar();
         setCircularSeekBarListener();
-        // setupUI();
-        // getModes();
         return view;
     }
 
@@ -211,39 +211,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         });
     }
 
-//    private void loadUserInfo() {
-//        //   progressBar.setVisibility(View.VISIBLE);
-//        Call<GetSingleUserResponse> call = api.getUser(Id);
-//        call.enqueue(new Callback<GetSingleUserResponse>() {
-//            @Override
-//            public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
-//                if (response.body() != null && response.code() == 200) {
-//                    if (response.body().getResult() != null) {
-//                        userModel = response.body().getResult();
-//                        modes = userModel.getUserModes();
-//                        EasyPreference.with(getActivity()).addObject(Constants.MODE, modes).save();
-//                        if (response.body().getResult().getRoleNames() != null) {
-//                            List<String> roles = userModel.getRoleNames();
-//                            if (roles.stream().noneMatch(s -> s.matches("ADMIN"))) {
-//
-//                            }
-//                        }
-//                    } else {
-//                        TastyToast.makeText(getContext(), "" + response.code(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
-//                    }
-//                } else {
-//                    Toast.makeText(getContext(), "" + response.code(), Toast.LENGTH_LONG).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
-//                //      progressBar.setVisibility(View.GONE);
-//                Toast.makeText(getContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
-//            }
-//        });
-//    }
-
     private void setupUI() {
         selectedMode = view.findViewById(R.id.text_mode_name);
         SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs, key) -> getActivity().runOnUiThread(() -> {
@@ -304,26 +271,61 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
 
     }
 
-//    public void displayModes() {
-//        List<Mode> mode = dbHelper.getAllModes();
-//        recyclerView = view.findViewById(R.id.modesRecyclerView);
-//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-//        recyclerView.setLayoutManager(layoutManager);
-//        modesAdapter = new UserModesAdapter(getContext(), mode);
-//        recyclerView.setAdapter(modesAdapter);
-//        //  progressBar.setVisibility(View.GONE);
-//    }
+    public void displayModes() {
+        List<Mode> modes = dbHelper.getAllModes();
+        recyclerView = view.findViewById(R.id.recyclerView);
+        LinearLayoutManager layoutManager = new GridLayoutManager(getActivity(), Tools.getGridSpanCount(getActivity()));
+        recyclerView.setLayoutManager(layoutManager);
+        modesAdapter = new UserDashboardAdapter(modes, getContext(), null);
+        recyclerView.setAdapter(modesAdapter);
+        // progressBar.setVisibility(View.GONE);
+    }
+
+    private void getAllModes() {
+        //   progressBar.setVisibility(View.VISIBLE);
+        Call<GetSingleUserResponse> call = api.getSingleUser(Id);
+        call.enqueue(new Callback<GetSingleUserResponse>() {
+            @Override
+            public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
+                if (response.body() != null && response.code() == 200) {
+                    if (response.body().getResult() != null) {
+                        arrayList = response.body().getResult().getUserModes();
+                        if (modeList.size() != 0) {
+                            //  initRecyclerView(response.body().getResult().getUserModes());
+                            for (UserModeModel modes : arrayList) {
+                                mode.add(modes.getMode());
+                                //  insertToDb(mode);
+                            }
+                            modeAdapter = new UserDashboardAdapter(mode, getContext(), null);
+                            recyclerView.setAdapter(modeAdapter);
+                        } else {
+                            TastyToast.makeText(getContext(), "It appears you have not been assigned any modes yet", TastyToast.LENGTH_LONG, TastyToast.CONFUSING).show();
+                        }
+                    }
+                } else {
+                    TastyToast.makeText(getContext(), "Response code error " + response.code(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
+                }
+                // progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
+                // progressBar.setVisibility(View.GONE);
+                TastyToast.makeText(getContext(), "" + t.getMessage(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
+            }
+        });
+    }
 
 //    public void getUserModes() {
-//        //    progressBar.setVisibility(View.VISIBLE);
-//        Call<GetSingleUserResponse> call = api.getUser(Id);
+//        //  progressBar.setVisibility(View.VISIBLE);
+//        Call<GetSingleUserResponse> call = api.getSingleUser(Id);
 //        call.enqueue(new Callback<GetSingleUserResponse>() {
 //            @Override
 //            public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
 //                if (response.body() != null && response.code() == 200) {
 //                    if (response.body().getResult() != null) {
-//                        modeList = response.body().getResult().getUserModes();
-//                        //modeList.add((Mode) response.body().getResult().getUserModes());
+//                        // modeList = response.body().getResult().getUserModes();
+//                        modeList.add((Mode) response.body().getResult().getUserModes());
 //                        //Toast.makeText(getContext(), "User has no modes" + modeList.get(0).getMode(), Toast.LENGTH_LONG).show();
 //                        if (modeList.size() != 0) {
 //                            //  initRecyclerView(modeList);
@@ -358,7 +360,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
 
         List<Mode> helperAllModes = null;
         try {
-            //mode = dbHelper.getAllModes();
             helperAllModes = dbHelper.getAllModes();
             helperAllModes.forEach(el -> {
                 Log.d("Mode", "getModes: " + el.getName());
@@ -475,10 +476,15 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     @Override
     public void onStart() {
         super.onStart();
-        if (!isNetworkAvailable()) {
-            getModes();
-        } else {
-            setupUI();
-        }
+        selectedMode = view.findViewById(R.id.text_mode_name);
+//        if (!isNetworkAvailable()) {
+//            getAllModes();
+//            // getModes();
+//        } else {
+//           // setupUI();
+//            getAllModes();
+//        }
+//        displayModes();
+        getModes();
     }
 }
