@@ -65,7 +65,7 @@ public class UserDashboardAdapter extends RecyclerView.Adapter<UserDashboardAdap
         final boolean active = command != null && command.isActive();
         if (active) {
             int icon = command.getIconIndex();
-            holder.image.setImageResource(myIcons[position]);
+            holder.image.setImageResource(myIcons[icon]);
             holder.mode.setText(userModes.getName());
         } else
             holder.image.setImageDrawable(null);
