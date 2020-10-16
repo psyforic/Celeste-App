@@ -28,6 +28,7 @@ import com.sdsmdg.tastytoast.TastyToast;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -93,7 +94,7 @@ public class TenantLogin extends AppCompatActivity {
         View view = this.getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 
@@ -154,5 +155,6 @@ public class TenantLogin extends AppCompatActivity {
                 .putString(Constants.TENANT_NAME, tenantName)
                 .apply();
     }
+
 
 }

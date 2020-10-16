@@ -74,12 +74,12 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     private final static String PREFS_CONFIGURATION = "configuration_id";
     @BindView(R.id.text_mode_name)
     TextView selectedMode;
-    String deviceName = "No Device";
-    Api api = ApiClient.getInstance(getActivity()).create(Api.class);
-    int Id;
     List<Mode> modes;
-    UserDashboardAdapter modesAdapter;
-    List<Mode> mode = new ArrayList<>();
+    private String deviceName = "No Device";
+    private Api api = ApiClient.getInstance(getActivity()).create(Api.class);
+    private int Id;
+    private UserDashboardAdapter modesAdapter;
+    private List<Mode> mode = new ArrayList<>();
     private View view;
     private CircularSeekBar mCircularSeekBar;
     private UartConfiguration mConfiguration;
@@ -268,7 +268,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         });
         recyclerView.setAdapter(mAdapter);
         fabSwitch = view.findViewById(R.id.fab_switch);
-
     }
 
     public void displayModes() {
@@ -282,7 +281,10 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     }
 
     private void getAllModes() {
-        //   progressBar.setVisibility(View.VISIBLE);
+        //progressBar.setVisibility(View.VISIBLE);
+        recyclerView = view.findViewById(R.id.recyclerView);
+        LinearLayoutManager layoutManager = new GridLayoutManager(getActivity(), Tools.getGridSpanCount(getActivity()));
+        recyclerView.setLayoutManager(layoutManager);
         Call<GetSingleUserResponse> call = api.getSingleUser(Id);
         call.enqueue(new Callback<GetSingleUserResponse>() {
             @Override
@@ -290,23 +292,20 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         arrayList = response.body().getResult().getUserModes();
-                        if (modeList.size() != 0) {
-                            //  initRecyclerView(response.body().getResult().getUserModes());
+                        if (arrayList.size() != 0) {
                             for (UserModeModel modes : arrayList) {
                                 mode.add(modes.getMode());
-                                //  insertToDb(mode);
+                                //insertToDb(mode);
                             }
                             modeAdapter = new UserDashboardAdapter(mode, getContext(), new UserDashboardAdapter.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(Mode obj, int position) {
                                     Command comm = new Command();
                                     comm.setActive(true);
-                                    comm.setCommand(obj.getCommand());
                                     comm.setEol(0);
-                                    comm.setIconIndex(0);
                                     comm.setCommandName(obj.getName());
                                     final Command.Eol eol = comm.getEol();
-                                    String text = comm.getCommand();
+                                    String text = obj.getCommand();
                                     if (text == null)
                                         text = "";
                                     switch (eol) {
@@ -324,15 +323,19 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                                     switch (position) {
                                         case 0:
                                             mCircularSeekBar.setProgress(27f);
+                                            TastyToast.makeText(getActivity(), "Selected mode " + text, TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                                             break;
                                         case 1:
                                             mCircularSeekBar.setProgress(30f);
+                                            TastyToast.makeText(getActivity(), "Selected mode " + text, TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                                             break;
                                         case 2:
                                             mCircularSeekBar.setProgress(45f);
+                                            TastyToast.makeText(getActivity(), "Selected mode " + text, TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                                             break;
                                         case 3:
                                             mCircularSeekBar.setProgress(65f);
+                                            TastyToast.makeText(getActivity(), "Selected mode " + text, TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                                             break;
                                     }
                                     mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
@@ -394,33 +397,25 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
 
     private void getModes() {
         selectedMode = view.findViewById(R.id.text_mode_name);
-        SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs, key) -> getActivity().runOnUiThread(() -> {
-            selectedMode.setText(mPreferences.getString(ACTIVEMODE, "No Mode Selected"));
-        });
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView = view.findViewById(R.id.recyclerView);
         LinearLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), Tools.getGridSpanCount(getActivity()));
         recyclerView.setLayoutManager(mLayoutManager);
-
-        List<Mode> helperAllModes = null;
+        recyclerView.setHasFixedSize(true);
         try {
-            helperAllModes = dbHelper.getAllModes();
-            helperAllModes.forEach(el -> {
-                Log.d("Mode", "getModes: " + el.getName() + "" + el.getCommand());
-            });
+            final List<Mode> helperAllModes = dbHelper.getAllModes();
 
             modeAdapter = new UserDashboardAdapter(helperAllModes, getContext(), new UserDashboardAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(Mode obj, int position) {
-                    Command comm = new Command();
-                    comm.setActive(true);
+                   final Command comm = new Command();
                     comm.setEol(0);
-                    comm.setIconIndex(0);
+                    comm.setActive(true);
+                    comm.setCommand(obj.getCommand());
                     comm.setCommandName(obj.getName());
-                    final Command.Eol eol = comm.getEol();
                     String text = obj.getCommand();
                     if (text == null)
                         text = "";
-                    switch (eol) {
+                    switch (comm.getEol()) {
                         case CR_LF:
                             text = text.replaceAll("\n", "\r\n");
                             break;
@@ -435,28 +430,23 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                     switch (position) {
                         case 0:
                             mCircularSeekBar.setProgress(27f);
-                            TastyToast.makeText(getActivity(), "Selected mode " + text, TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                             break;
                         case 1:
                             mCircularSeekBar.setProgress(30f);
-                            TastyToast.makeText(getActivity(), "Selected mode " + text, TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                             break;
                         case 2:
                             mCircularSeekBar.setProgress(45f);
-                            TastyToast.makeText(getActivity(), "Selected mode " + text, TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                             break;
                         case 3:
                             mCircularSeekBar.setProgress(65f);
-                            TastyToast.makeText(getActivity(), "Selected mode " + text, TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                             break;
                     }
                     mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
+                    assert uart != null;
                     uart.send(text);
-                    TastyToast.makeText(getActivity(), "Selected mode " + selectedMode.getText(), TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                 }
             });
             recyclerView.setAdapter(modeAdapter);
-            Log.d(TAG, "getModes: " + modeAdapter.getItemCount());
             fabSwitch = view.findViewById(R.id.fab_switch);
         } catch (Exception e) {
             e.printStackTrace();
@@ -522,14 +512,14 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     public void onStart() {
         super.onStart();
         selectedMode = view.findViewById(R.id.text_mode_name);
-//      if (!isNetworkAvailable()) { getModes();
-//
-//          // getModes();
-//      } else {
-//         // setupUI();
-//          getAllModes();
-//      }
-//      displayModes();
-        getModes();
+        if (!isNetworkAvailable()) {
+            getModes();
+            // getModes();
+        } else {
+            // setupUI();
+            getModes();
+            // getAllModes();
+        }
+
     }
 }
