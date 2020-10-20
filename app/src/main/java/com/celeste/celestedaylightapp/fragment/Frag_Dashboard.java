@@ -281,7 +281,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     }
 
     private void getAllModes() {
-        //progressBar.setVisibility(View.VISIBLE);
+
         recyclerView = view.findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new GridLayoutManager(getActivity(), Tools.getGridSpanCount(getActivity()));
         recyclerView.setLayoutManager(layoutManager);
@@ -412,7 +412,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                     comm.setActive(true);
                     comm.setCommand(obj.getCommand());
                     comm.setCommandName(obj.getName());
-                    String text = obj.getCommand();
+                    String text = comm.getCommand();
                     if (text == null)
                         text = "";
                     switch (comm.getEol()) {
@@ -425,8 +425,8 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                     }
                     final UARTInterface uart = (UARTInterface) getActivity();
                     String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
-                    selectedMode.setText(text);
-                    //selectedMode.setText(names[position]);
+                  //  selectedMode.setText(text);
+                    selectedMode.setText(comm.getCommandName());
                     switch (position) {
                         case 0:
                             mCircularSeekBar.setProgress(27f);
