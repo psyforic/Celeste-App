@@ -36,7 +36,7 @@ public class UserDashboardAdapter extends RecyclerView.Adapter<UserDashboardAdap
     }
 
     private Object getItem(final int position) {
-       return mConfiguration.get(position);
+        return mConfiguration.get(position);
     }
 
     @Override
@@ -65,16 +65,15 @@ public class UserDashboardAdapter extends RecyclerView.Adapter<UserDashboardAdap
         if (active) {
             int icon = command.getIconIndex();
             holder.image.setImageResource(myIcons[position]);
-            holder.mode.setText(userModes.getName());
-        } else
-        {
+            holder.mode.setText(command.getCommandName());
+        } else {
             holder.image.setImageDrawable(null);
         }
 
         holder.card_parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnItemClickListener.onItemClick(mConfiguration.get(position)     , position);
+                mOnItemClickListener.onItemClick(mConfiguration.get(position), position);
             }
         });
     }

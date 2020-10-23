@@ -2,6 +2,7 @@ package com.celeste.celestedaylightapp.retrofit;
 
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateModel;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
+import com.celeste.celestedaylightapp.model.modes.AddModeResponse;
 import com.celeste.celestedaylightapp.model.modes.ModeGetResponse;
 import com.celeste.celestedaylightapp.model.registertenant.RegisterTenantResponse;
 import com.celeste.celestedaylightapp.model.registertenant.RegisterTenantResult;
@@ -54,6 +55,9 @@ public interface Api {
 
     @GET("/api/services/app/User/Get")
     Call<GetSingleUserResponse> getSingleUser(@Query("Id") int id);
+
+    @POST("/api/services/app/Mode/AddSelectedMode")
+    Call<AddModeResponse> addSelectedMode(@Query("tenantId") int id, @Query("modeId") String modeId);
 
     @PUT("/api/services/app/User/UpdateUser")
     Call<UpdateUserResponse> updateUser(@Query("id") int id, @Body() UpdateUserResult userModel);

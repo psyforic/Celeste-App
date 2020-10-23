@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +32,7 @@ import com.celeste.celestedaylightapp.adapter.UserDashboardAdapter;
 import com.celeste.celestedaylightapp.database.DatabaseHelper;
 import com.celeste.celestedaylightapp.domain.Command;
 import com.celeste.celestedaylightapp.domain.UartConfiguration;
+import com.celeste.celestedaylightapp.model.modes.AddModeResponse;
 import com.celeste.celestedaylightapp.model.modes.Mode;
 import com.celeste.celestedaylightapp.model.modes.UserModeModel;
 import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
@@ -78,6 +80,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     private String deviceName = "No Device";
     private Api api = ApiClient.getInstance(getActivity()).create(Api.class);
     private int Id;
+    private String tenantId;
     private UserDashboardAdapter modesAdapter;
     private List<Mode> mode = new ArrayList<>();
     private View view;
@@ -127,6 +130,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_frag__dashboard, container, false);
         Id = EasyPreference.with(getActivity()).getInt(Constants.USERID, 0);
+        tenantId = EasyPreference.with(getActivity()).getString(Constants.TENANT_ID, "");
         mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs, key) -> Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
             Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setTitle(prefs.getString(MDEVICE_NAME, "Not Connected"));
@@ -138,6 +142,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         initToolbar();
         initCircularSeekBar();
         setCircularSeekBarListener();
+        TastyToast.makeText(getContext(), "" + Id + " ," + tenantId, TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
         return view;
     }
 
@@ -403,14 +408,19 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         recyclerView.setHasFixedSize(true);
         try {
             final List<Mode> helperAllModes = dbHelper.getAllModes();
-
             modeAdapter = new UserDashboardAdapter(helperAllModes, getContext(), new UserDashboardAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(Mode obj, int position) {
-                   final Command comm = new Command();
+                    final Command comm = new Command();
                     comm.setEol(0);
                     comm.setActive(true);
-                    comm.setCommand(obj.getCommand());
+                    if (obj.getName().equals("Therapy")) {
+                        comm.setCommand("<<f00");
+                        addSelectedMode(obj.getId());
+                    } else {
+                        comm.setCommand(obj.getCommand());
+                        addSelectedMode(obj.getId());
+                    }
                     comm.setCommandName(obj.getName());
                     String text = comm.getCommand();
                     if (text == null)
@@ -424,9 +434,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                             break;
                     }
                     final UARTInterface uart = (UARTInterface) getActivity();
-                    String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
-                  //  selectedMode.setText(text);
-                    selectedMode.setText(comm.getCommandName());
+                    selectedMode.setText(obj.getName());
                     switch (position) {
                         case 0:
                             mCircularSeekBar.setProgress(27f);
@@ -444,6 +452,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                     mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
                     assert uart != null;
                     uart.send(text);
+                    TastyToast.makeText(getContext(), " " + comm.getCommand(), TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
                 }
             });
             recyclerView.setAdapter(modeAdapter);
@@ -451,6 +460,23 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void addSelectedMode(String modeId) {
+        Call<AddModeResponse> call = api.addSelectedMode(Integer.parseInt(tenantId), modeId);
+        call.enqueue(new Callback<AddModeResponse>() {
+            @Override
+            public void onResponse(Call<AddModeResponse> call, Response<AddModeResponse> response) {
+                if (response.code() == 200 && response.body() != null) {
+                    TastyToast.makeText(getContext(), "Success", TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AddModeResponse> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
