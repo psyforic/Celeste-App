@@ -30,9 +30,6 @@ import com.celeste.celestedaylightapp.profile.BleProfileServiceReadyActivity;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
 import com.celeste.celestedaylightapp.sqllitedb.DBManager;
-import com.celeste.celestedaylightapp.sqllitedb.MainAdapter;
-import com.celeste.celestedaylightapp.sqllitedb.MainData;
-import com.celeste.celestedaylightapp.sqllitedb.RoomDB;
 import com.celeste.celestedaylightapp.widget.LineItemDecoration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -110,26 +107,6 @@ public class ModesFragment extends BleProfileServiceReadyActivity<UARTService.UA
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        mAdapter = new ModeListAdapter(mConfiguration, this, new ModeListAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(Command obj, int position) {
-//                final Command.Eol eol = obj.getEol();
-//                String text = obj.getCommand();
-//                if (text == null)
-//                    text = "";
-//                switch (eol) {
-//                    case CR_LF:
-//                        text = text.replaceAll("\n", "\r\n");
-//                        break;
-//                    case CR:
-//                        text = text.replaceAll("\n", "\r");
-//                        break;
-//                }
-//                final UARTInterface uart = (UARTInterface) ModesFragment.this;
-//                // Toast.makeText(AutomaticModesActivity.this, "Clicked " + obj.getCommand(), Toast.LENGTH_LONG).show();
-//                uart.send(text);
-//            }
-//        });
 
         recyclerView.setAdapter(mAdapter);
         actionModeCallback = new ActionModeCallback();
@@ -139,21 +116,7 @@ public class ModesFragment extends BleProfileServiceReadyActivity<UARTService.UA
             lyt_not_found.setVisibility(View.GONE);
         }
     }
-//    public void showModes()
-//    {
-//        Call<UserModeGetResponse> call=api.getUserMode(1+"");
-//        call.enqueue(new Callback<UserModeGetResponse>() {
-//            @Override
-//            public void onResponse(Call<UserModeGetResponse> call, Response<UserModeGetResponse> response) {
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<UserModeGetResponse> call, Throwable t) {
-//
-//            }
-//        });
-//    }
+
     private void setup() {
         parenView = findViewById(android.R.id.content);
         lyt_not_found = findViewById(R.id.lyt_not_found);

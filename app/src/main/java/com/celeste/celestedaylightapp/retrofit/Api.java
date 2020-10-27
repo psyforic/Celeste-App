@@ -7,6 +7,7 @@ import com.celeste.celestedaylightapp.model.registertenant.RegisterTenantRespons
 import com.celeste.celestedaylightapp.model.registertenant.RegisterTenantResult;
 import com.celeste.celestedaylightapp.model.tenant.TenantLoginModel;
 import com.celeste.celestedaylightapp.model.tenant.TenantResponse;
+import com.celeste.celestedaylightapp.model.modes.AddModeResponse;
 import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UpdateUserResponse;
 import com.celeste.celestedaylightapp.model.user.UpdateUserResult;
@@ -54,6 +55,9 @@ public interface Api {
 
     @GET("/api/services/app/User/Get")
     Call<GetSingleUserResponse> getSingleUser(@Query("Id") int id);
+
+    @POST("/api/services/app/Mode/AddSelectedMode")
+    Call<AddModeResponse> addSelectedMode(@Query("tenantId") int id, @Query("modeId") String modeId);
 
     @PUT("/api/services/app/User/UpdateUser")
     Call<UpdateUserResponse> updateUser(@Query("id") int id, @Body() UpdateUserResult userModel);

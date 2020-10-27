@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -31,6 +32,10 @@ import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateModel;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResponse;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
+import com.celeste.celestedaylightapp.model.modes.Mode;
+import com.celeste.celestedaylightapp.model.modes.UserModeModel;
+import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
+import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
 import com.celeste.celestedaylightapp.sqllitedb.SQLLiteOpenHelper;
@@ -45,6 +50,7 @@ import com.sdsmdg.tastytoast.TastyToast;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -66,14 +72,18 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin;
     private CheckBox chkRememberMe;
     private TextView btnRegister;
-    private ProgressBar progressBar;
+    ProgressBar progressBar;
+    Api api = ApiClient.getInstance(LoginActivity.this).create(Api.class);
     private View parentView;
     private SharedPreferences mSharedPrefs;
     private User user;
     private SQLLiteOpenHelper databaseHelper;
     private InputValidation inputValidation;
     private RelativeLayout login;
-
+    private UserModel userModel;
+    private int userId;
+    private Mode mode = new Mode();
+    private com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper dbHelper;
     private static boolean isValidEmail(String email) {
         return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
@@ -84,22 +94,22 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.logins_layout);
         setupUI();
         initObjects();
-       if (isNetworkAvailable()) {
-           AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
-           if (response != null) {
-               startActivity(new Intent(getApplicationContext(), MainActivity.class));
-           }
-       } else {
-           credentials = EasyPreference.with(getApplicationContext()).getString(Constants.USERNAME, "");
-           if (credentials != null) {
-               startActivity(new Intent(getApplicationContext(), MainActivity.class));
-           }
-       }
+        if (isNetworkAvailable()) {
+            AuthenticateResponse response = EasyPreference.with(getApplicationContext()).getObject(Constants.CREDENTIALS, AuthenticateResponse.class);
+            if (response != null) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            }
+        } else {
+            credentials = EasyPreference.with(getApplicationContext()).getString(Constants.USERNAME, "");
+            if (credentials != null) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            }
+        }
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 login();
-              //  verifyFromSQLite();
+                //  verifyFromSQLite();
             }
         });
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +119,54 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         Tools.systemBarLolipop(this);
+    }
+    private void loadUserInfo(int Id) {
+         progressBar.setVisibility(View.VISIBLE);
+        //startService(new Intent(this, CelesteService.class));
+        Call<GetSingleUserResponse> call = api.getSingleUser(Id);
+        call.enqueue(new Callback<GetSingleUserResponse>() {
+            @Override
+            public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
+                if (response.body() != null && response.code() == 200) {
+                    if (response.body().getResult() != null) {
+                        userModel = response.body().getResult();
+                        List<UserModeModel> modesList = userModel.getUserModes();
+                        for (UserModeModel modes : modesList) {
+                            mode = modes.getMode();
+                            insertToDb(mode);
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "" + response.code(), Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "" + response.code(), Toast.LENGTH_LONG).show();
+                }
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+    private void insertToDb(Mode mode) {
+        Log.d("TAG", "onResponse: " + mode.getName());
+        if (mode.getName() != null) {
+            if (!dbHelper.recordExists(mode.getName())) {
+                boolean inserted = dbHelper.insertUserMode(mode);
+                if (inserted) {
+                    Toast.makeText(getApplicationContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
+                } else {
+                    //   Toast.makeText(getContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
+                }
+            }
+        } else {
+            TastyToast.makeText(getApplicationContext(), "It appears you have not been assigned any modes yet", TastyToast.LENGTH_LONG, TastyToast.CONFUSING).show();
+        }
     }
 
     private void getPreferencesData() {
@@ -138,6 +196,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initObjects() {
+        dbHelper = new com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper(getApplicationContext());
+        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
         databaseHelper = new SQLLiteOpenHelper(activity);
         inputValidation = new InputValidation(activity);
     }
@@ -213,6 +273,13 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -240,13 +307,6 @@ public class LoginActivity extends AppCompatActivity {
 
         }
 
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -290,6 +350,7 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.putString("pref_password", editPassword.getText().toString().trim());
                                 editor.putString("pref_token", response.body().getResult().getAccessToken());
                                 editor.apply();
+                                loadUserInfo(response.body().getResult().getUserId());
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 intent.putExtra("userId", response.body().getResult().getUserId());
                                 EasyPreference.with(getApplicationContext()).addInt(Constants.USERID, response.body().getResult().getUserId()).save();

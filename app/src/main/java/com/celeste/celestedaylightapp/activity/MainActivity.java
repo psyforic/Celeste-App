@@ -42,7 +42,6 @@ import com.celeste.celestedaylightapp.fragment.FragmentUserModes;
 import com.celeste.celestedaylightapp.fragment.SettingsFragment;
 import com.celeste.celestedaylightapp.fragment.UsersFragment;
 import com.celeste.celestedaylightapp.model.modes.Mode;
-import com.celeste.celestedaylightapp.model.modes.UserModeModel;
 import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.profile.BleProfileService;
@@ -144,12 +143,12 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
-                        List<UserModeModel> modesList = userModel.getUserModes();
-                        for (UserModeModel modes : modesList) {
-                            mode = modes.getMode();
-                            insertToDb(mode);
-                        }
-                        EasyPreference.with(getApplicationContext()).addObject(Constants.MODE, modesList).save();
+//                        List<UserModeModel> modesList = userModel.getUserModes();
+//                        for (UserModeModel modes : modesList) {
+//                            mode = modes.getMode();
+//                            insertToDb(mode);
+//                        }
+//                      EasyPreference.with(getApplicationContext()).addObject(Constants.MODE, modesList).save();
                         if (response.body().getResult().getRoleNames() != null) {
                             List<String> roles = userModel.getRoleNames();
                             if (roles.stream().noneMatch(s -> s.matches("ADMIN"))) {

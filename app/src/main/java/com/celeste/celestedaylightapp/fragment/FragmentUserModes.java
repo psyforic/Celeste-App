@@ -131,7 +131,6 @@ public class FragmentUserModes extends Fragment {
                     lyt_not_found.setVisibility(View.VISIBLE);
                 }
             }
-////
             @Override
             public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
                 if (t instanceof NoConnectivityException) {
@@ -176,8 +175,11 @@ public class FragmentUserModes extends Fragment {
         recyclerView = view.findViewById(R.id.modesRecyclerView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
+        modesList.sort((lhs, rhs) -> lhs.getMode().getCommand().compareTo(rhs.getMode().getCommand()));
+
         modesAdapter = new UserModesAdapter(getActivity(), modesList);
         recyclerView.setAdapter(modesAdapter);
+        recyclerView.getAdapter().notifyDataSetChanged();
         progressBar.setVisibility(View.GONE);
     }
 }

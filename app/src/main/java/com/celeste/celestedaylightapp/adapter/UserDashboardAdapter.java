@@ -1,3 +1,4 @@
+
 package com.celeste.celestedaylightapp.adapter;
 
 import android.content.Context;
@@ -21,7 +22,7 @@ public class UserDashboardAdapter extends RecyclerView.Adapter<UserDashboardAdap
     private UserDashboardAdapter.OnItemClickListener mOnItemClickListener;
     private List<Mode> mConfiguration;
     private Context mContext;
-    Mode userModes;
+    private Mode userModes = new Mode();
     //  private List<Mode> modes;
 
     public UserDashboardAdapter(final List<Mode> configuration, Context context, UserDashboardAdapter.OnItemClickListener onItemClickListener) {
@@ -30,14 +31,13 @@ public class UserDashboardAdapter extends RecyclerView.Adapter<UserDashboardAdap
         this.mOnItemClickListener = onItemClickListener;
     }
 
-    public void setConfiguration(final List<Mode> configuration) {
+    public void setConfiguration(List<Mode> configuration) {
         mConfiguration = configuration;
         notifyDataSetChanged();
     }
 
     private Object getItem(final int position) {
         return mConfiguration.get(position);
-        //  return mConfiguration.getCommands()[position];
     }
 
     @Override
@@ -58,21 +58,23 @@ public class UserDashboardAdapter extends RecyclerView.Adapter<UserDashboardAdap
         userModes = mConfiguration.get(position);
         String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
         int[] myIcons = {R.drawable.ic_automatic, R.drawable.ic_sunny, R.drawable.ic_happy, R.drawable.ic_night, R.drawable.ic_hospital, R.drawable.ic_do_not_disturb};
-        final Command command = new Command();
+        Command command = new Command();
         command.setCommandName(userModes.getName());
-        command.setCommand(userModes.getCommand());
+        command.setCommand(mConfiguration.get(position).getCommand());
         command.setActive(true);
         final boolean active = command != null && command.isActive();
         if (active) {
             int icon = command.getIconIndex();
             holder.image.setImageResource(myIcons[position]);
-            holder.mode.setText(userModes.getName());
-        } else
+            holder.mode.setText(command.getCommandName());
+        } else {
             holder.image.setImageDrawable(null);
+        }
+
         holder.card_parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnItemClickListener.onItemClick(userModes, position);
+                mOnItemClickListener.onItemClick(mConfiguration.get(position), position);
             }
         });
     }
