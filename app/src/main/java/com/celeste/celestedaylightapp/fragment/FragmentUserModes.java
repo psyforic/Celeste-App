@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -112,6 +113,7 @@ public class FragmentUserModes extends Fragment {
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         modeList = response.body().getResult().getUserModes();
+                        Toast.makeText(getContext(),""+modeList.size(), Toast.LENGTH_SHORT).show();
                         if (modeList.size() != 0) {
                             initRecyclerView(response.body().getResult().getUserModes());
 //                            for (UserModeModel modes : modeList) {
@@ -176,7 +178,6 @@ public class FragmentUserModes extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         modesList.sort((lhs, rhs) -> lhs.getMode().getCommand().compareTo(rhs.getMode().getCommand()));
-
         modesAdapter = new UserModesAdapter(getActivity(), modesList);
         recyclerView.setAdapter(modesAdapter);
         recyclerView.getAdapter().notifyDataSetChanged();

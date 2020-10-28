@@ -54,18 +54,18 @@ public class UserModesAdapter extends RecyclerView.Adapter<UserModesAdapter.View
         userModes = modes.get(position);
 //        String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
 //        String[] times = {"04:00-6:45", "6:45-11:00", "12:00-13:00", "17:30-18:30", "", ""};
-        int[] myIcons = {R.drawable.ic_automatic, R.drawable.ic_sunny, R.drawable.ic_happy, R.drawable.ic_night, R.drawable.ic_hospital, R.drawable.ic_do_not_disturb};
+        int[] myIcons = {R.drawable.ic_automatic, R.drawable.ic_sunny, R.drawable.ic_happy, R.drawable.ic_night, R.drawable.ic_hospital};
 
         //  holder.mode.setText(String.valueOf(description.get(position)));
         //  holder.time.setText(start_time.get(position) + "-" + end_time.get(position));
         holder.mode.setText(userModes.getMode().getName());
         holder.time.setText(userModes.getMode().getStartTime() + " - " + userModes.getMode().getEndTime());
-
+        holder.image.setImageResource(myIcons[position]);
         //   holder.time.setText(modes.get(position).getStartTime() + " - " + modes.get(position).getEndTime());
         /*
          Set images using a switch,check mode names and assign images appropriately
         */
-        //    holder.image.setImageResource(myIcons[position]);
+
     }
 
     @Override

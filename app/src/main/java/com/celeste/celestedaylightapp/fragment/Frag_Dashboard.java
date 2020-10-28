@@ -145,7 +145,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         return view;
     }
 
-
     private void initCircularSeekBar() {
         mCircularSeekBar = view.findViewById(R.id.mCircularSeekBar);
         mSeekBarValue = view.findViewById(R.id.mSeekBarValue);
@@ -223,7 +222,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         recyclerView = view.findViewById(R.id.recyclerView);
         LinearLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), Tools.getGridSpanCount(getActivity()));
         recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setHasFixedSize(true);
         try {
             DatabaseHelper mDatabaseHelper = new DatabaseHelper(getContext());
             long id = mPreferences.getLong(PREFS_CONFIGURATION, 0);
@@ -234,41 +232,38 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mAdapter = new DashboardModeAdapter(mConfiguration, getContext(), new DashboardModeAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Command obj, int position) {
-                final Command.Eol eol = obj.getEol();
-                String text = obj.getCommand();
-                if (text == null)
-                    text = "";
-                switch (eol) {
-                    case CR_LF:
-                        text = text.replaceAll("\n", "\r\n");
-                        break;
-                    case CR:
-                        text = text.replaceAll("\n", "\r");
-                        break;
-                }
-                final UARTInterface uart = (UARTInterface) getActivity();
-                String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
-                selectedMode.setText(names[position]);
-                switch (position) {
-                    case 0:
-                        mCircularSeekBar.setProgress(27f);
-                        break;
-                    case 1:
-                        mCircularSeekBar.setProgress(30f);
-                        break;
-                    case 2:
-                        mCircularSeekBar.setProgress(45f);
-                        break;
-                    case 3:
-                        mCircularSeekBar.setProgress(65f);
-                        break;
-                }
-                mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
-                uart.send(text);
+        mAdapter = new DashboardModeAdapter(mConfiguration, getContext(), (obj, position) -> {
+            final Command.Eol eol = obj.getEol();
+            String text = obj.getCommand();
+            if (text == null)
+                text = "";
+            switch (eol) {
+                case CR_LF:
+                    text = text.replaceAll("\n", "\r\n");
+                    break;
+                case CR:
+                    text = text.replaceAll("\n", "\r");
+                    break;
             }
+            final UARTInterface uart = (UARTInterface) getActivity();
+            String[] names = {"Sunrise", "Mid-Morning", "Mid-Day", "Sun Set", "Therapy", "Off"};
+            selectedMode.setText(names[position]);
+            switch (position) {
+                case 0:
+                    mCircularSeekBar.setProgress(27f);
+                    break;
+                case 1:
+                    mCircularSeekBar.setProgress(30f);
+                    break;
+                case 2:
+                    mCircularSeekBar.setProgress(45f);
+                    break;
+                case 3:
+                    mCircularSeekBar.setProgress(65f);
+                    break;
+            }
+            mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
+            uart.send(text);
         });
         recyclerView.setAdapter(mAdapter);
         fabSwitch = view.findViewById(R.id.fab_switch);
@@ -365,7 +360,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
             }
         });
     }
-
 //    public void getUserModes() {
 //        //  progressBar.setVisibility(View.VISIBLE);
 //        Call<GetSingleUserResponse> call = api.getSingleUser(Id);
@@ -398,13 +392,11 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
 //            }
 //        });
 //    }
-
     private void getModes() {
         selectedMode = view.findViewById(R.id.text_mode_name);
         recyclerView = view.findViewById(R.id.recyclerView);
-        LinearLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), Tools.getGridSpanCount(getActivity()));
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(),RecyclerView.HORIZONTAL,false);
         recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setHasFixedSize(true);
         try {
             final List<Mode> helperAllModes = dbHelper.getAllModes();
             helperAllModes.sort((lhs, rhs) -> lhs.getCommand().compareTo(rhs.getCommand()));
@@ -536,11 +528,11 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         super.onStart();
         selectedMode = view.findViewById(R.id.text_mode_name);
         if (!isNetworkAvailable()) {
-            getModes();
+            setupUI();
             // getModes();
         } else {
-            // setupUI();
-            getModes();
+
+           getModes();
             // getAllModes();
         }
 

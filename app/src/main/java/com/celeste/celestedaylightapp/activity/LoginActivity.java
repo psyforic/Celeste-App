@@ -161,7 +161,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (inserted) {
                     Toast.makeText(getApplicationContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
                 } else {
-                    //   Toast.makeText(getContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
+                      Toast.makeText(getApplicationContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
                 }
             }
         } else {
@@ -337,7 +337,6 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<AuthenticateResult> call, Response<AuthenticateResult> response) {
                         if (response.code() == 500) {
-
                             Toast.makeText(getApplicationContext(), "username or password incorrect", Toast.LENGTH_LONG).show();
                             Log.d("TAG", "index" + response.errorBody());
                             progressBar.setVisibility(View.GONE);
@@ -363,10 +362,9 @@ public class LoginActivity extends AppCompatActivity {
                             progressBar.setVisibility(View.GONE);
                         }
                     }
-
                     @Override
                     public void onFailure(Call<AuthenticateResult> call, Throwable t) {
-//                        Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
                         final InternetDialog dialog = new InternetDialog(LoginActivity.this);
                         dialog.showNoInternetDialog();
                         progressBar.setVisibility(View.GONE);
