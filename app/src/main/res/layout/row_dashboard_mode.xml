@@ -11,13 +11,13 @@
     android:padding="5dp">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_parent"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:clickable="true"
             android:focusable="true"
@@ -28,12 +28,12 @@
             app:cardUseCompatPadding="true">
 
             <com.balysv.materialripple.MaterialRippleLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent">
 
                 <LinearLayout
                     android:id="@+id/lyt_inner_parent"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
@@ -58,9 +58,9 @@
 
     <TextView
         android:id="@+id/mode_name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:textAlignment="center"
-        android:textSize="12sp"/>
+        android:textSize="12sp" />
 </LinearLayout>

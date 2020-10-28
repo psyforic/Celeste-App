@@ -159,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
             if (!dbHelper.recordExists(mode.getName())) {
                 boolean inserted = dbHelper.insertUserMode(mode);
                 if (inserted) {
-                    Toast.makeText(getApplicationContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
+                      Toast.makeText(getApplicationContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
                 } else {
                       Toast.makeText(getApplicationContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
                 }

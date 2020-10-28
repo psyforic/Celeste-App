@@ -6,12 +6,14 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,6 +42,7 @@ import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
 import com.celeste.celestedaylightapp.utils.Constants;
 import com.celeste.celestedaylightapp.utils.Tools;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.iamhabib.easy_preference.EasyPreference;
 import com.sdsmdg.tastytoast.TastyToast;
@@ -65,7 +68,6 @@ import retrofit2.Response;
  * create an instance of this fragment.
  */
 public class Frag_Dashboard extends Fragment implements MainActivity.ConfigurationListener {
-
     public static final String ACTIVEMODE = "ACTIVEMODE";
     private static final float multiplier = 100f;
     private static final String UTILS_CATEGORY = "com.celeste.celestedaylghtapp.UTILS";
@@ -76,6 +78,9 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     @BindView(R.id.text_mode_name)
     TextView selectedMode;
     List<Mode> modes;
+    ProgressBar progressBar;
+    List<Mode> helperAllModes;
+    private float progressValue = 10f;
     private String deviceName = "No Device";
     private Api api = ApiClient.getInstance(getActivity()).create(Api.class);
     private int Id;
@@ -86,12 +91,9 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     private CircularSeekBar mCircularSeekBar;
     private UartConfiguration mConfiguration;
     private TextView mSeekBarValue;
-    //    @BindView(R.id.iconRecycler)
-//    RecyclerView iconRecycler;
     private DashboardModeAdapter mAdapter;
     private UserDashboardAdapter modeAdapter;
     private FloatingActionButton fabSwitch;
-    // private LineChartView lineChartView;
     private IconLabelAdapter iconAdapter;
     private boolean mEditMode;
     private SharedPreferences mPreferences;
@@ -141,7 +143,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         initToolbar();
         initCircularSeekBar();
         setCircularSeekBarListener();
-        TastyToast.makeText(getContext(), "" + Id + " ," + tenantId, TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
         return view;
     }
 
@@ -150,18 +151,17 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         mSeekBarValue = view.findViewById(R.id.mSeekBarValue);
         mCircularSeekBar.setDrawMarkings(true);
         mCircularSeekBar.setDotMarkers(false);
-        mCircularSeekBar.setShader();
-        mCircularSeekBar.getDotMarkers();
+        // mCircularSeekBar.setArcColor(R.color.colorPrimary);
         mCircularSeekBar.setProgressColor(R.color.colorPrimary);
         mCircularSeekBar.setRoundedEdges(true);
         mCircularSeekBar.setIsGradient(true);
         mCircularSeekBar.setPopup(false);
         mCircularSeekBar.setSweepAngle(270);
-        mCircularSeekBar.setArcThickness(10);
+        mCircularSeekBar.setArcThickness(8);
         mCircularSeekBar.setArcRotation(225);
         mCircularSeekBar.setMin(0);
         mCircularSeekBar.setMax(70);
-        float progressValue = 10f;
+        //mCircularSeekBar.setEnabled(false);
         mCircularSeekBar.setProgress(progressValue);
         mCircularSeekBar.setIncreaseCenterNeedle(20);
         mCircularSeekBar.setValueStep(2);
@@ -280,7 +280,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     }
 
     private void getAllModes() {
-
         recyclerView = view.findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new GridLayoutManager(getActivity(), Tools.getGridSpanCount(getActivity()));
         recyclerView.setLayoutManager(layoutManager);
@@ -360,7 +359,8 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
             }
         });
     }
-//    public void getUserModes() {
+
+    //    public void getUserModes() {
 //        //  progressBar.setVisibility(View.VISIBLE);
 //        Call<GetSingleUserResponse> call = api.getSingleUser(Id);
 //        call.enqueue(new Callback<GetSingleUserResponse>() {
@@ -393,12 +393,13 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
 //        });
 //    }
     private void getModes() {
+        progressBar.setVisibility(View.VISIBLE);
         selectedMode = view.findViewById(R.id.text_mode_name);
         recyclerView = view.findViewById(R.id.recyclerView);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(),RecyclerView.HORIZONTAL,false);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false);
         recyclerView.setLayoutManager(mLayoutManager);
         try {
-            final List<Mode> helperAllModes = dbHelper.getAllModes();
+            List<Mode> helperAllModes = dbHelper.getAllModes();
             helperAllModes.sort((lhs, rhs) -> lhs.getCommand().compareTo(rhs.getCommand()));
             modeAdapter = new UserDashboardAdapter(helperAllModes, getContext(), (obj, position) -> {
                 final Command comm = new Command();
@@ -447,6 +448,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
             recyclerView.setAdapter(modeAdapter);
             recyclerView.getAdapter().notifyDataSetChanged();
             fabSwitch = view.findViewById(R.id.fab_switch);
+            progressBar.setVisibility(View.GONE);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -461,6 +463,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                     TastyToast.makeText(getContext(), "Success", TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
                 }
             }
+
             @Override
             public void onFailure(Call<AddModeResponse> call, Throwable t) {
 
@@ -526,14 +529,72 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     @Override
     public void onStart() {
         super.onStart();
-        selectedMode = view.findViewById(R.id.text_mode_name);
-        if (!isNetworkAvailable()) {
-            setupUI();
-            // getModes();
-        } else {
 
-           getModes();
-            // getAllModes();
+        selectedMode = view.findViewById(R.id.text_mode_name);
+        progressBar = view.findViewById(R.id.progressBar);
+        startAsyncTask();
+        getModes();
+
+
+    }
+
+    private boolean isModeAvailable() {
+        progressBar.setVisibility(View.VISIBLE);
+        boolean isAvailable = false;
+        helperAllModes = dbHelper.getAllModes();
+        if (helperAllModes.size() == 0) {
+            isAvailable = false;
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            isAvailable = true;
+            progressBar.setVisibility(View.GONE);
+        }
+        return isAvailable;
+    }
+
+    public void startAsyncTask() {
+        ModesAsyncTask task = new ModesAsyncTask(getContext());
+        task.execute(10);
+    }
+
+    private class ModesAsyncTask extends AsyncTask<Integer, Integer, String> {
+
+        ModesAsyncTask(Context context) {
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            progressBar.setVisibility(View.GONE);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(Integer... integers) {
+            if (!isModeAvailable()) {
+                for (int i = 0; i < integers[0]; i++) {
+                    publishProgress((i * 100) / integers[0]);
+                    try {
+                        getModes();
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return "Modes loaded successfully";
+            }
+            return "Modes loaded successfully";
         }
 
     }

@@ -116,10 +116,6 @@ public class FragmentUserModes extends Fragment {
                         Toast.makeText(getContext(),""+modeList.size(), Toast.LENGTH_SHORT).show();
                         if (modeList.size() != 0) {
                             initRecyclerView(response.body().getResult().getUserModes());
-//                            for (UserModeModel modes : modeList) {
-//                                mode = modes.getMode();
-//                                insertToDb(mode);
-//                            }
                             pullToRefresh.setRefreshing(false);
                             swipeRefreshListener();
                         } else {

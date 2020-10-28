@@ -63,15 +63,14 @@
 
             <com.skumar.flexibleciruclarseekbar.CircularSeekBar
                 android:id="@+id/mCircularSeekBar"
-                android:layout_width="243dp"
+                android:layout_width="230dp"
                 android:layout_height="240dp"
                 android:layout_centerHorizontal="true"
-                android:focusableInTouchMode="true"
+                android:focusableInTouchMode="false"
                 android:paddingLeft="40dp"
                 android:paddingTop="60dp"
                 android:paddingRight="40dp"
-                android:paddingBottom="20dp"
-                app:arcWidth="20dp" />
+                android:paddingBottom="20dp" />
 
             <ImageView
                 android:layout_width="100dp"
@@ -79,7 +78,29 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="70dp"
-                android:src="@drawable/ic_logo_new" />
+                android:src="@drawable/ic_logo_new">
+
+
+            </ImageView>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="false"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="98dp"
+                android:layout_marginBottom="10dp"
+                android:clickable="true"
+                android:elevation="0dp"
+                android:onClick="onConnectClicked"
+                android:tint="#FB0303"
+                app:backgroundTint="@color/whiteCardColor"
+                app:fabCustomSize="45dp"
+                app:fabSize="auto"
+                app:rippleColor="@color/colorPrimaryDark"
+                app:srcCompat="@drawable/ic_power_settings"
+                tools:ignore="RelativeOverlap" />
 
             <TextView
                 android:id="@+id/mSeekBarValue"
@@ -134,7 +155,14 @@
                     android:layout_gravity="center_horizontal"
                     android:gravity="center_horizontal">
                 </androidx.recyclerview.widget.RecyclerView>
-
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleLargeInverse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:elevation="6dp"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout
@@ -162,6 +190,7 @@
                     android:onClick="onConnectClicked"
                     app:fabCustomSize="48dp"
                     app:fabSize="auto"
+                    android:visibility="gone"
                     app:rippleColor="@color/colorPrimaryDark"
                     app:srcCompat="@drawable/ic_power_settings"
                     tools:ignore="RelativeOverlap" />
@@ -174,6 +203,7 @@
                 </LinearLayout>
 
             </LinearLayout>
+
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 
