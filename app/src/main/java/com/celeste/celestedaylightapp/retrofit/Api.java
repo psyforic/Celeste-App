@@ -2,6 +2,7 @@ package com.celeste.celestedaylightapp.retrofit;
 
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateModel;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
+import com.celeste.celestedaylightapp.model.modes.AddModeResponse;
 import com.celeste.celestedaylightapp.model.modes.ModeGetResponse;
 import com.celeste.celestedaylightapp.model.registertenant.RegisterTenantResponse;
 import com.celeste.celestedaylightapp.model.registertenant.RegisterTenantResult;

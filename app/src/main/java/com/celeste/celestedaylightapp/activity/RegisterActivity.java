@@ -1,8 +1,10 @@
 package com.celeste.celestedaylightapp.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -97,6 +99,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //postDataToSQLite();
+                hideKeyboard();
                 registerTenant();
             }
         });
@@ -186,6 +189,14 @@ public class RegisterActivity extends AppCompatActivity {
         edit_lastName.setText(null);
         edit_password.setText(null);
         edit_confirmPass.setText(null);
+    }
+
+    private void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     @Override
