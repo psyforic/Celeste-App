@@ -78,8 +78,6 @@ public class CelesteService extends Service {
     public class MyBinder extends Binder {
         CelesteService getService() {
             return CelesteService.this;
-
         }
-
     }
 }

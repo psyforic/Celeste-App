@@ -102,7 +102,6 @@ public class ActivityEditUser extends AppCompatActivity {
         userUpdateModel.setSurname(etSurname.getText().toString());
         userUpdateModel.setUserName(etUsername.getText().toString());
         userUpdateModel.setAddress(etAddress.getText().toString());
-//        userUpdateModel.setCellphoneNumber(etCellphone.getText().toString());
         userUpdateModel.setIsActive(true);
         Call<UpdateUserResponse> call = api.updateUser(userId, userUpdateModel);
         call.enqueue(new Callback<UpdateUserResponse>() {
@@ -115,8 +114,6 @@ public class ActivityEditUser extends AppCompatActivity {
                         onBackPressed();
                         finish();
                     }
-                } else {
-                    Toast.makeText(getApplicationContext(), "Response code error" + response.message(), Toast.LENGTH_LONG).show();
                 }
                 progressBar.setVisibility(View.GONE);
                 Log.d("USER RESPONSE", "onResponse: " + response.code());
@@ -130,18 +127,16 @@ public class ActivityEditUser extends AppCompatActivity {
         });
 
     }
+
     private void updateUserProfile() {
         SQLLiteOpenHelper dbHelper = new SQLLiteOpenHelper(getApplicationContext());
         User userProfileInfo = new User();
         userProfileInfo.setFirstName(etName.getText().toString());
         userProfileInfo.setLastName(etSurname.getText().toString());
         userProfileInfo.setUserEmail(etEmail.getText().toString());
-
-//        if(dbHelper.checkUser(userProfileInfo.getUserEmail()))
-//        {
-            dbHelper.updateUser(userProfileInfo);
-     //   }
+        dbHelper.updateUser(userProfileInfo);
     }
+
     @Override
     public void onBackPressed() {
         startActivity(new Intent(getApplicationContext(), ActivityProfile.class));

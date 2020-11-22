@@ -2,15 +2,11 @@ package com.celeste.celestedaylightapp.activity;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -18,9 +14,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -39,6 +32,7 @@ import com.celeste.celestedaylightapp.domain.Command;
 import com.celeste.celestedaylightapp.domain.UartConfiguration;
 import com.celeste.celestedaylightapp.fragment.Frag_Dashboard;
 import com.celeste.celestedaylightapp.fragment.FragmentUserModes;
+import com.celeste.celestedaylightapp.fragment.InternetDialog;
 import com.celeste.celestedaylightapp.fragment.SettingsFragment;
 import com.celeste.celestedaylightapp.fragment.UsersFragment;
 import com.celeste.celestedaylightapp.model.modes.Mode;
@@ -48,13 +42,9 @@ import com.celeste.celestedaylightapp.profile.BleProfileService;
 import com.celeste.celestedaylightapp.profile.BleProfileServiceReadyActivity;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
-import com.celeste.celestedaylightapp.utils.CelesteService;
 import com.celeste.celestedaylightapp.utils.Constants;
 import com.celeste.celestedaylightapp.utils.Tools;
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
 import com.iamhabib.easy_preference.EasyPreference;
 import com.sdsmdg.tastytoast.TastyToast;
 
@@ -87,37 +77,17 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     private final static String PREFS_BUTTON_ENABLED = "prefs_uart_enabled_";
     private final static String PREFS_BUTTON_COMMAND = "prefs_uart_command_";
     private final static String PREFS_BUTTON_ICON = "prefs_uart_icon_";
-    private static final String UTILS_CATEGORY = "com.celeste.celestedaylightapp.UTILS";
-    private static final String PREF_NAME = "prefs";
-    private static final String KEY_REMEMBER = "remember";
-    private static final String KEY_USERNAME = "username";
-    private static final String KEY_PASS = "username";
     // final ModesFragment modes = new ModesFragment();
     public ActionBar actionBar;
     boolean isNavigationHide = false;
-    boolean isSearchBarHide = false;
-    FirebaseAuth mAuth;
-    FirebaseAuth.AuthStateListener mAuthListener;
     int userId;
     Api api = ApiClient.getInstance(MainActivity.this).create(Api.class);
-    SharedPreferences.Editor editor;
     int Id;
-    private TextView mTextMessage;
     private BottomNavigationView navigation;
-    private View search_bar;
-    private Toolbar toolbar;
-    private NavigationView navigationView;
-    private AppBarLayout appBarLayout;
-    private View mContainer;
-    private UartConfiguration mConfiguration;
     private DatabaseHelper mDatabaseHelper;
     private SharedPreferences mPreferences;
     private UARTService.UARTBinder mServiceBinder;
-    private ConfigurationListener mConfigurationListener;
     private UserModel userModel;
-    private ProgressBar progressBar;
-    private CelesteService celesteService;
-    private Mode mode = new Mode();
     private com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper dbHelper;
 
     @Override
@@ -125,7 +95,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         setContentView(R.layout.activity_main);
         Id = EasyPreference.with(getApplicationContext()).getInt(Constants.USERID, 0);
         dbHelper = new com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper(getApplicationContext());
-        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
         initToolbar();
         setDefaultFragment();
         initComponent();
@@ -134,8 +103,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     }
 
     private void loadUserInfo() {
-        // progressBar.setVisibility(View.VISIBLE);
-        //startService(new Intent(this, CelesteService.class));
         Call<GetSingleUserResponse> call = api.getSingleUser(Id);
         call.enqueue(new Callback<GetSingleUserResponse>() {
             @Override
@@ -143,12 +110,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         userModel = response.body().getResult();
-//                        List<UserModeModel> modesList = userModel.getUserModes();
-//                        for (UserModeModel modes : modesList) {
-//                            mode = modes.getMode();
-//                            insertToDb(mode);
-//                        }
-//                      EasyPreference.with(getApplicationContext()).addObject(Constants.MODE, modesList).save();
                         if (response.body().getResult().getRoleNames() != null) {
                             List<String> roles = userModel.getRoleNames();
                             if (roles.stream().noneMatch(s -> s.matches("ADMIN"))) {
@@ -167,8 +128,10 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
 
             @Override
             public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
-                //      progressBar.setVisibility(View.GONE);
-                Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
+                final InternetDialog dialog = new InternetDialog(MainActivity.this);
+                if (!Tools.isNetworkAvailable(MainActivity.this)) {
+                    dialog.showNoInternetDialog();
+                }
             }
         });
     }
@@ -181,8 +144,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                 boolean inserted = dbHelper.insertUserMode(mode);
                 if (inserted) {
                     Toast.makeText(getApplicationContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
-                } else {
-                    //   Toast.makeText(getContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
                 }
             }
         } else {
@@ -191,7 +152,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     }
 
     public void setConfigurationListener(final ConfigurationListener listener) {
-        mConfigurationListener = listener;
     }
 
     @Override
@@ -234,7 +194,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     }
 
     private void initToolbar() {
-        toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
         assert actionBar != null;
@@ -373,7 +333,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
             final String xml = mDatabaseHelper.getConfiguration(id);
             final Format format = new Format(new HyphenStyle());
             final Serializer serializer = new Persister(format);
-            mConfiguration = serializer.read(UartConfiguration.class, xml);
+            UartConfiguration mConfiguration = serializer.read(UartConfiguration.class, xml);
         } catch (final Exception e) {
             Log.e(TAG, "Selecting configuration failed", e);
 
@@ -385,8 +345,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
             else
                 message = "Unknown error";
             final String msg = message;
-
-            return;
         }
     }
 
@@ -396,7 +354,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 EasyPreference.with(getApplicationContext()).remove(Constants.CREDENTIALS).save();
-                Intent intent = new Intent(getApplicationContext(), TenantLogin.class);
+                Intent intent = new Intent(getApplicationContext(), TenantLoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
@@ -412,7 +370,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     }
 
     private void initComponent() {
-        search_bar = (View) findViewById(R.id.search_bar);
         navigation = findViewById(R.id.navigation);
         navigation.setSelectedItemId(R.id.navigation_dashboard);
         navigation.setItemRippleColor(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
@@ -451,17 +408,12 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
             return true;
         });
         NestedScrollView nested_content = (NestedScrollView) findViewById(R.id.nested_scroll_view);
-        nested_content.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollY < oldScrollY) { // up
-                    animateNavigation(false);
-
-                }
-                if (scrollY > oldScrollY) { // down
-                    animateNavigation(true);
-
-                }
+        nested_content.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            if (scrollY < oldScrollY) { // up
+                animateNavigation(false);
+            }
+            if (scrollY > oldScrollY) { // down
+                animateNavigation(true);
             }
         });
         Tools.setSystemBarColor(this, R.color.grey_5);
@@ -494,11 +446,20 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    @Override
+    public void onBackPressed() {
+        doExitApp();
+    }
+
+    private long exitTime = 0;
+
+    public void doExitApp() {
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            TastyToast.makeText(this, getString(R.string.press_again_exit_app), TastyToast.LENGTH_LONG, TastyToast.INFO).show();
+            exitTime = System.currentTimeMillis();
+        } else {
+            finish();
+        }
     }
 
     private void animateNavigation(final boolean hide) {
@@ -538,8 +499,6 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
         void onConfigurationModified();
 
         void onConfigurationChanged(final UartConfiguration configuration);
-
-        //void setEditMode(final boolean editMode);
     }
 
     private class CommentVisitor implements Visitor {

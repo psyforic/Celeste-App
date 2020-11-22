@@ -1,5 +1,6 @@
 package com.celeste.celestedaylightapp.model.registertenant;
 
+import com.celeste.celestedaylightapp.model.ResponseError;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,7 +28,7 @@ public class RegisterTenantResponse {
     @JsonProperty("success")
     private Boolean success;
     @JsonProperty("error")
-    private Object error;
+    private ResponseError error;
     @JsonProperty("unAuthorizedRequest")
     private Boolean unAuthorizedRequest;
     @JsonProperty("__abp")
@@ -66,12 +67,12 @@ public class RegisterTenantResponse {
     }
 
     @JsonProperty("error")
-    public Object getError() {
+    public ResponseError getError() {
         return error;
     }
 
     @JsonProperty("error")
-    public void setError(Object error) {
+    public void setError(ResponseError error) {
         this.error = error;
     }
 
@@ -104,5 +105,4 @@ public class RegisterTenantResponse {
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
     }
-
 }

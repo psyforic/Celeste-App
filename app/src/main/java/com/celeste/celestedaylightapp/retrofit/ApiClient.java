@@ -18,6 +18,7 @@ public class ApiClient {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(15, TimeUnit.SECONDS)
+                .addNetworkInterceptor(new NetworkConnectionInterceptor(context))
                 .addInterceptor(new AuthHeader(context))
                 .authenticator(new TokenAuthenticator(context));
         if (retrofitInstance == null) {

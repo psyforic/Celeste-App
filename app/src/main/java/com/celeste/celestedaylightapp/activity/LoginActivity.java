@@ -4,20 +4,15 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -28,7 +23,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.fragment.InternetDialog;
 import com.celeste.celestedaylightapp.fragment.UsersFragment;
-import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateModel;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResponse;
 import com.celeste.celestedaylightapp.model.authenticate.AuthenticateResult;
@@ -38,6 +32,7 @@ import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
+import com.celeste.celestedaylightapp.retrofit.NoConnectivityException;
 import com.celeste.celestedaylightapp.sqllitedb.SQLLiteOpenHelper;
 import com.celeste.celestedaylightapp.utils.Constants;
 import com.celeste.celestedaylightapp.utils.InputValidation;
@@ -70,23 +65,16 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputLayout textInputEmail;
     private TextInputLayout textInputPassword;
     private Button btnLogin;
-    private CheckBox chkRememberMe;
     private TextView btnRegister;
     ProgressBar progressBar;
-    Api api = ApiClient.getInstance(LoginActivity.this).create(Api.class);
-    private View parentView;
     private SharedPreferences mSharedPrefs;
-    private User user;
     private SQLLiteOpenHelper databaseHelper;
     private InputValidation inputValidation;
     private RelativeLayout login;
     private UserModel userModel;
-    private int userId;
     private Mode mode = new Mode();
     private com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper dbHelper;
-    private static boolean isValidEmail(String email) {
-        return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,30 +88,19 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
         } else {
-            credentials = EasyPreference.with(getApplicationContext()).getString(Constants.USERNAME, "");
+            credentials = EasyPreference.with(getApplicationContext()).getString(Constants.USERNAME, null);
             if (credentials != null) {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
         }
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                login();
-                //  verifyFromSQLite();
-            }
-        });
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
-            }
-        });
+        btnLogin.setOnClickListener(view -> login());
+        btnRegister.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), RegisterActivity.class)));
         Tools.systemBarLolipop(this);
     }
+
     private void loadUserInfo(int Id) {
-         progressBar.setVisibility(View.VISIBLE);
-        //startService(new Intent(this, CelesteService.class));
-        Call<GetSingleUserResponse> call = api.getSingleUser(Id);
+        progressBar.setVisibility(View.VISIBLE);
+        Call<GetSingleUserResponse> call = apiService.getSingleUser(Id);
         call.enqueue(new Callback<GetSingleUserResponse>() {
             @Override
             public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
@@ -154,14 +131,13 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void insertToDb(Mode mode) {
-        Log.d("TAG", "onResponse: " + mode.getName());
         if (mode.getName() != null) {
             if (!dbHelper.recordExists(mode.getName())) {
                 boolean inserted = dbHelper.insertUserMode(mode);
                 if (inserted) {
-                      Toast.makeText(getApplicationContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Saved to db" + mode.getName(), Toast.LENGTH_LONG).show();
                 } else {
-                      Toast.makeText(getApplicationContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Mode exists" + mode.getName(), Toast.LENGTH_LONG).show();
                 }
             }
         } else {
@@ -176,28 +152,23 @@ public class LoginActivity extends AppCompatActivity {
             password = sharedPreferences.getString("pref_password", "invalid");
             editEmail.setText(username);
             editPassword.setText(password);
-            //  TastyToast.makeText(getApplicationContext(), "Credentials" + username, TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
         }
     }
 
     private void setupUI() {
-        parentView = findViewById(android.R.id.content);
         editEmail = findViewById(R.id.edit_email);
         editPassword = findViewById(R.id.edit_password);
         btnLogin = findViewById(R.id.btn_login);
         progressBar = findViewById(R.id.progressBar);
-        editEmail.addTextChangedListener(new MyTextWatcher(editEmail));
         textInputEmail = findViewById(R.id.textInputEmail);
         textInputPassword = findViewById(R.id.textInputPassword);
         btnRegister = findViewById(R.id.createAccount);
         login = findViewById(R.id.login);
-
         mSharedPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
     }
 
     private void initObjects() {
         dbHelper = new com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper(getApplicationContext());
-        SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
         databaseHelper = new SQLLiteOpenHelper(activity);
         inputValidation = new InputValidation(activity);
     }
@@ -219,7 +190,6 @@ public class LoginActivity extends AppCompatActivity {
             emptyInputEditText();
             startActivity(accountsIntent);
         } else {
-            // Snack Bar to show success message that record is wrong
             Snackbar.make(login, getString(R.string.error_valid_email_password), Snackbar.LENGTH_LONG).show();
         }
     }
@@ -257,7 +227,6 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             textInputPassword.setErrorEnabled(false);
         }
-
         return true;
     }
 
@@ -270,7 +239,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-
     }
 
     private boolean isNetworkAvailable() {
@@ -304,16 +272,14 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 TastyToast.makeText(getApplicationContext(), "", TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
             }
-
         }
-
     }
 
     @SuppressLint("StaticFieldLeak")
     private class AttemptLoginTask extends AsyncTask<String, String, String> {
 
-        private String usernameOrEmailAddress;
-        private String password;
+        private final String usernameOrEmailAddress;
+        private final String password;
 
         public AttemptLoginTask(String usernameOrEmailAddress, String password) {
             this.usernameOrEmailAddress = usernameOrEmailAddress;
@@ -362,11 +328,13 @@ public class LoginActivity extends AppCompatActivity {
                             progressBar.setVisibility(View.GONE);
                         }
                     }
+
                     @Override
                     public void onFailure(Call<AuthenticateResult> call, Throwable t) {
-                        //Toast.makeText(getApplicationContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
                         final InternetDialog dialog = new InternetDialog(LoginActivity.this);
-                        dialog.showNoInternetDialog();
+                        if (t instanceof NoConnectivityException) {
+                            dialog.showNoInternetDialog();
+                        }
                         progressBar.setVisibility(View.GONE);
                     }
                 });
@@ -390,25 +358,6 @@ public class LoginActivity extends AppCompatActivity {
 
             hideKeyboard();
             super.onPostExecute(s);
-        }
-    }
-
-    private class MyTextWatcher implements TextWatcher {
-
-        private View view;
-
-        private MyTextWatcher(View view) {
-            this.view = view;
-        }
-
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-
-        public void afterTextChanged(Editable editable) {
-
         }
     }
 }

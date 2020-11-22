@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -35,7 +36,7 @@ public class RegisterActivity extends AppCompatActivity {
     private final AppCompatActivity activity = RegisterActivity.this;
     TextView tvLogin;
     View parentView;
-    TextInputEditText edit_address,
+    TextInputEditText
             edit_tenancyName,
             edit_email,
             edit_firstName,
@@ -89,23 +90,20 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void setOnClickListeners() {
-        tvLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), TenantLogin.class));
-            }
-        });
-        btn_signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //postDataToSQLite();
-                hideKeyboard();
-                registerTenant();
-            }
+        tvLogin.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), TenantLoginActivity.class)));
+        btn_signUp.setOnClickListener(v -> {
+            hideKeyboard();
+            registerTenant();
         });
     }
 
     public void registerTenant() {
+        if (!validateEmail()) {
+            return;
+        }
+        if (!validatePassword() || !validateConFirmPassword()) {
+            return;
+        }
         RegisterTenantResult registerTenantResult = new RegisterTenantResult();
         registerTenantResult.setEmail(Objects.requireNonNull(edit_email.getText()).toString().trim());
         registerTenantResult.setFirstName(Objects.requireNonNull(edit_firstName.getText()).toString());
@@ -122,11 +120,15 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<RegisterTenantResponse> call, Response<RegisterTenantResponse> response) {
                 if (response.code() == 200 && response.body() != null) {
-                    startActivity(new Intent(getApplicationContext(), TenantLogin.class));
+                    startActivity(new Intent(getApplicationContext(), TenantLoginActivity.class));
                     emptyInputEditText();
                     finish();
                 } else {
-                    TastyToast.makeText(getApplicationContext(), "" + response.errorBody(), TastyToast.LENGTH_LONG, TastyToast.CONFUSING).show();
+                    if (response.body() != null) {
+                        TastyToast.makeText(getApplicationContext(), "" + response.body().getError().getMessage(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
+                    }else{
+                        TastyToast.makeText(getApplicationContext(), "That Home/Organization Name has already been taken", TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
+                    }
                 }
                 progressBar.setVisibility(View.GONE);
             }
@@ -180,7 +182,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     /**
-     * This method is to empty all input edit text
+     * This method is to clear all input edit text
      */
     private void emptyInputEditText() {
         edit_email.setText(null);
@@ -196,6 +198,50 @@ public class RegisterActivity extends AppCompatActivity {
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    private boolean validateEmail() {
+        String email = Objects.requireNonNull(edit_email.getText()).toString().trim();
+        if (email.isEmpty()) {
+            textInputLayoutEmail.setError(getString(R.string.err_msg_email));
+            requestFocus(edit_email);
+            return false;
+        } else {
+            textInputLayoutEmail.setErrorEnabled(false);
+        }
+        return true;
+    }
+
+    private boolean validatePassword() {
+        if (edit_password.getText().toString().trim().isEmpty()) {
+            textInputLayoutPassword.setError(getString(R.string.err_msg_password));
+            requestFocus(edit_password);
+            return false;
+        } else if (edit_password.getText().toString().trim().length() < 8) {
+            textInputLayoutPassword.setError(getString(R.string.str_password_length));
+            requestFocus(edit_password);
+            return false;
+        } else {
+            textInputLayoutPassword.setErrorEnabled(false);
+        }
+        return true;
+    }
+
+    private boolean validateConFirmPassword() {
+        if (!edit_confirmPass.getText().toString().trim().equals(edit_password.getText().toString().trim())) {
+            textInputLayoutConfirmPassword.setError(getString(R.string.str_password_match));
+            requestFocus(edit_confirmPass);
+            return false;
+        } else {
+            textInputLayoutConfirmPassword.setErrorEnabled(false);
+        }
+        return true;
+    }
+
+    private void requestFocus(View view) {
+        if (view.requestFocus()) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
     }
 

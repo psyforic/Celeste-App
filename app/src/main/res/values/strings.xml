@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Celeste App</string>
+    <string name="app_name">Celeste Daylight Control</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -40,7 +40,7 @@
     <string name="err_msg_name">Firstname cannot be empty</string>
     <string name="err_msg_lastname">Lastname cannot be empty</string>
     <string name="err_msg_email">Email Address is Required</string>
-    <string name="err_msg_password">Check Error Above</string>
+    <string name="err_msg_password">Password is Required</string>
     <string name="err_msg_confirm_password">Passwords Do Not Match</string>
     <string name="logo">logo</string>
     <string name="edit">Edit Profile</string>
@@ -103,7 +103,7 @@
 
     <string name="error_email_exists">Email Already Exists</string>
     <string name="error_password_match">Password Does Not Matches</string>
-    <string name="error_valid_email_password">Wrong Email or Password</string>
+    <string name="error_valid_email_password">Invalid Email or Password</string>
     <string name="error_message_age">Enter Age</string>
     <string name="error_message_password">Enter Password</string>
     <string name="error_message_email">Enter Valid Email</string>
@@ -168,4 +168,8 @@
     <string name="mobile">Mobile</string>
     <string name="sign_up">Sign Up</string>
     <string name="str_tenant_name">HOME/ORGANIZATION</string>
+    <string name="str_have_an_account">Already have an account? Sign In</string>
+    <string name="str_sign_up">Sign Up</string>
+    <string name="str_password_length">Your Password Must Be At Least 8 Characters Long</string>
+    <string name="str_password_match">Passwords Do Not Match</string>
 </resources>

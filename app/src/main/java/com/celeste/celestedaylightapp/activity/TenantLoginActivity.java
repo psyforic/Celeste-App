@@ -21,6 +21,7 @@ import com.celeste.celestedaylightapp.model.tenant.TenantLoginModel;
 import com.celeste.celestedaylightapp.model.tenant.TenantResponse;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
+import com.celeste.celestedaylightapp.retrofit.NoConnectivityException;
 import com.celeste.celestedaylightapp.utils.Constants;
 import com.celeste.celestedaylightapp.utils.Tools;
 import com.iamhabib.easy_preference.EasyPreference;
@@ -34,8 +35,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TenantLogin extends AppCompatActivity {
-    private static final String PREFS_NAME = "Celeste_PrefsFile";
+public class TenantLoginActivity extends AppCompatActivity {
     Api api = ApiClient.getInstance(this).create(Api.class);
     TenantLoginModel tenantLoginModel = new TenantLoginModel();
     EditText edit_tenancyName;
@@ -43,9 +43,6 @@ public class TenantLogin extends AppCompatActivity {
     ProgressBar progressBar;
     String tenantId;
     TextView createAccount, forgotPassword;
-    //   SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.CREDENTIALS, 0); // 0 - for private mode
-//    SharedPreferences.Editor editor = pref.edit();
-    private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,26 +65,18 @@ public class TenantLogin extends AppCompatActivity {
     }
 
     private void login() {
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideKeyboard();
-                if (isNetworkAvailable()) {
-                    isTenantAvailable();
-                } else {
-                    tenantId = EasyPreference.with(getApplicationContext()).getString(Constants.CREDENTIALS, "");
-                    if (tenantId != null) {
-                        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                    }
+        btnLogin.setOnClickListener(v -> {
+            hideKeyboard();
+            if (isNetworkAvailable()) {
+                isTenantAvailable();
+            } else {
+                tenantId = EasyPreference.with(getApplicationContext()).getString(Constants.CREDENTIALS, "");
+                if (tenantId != null) {
+                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 }
             }
         });
-        createAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
-            }
-        });
+        createAccount.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), RegisterActivity.class)));
     }
 
     private void hideKeyboard() {
@@ -111,20 +100,20 @@ public class TenantLogin extends AppCompatActivity {
                             try {
                                 EasyPreference.with(getApplicationContext()).addObject(Constants.TENANT_ID, response.body().getResult().getTenantId()).save();
                                 setPreferences(response.body().getResult().getTenantId(), edit_tenancyName.getText().toString(), response.body().getResult().getState().ordinal());
-                                startActivity(new Intent(TenantLogin.this, LoginActivity.class));
+                                startActivity(new Intent(TenantLoginActivity.this, LoginActivity.class));
                                 finish();
                             } catch (GeneralSecurityException | IOException ex) {
                                 ex.printStackTrace();
-                                TastyToast.makeText(getApplicationContext(), "Tenant ID " + response.body().getResult().getTenantId(), TastyToast.LENGTH_LONG,TastyToast.SUCCESS).show();
+                                TastyToast.makeText(getApplicationContext(), "An Error Occurred", TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
                             }
                             progressBar.setVisibility(View.GONE);
                             break;
                         case IN_ACTIVE:
-                            TastyToast.makeText(getApplicationContext(), "This user is not active yet, please contact admin", TastyToast.LENGTH_LONG,TastyToast.INFO).show();
+                            TastyToast.makeText(getApplicationContext(), "This user is not active yet, please contact admin", TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
                             progressBar.setVisibility(View.GONE);
                             break;
                         case NOT_FOUND:
-                            TastyToast.makeText(getApplicationContext(), "User Not Found,Please make sure you are registered", TastyToast.LENGTH_LONG,TastyToast.INFO).show();
+                            TastyToast.makeText(getApplicationContext(), "User Not Found,Please make sure you are registered", TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
                             progressBar.setVisibility(View.GONE);
                             break;
                     }
@@ -134,9 +123,10 @@ public class TenantLogin extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<TenantResponse> call, Throwable t) {
-                //  Toast.makeText(getApplicationContext(), "Tenant Not Found" + t.getMessage(), Toast.LENGTH_LONG).show();
-                final InternetDialog dialog = new InternetDialog(TenantLogin.this);
-                dialog.showNoInternetDialog();
+                final InternetDialog dialog = new InternetDialog(TenantLoginActivity.this);
+                if (t instanceof NoConnectivityException) {
+                     dialog.showNoInternetDialog();
+                }
                 progressBar.setVisibility(View.GONE);
             }
         });

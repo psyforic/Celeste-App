@@ -44,10 +44,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         UserModel user = users.get(position);
         holder.name.setText(users.get(position).getName() + " " + users.get(position).getSurname());
         holder.email.setText(users.get(position).getEmailAddress());
-        holder.image.setImageResource(R.drawable.ic_person);
-//        Picasso.get().load(R.drawable.ic_profile).resize(50, 50)
-//                .transform(new CircleTransform())
-//                .into(holder.image);
+        holder.image.setImageResource(R.drawable.unknown_avatar);
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.celeste.celestedaylightapp.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -14,7 +13,6 @@ import com.celeste.celestedaylightapp.R;
 import java.util.Objects;
 
 public class ActivityAbout extends AppCompatActivity {
-    View view;
     MaterialRippleLayout learnMore;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,13 +23,10 @@ public class ActivityAbout extends AppCompatActivity {
     }
     private void visitCeleste() {
         learnMore=findViewById(R.id.bt_learn_more);
-        learnMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse("http://celestedaylight.co.za"));
-                startActivity(i);
-            }
+        learnMore.setOnClickListener(v -> {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse("http://celestedaylight.co.za"));
+            startActivity(i);
         });
     }
     private void initToolbar() {

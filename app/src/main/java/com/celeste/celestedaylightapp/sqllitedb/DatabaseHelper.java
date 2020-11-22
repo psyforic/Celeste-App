@@ -7,7 +7,6 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.model.modes.Mode;
 
 import java.util.ArrayList;
@@ -34,19 +33,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             COLUMN_CMD + " TEXT, " +
             COLUMN_ICON + " TEXT, " +
             COLUMN_MODE_ID + " TEXT" + ")";
-//    private static final String COLUMN_USER_ID = "user_id";
-//    private static final String COLUMN_USER_NAME = "user_name";
-//    private static final String COLUMN__NAME = "user_name";
-//    private static final String COLUMN_USER_EMAIL = "user_email";
-//    private static final String COLUMN_USER_PASSWORD = "user_password";
-//    // create table sql query
-//    private String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + "("
-//            + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-//            + COLUMN_USER_NAME + " TEXT,"
-//            + COLUMN_USER_NAME + " TEXT,"
-//            + COLUMN_USER_EMAIL + " TEXT,"
-//            + COLUMN_USER_PASSWORD + " TEXT" + ")";
-//    private String DROP_USER_TABLE = "DROP TABLE IF EXISTS " + TABLE_USER;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -72,17 +58,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE);
-    }
-
-    public void addUser(User user) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues values = new ContentValues();
-//        values.put(COLUMN_USER_NAME, user.getTenantName());
-//        values.put(COLUMN_USER_EMAIL, user.get());
-//        values.put(COLUMN_USER_PASSWORD, user.getPassword());
-//        // Inserting Row
-//        db.insert(TABLE_USER, null, values);
-//        db.close();
     }
 
     public boolean insertUserMode(String start_time, String end_time, String description, String command, String icon, String modeId) {

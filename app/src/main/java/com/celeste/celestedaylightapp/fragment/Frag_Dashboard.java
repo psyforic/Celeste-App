@@ -3,9 +3,6 @@ package com.celeste.celestedaylightapp.fragment;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -37,12 +34,10 @@ import com.celeste.celestedaylightapp.model.modes.AddModeResponse;
 import com.celeste.celestedaylightapp.model.modes.Mode;
 import com.celeste.celestedaylightapp.model.modes.UserModeModel;
 import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
-import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
 import com.celeste.celestedaylightapp.utils.Constants;
 import com.celeste.celestedaylightapp.utils.Tools;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.iamhabib.easy_preference.EasyPreference;
 import com.sdsmdg.tastytoast.TastyToast;
@@ -77,16 +72,13 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     private final static String PREFS_CONFIGURATION = "configuration_id";
     @BindView(R.id.text_mode_name)
     TextView selectedMode;
-    List<Mode> modes;
     ProgressBar progressBar;
     List<Mode> helperAllModes;
-    private float progressValue = 10f;
-    private String deviceName = "No Device";
-    private Api api = ApiClient.getInstance(getActivity()).create(Api.class);
+    private final String deviceName = "No Device";
+    private final Api api = ApiClient.getInstance(getActivity()).create(Api.class);
     private int Id;
     private String tenantId;
-    private UserDashboardAdapter modesAdapter;
-    private List<Mode> mode = new ArrayList<>();
+    private final List<Mode> mode = new ArrayList<>();
     private View view;
     private CircularSeekBar mCircularSeekBar;
     private UartConfiguration mConfiguration;
@@ -97,11 +89,8 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
     private IconLabelAdapter iconAdapter;
     private boolean mEditMode;
     private SharedPreferences mPreferences;
-    private SQLiteDatabase sqLiteDatabase;
     private com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper dbHelper;
-    private UserModel userModel;
     private RecyclerView recyclerView;
-    private List<Mode> modeList = new ArrayList<>();
     private List<UserModeModel> arrayList = new ArrayList<>();
 
     public Frag_Dashboard() {
@@ -118,13 +107,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         }
 
     }
-
-    private void initToolbar() {
-//        Toolbar mToolbar = view.findViewById(R.id.dashboard_toolbar);
-//        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mToolbar);
-//        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(mPreferences.getString(MDEVICE_NAME, "Not Connected"));
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -139,8 +121,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         });
         mPreferences.registerOnSharedPreferenceChangeListener(listener);
         dbHelper = new com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper(getActivity());
-        sqLiteDatabase = dbHelper.getReadableDatabase();
-        initToolbar();
         initCircularSeekBar();
         setCircularSeekBarListener();
         return view;
@@ -151,7 +131,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         mSeekBarValue = view.findViewById(R.id.mSeekBarValue);
         mCircularSeekBar.setDrawMarkings(true);
         mCircularSeekBar.setDotMarkers(false);
-        // mCircularSeekBar.setArcColor(R.color.colorPrimary);
         mCircularSeekBar.setProgressColor(R.color.colorPrimary);
         mCircularSeekBar.setRoundedEdges(true);
         mCircularSeekBar.setIsGradient(true);
@@ -162,6 +141,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         mCircularSeekBar.setMin(0);
         mCircularSeekBar.setMax(70);
         //mCircularSeekBar.setEnabled(false);
+        float progressValue = 10f;
         mCircularSeekBar.setProgress(progressValue);
         mCircularSeekBar.setIncreaseCenterNeedle(20);
         mCircularSeekBar.setValueStep(2);
@@ -274,7 +254,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         recyclerView = view.findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new GridLayoutManager(getActivity(), Tools.getGridSpanCount(getActivity()));
         recyclerView.setLayoutManager(layoutManager);
-        modesAdapter = new UserDashboardAdapter(modes, getContext(), null);
+        UserDashboardAdapter modesAdapter = new UserDashboardAdapter(modes, getContext(), null);
         recyclerView.setAdapter(modesAdapter);
         // progressBar.setVisibility(View.GONE);
     }
@@ -359,39 +339,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
             }
         });
     }
-
-    //    public void getUserModes() {
-//        //  progressBar.setVisibility(View.VISIBLE);
-//        Call<GetSingleUserResponse> call = api.getSingleUser(Id);
-//        call.enqueue(new Callback<GetSingleUserResponse>() {
-//            @Override
-//            public void onResponse(Call<GetSingleUserResponse> call, Response<GetSingleUserResponse> response) {
-//                if (response.body() != null && response.code() == 200) {
-//                    if (response.body().getResult() != null) {
-//                        // modeList = response.body().getResult().getUserModes();
-//                        modeList.add((Mode) response.body().getResult().getUserModes());
-//                        //Toast.makeText(getContext(), "User has no modes" + modeList.get(0).getMode(), Toast.LENGTH_LONG).show();
-//                        if (modeList.size() != 0) {
-//                            //  initRecyclerView(modeList);
-//                            modesAdapter = new UserModesAdapter(getContext(), modeList);
-//                            recyclerView.setAdapter(modesAdapter);
-//                        }
-//                    } else {
-//                        Toast.makeText(getContext(), "User has no modes", Toast.LENGTH_LONG).show();
-//                    }
-//                } else {
-//                    Toast.makeText(getContext(), "Response code error " + response.code(), Toast.LENGTH_LONG).show();
-//                }
-//                //  progressBar.setVisibility(View.GONE);
-//            }
-//
-//            @Override
-//            public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
-//                //    progressBar.setVisibility(View.GONE);
-//                Toast.makeText(getContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
-//            }
-//        });
-//    }
     private void getModes() {
         progressBar.setVisibility(View.VISIBLE);
         selectedMode = view.findViewById(R.id.text_mode_name);
@@ -407,11 +354,10 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                 comm.setActive(true);
                 if (obj.getName().equals("Therapy")) {
                     comm.setCommand("<<f00");
-                    addSelectedMode(obj.getId());
                 } else {
                     comm.setCommand(obj.getCommand());
-                    addSelectedMode(obj.getId());
                 }
+                addSelectedMode(obj.getId());
                 comm.setCommandName(obj.getName());
                 String text = comm.getCommand();
                 if (text == null)
@@ -519,28 +465,18 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
 
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
     @Override
     public void onStart() {
         super.onStart();
-
         selectedMode = view.findViewById(R.id.text_mode_name);
         progressBar = view.findViewById(R.id.progressBar);
         startAsyncTask();
         getModes();
-
-
     }
 
     private boolean isModeAvailable() {
         progressBar.setVisibility(View.VISIBLE);
-        boolean isAvailable = false;
+        boolean isAvailable;
         helperAllModes = dbHelper.getAllModes();
         if (helperAllModes.size() == 0) {
             isAvailable = false;

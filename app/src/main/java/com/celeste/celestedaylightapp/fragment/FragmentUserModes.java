@@ -48,7 +48,6 @@ public class FragmentUserModes extends Fragment {
     private int Id;
     private List<UserModeModel> modeList = new ArrayList<>();
     private DatabaseHelper dbHelper;
-    private Mode mode = new Mode();
     private LinearLayout lyt_not_found;
     private SwipeRefreshLayout pullToRefresh;
 
@@ -68,7 +67,6 @@ public class FragmentUserModes extends Fragment {
 
     private void initComponents() {
         dbHelper = new DatabaseHelper(getActivity());
-        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
         progressBar = view.findViewById(R.id.progressBar);
         lyt_not_found = view.findViewById(R.id.lyt_not_found);
         pullToRefresh = view.findViewById(R.id.pullToRefresh);
@@ -83,16 +81,14 @@ public class FragmentUserModes extends Fragment {
         if (helperAllModes.size() != 0) {
             for (Mode mode : helperAllModes) {
                 userModeModel.setMode(mode);
+                modeList.add(userModeModel);
             }
-            modeList.add(userModeModel);
-            pullToRefresh.setRefreshing(false);
-            swipeRefreshListener();
         } else {
             lyt_not_found.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
-            pullToRefresh.setRefreshing(false);
-            swipeRefreshListener();
         }
+        pullToRefresh.setRefreshing(false);
+        swipeRefreshListener();
         recyclerView = view.findViewById(R.id.modesRecyclerView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -113,7 +109,6 @@ public class FragmentUserModes extends Fragment {
                 if (response.body() != null && response.code() == 200) {
                     if (response.body().getResult() != null) {
                         modeList = response.body().getResult().getUserModes();
-                        Toast.makeText(getContext(),""+modeList.size(), Toast.LENGTH_SHORT).show();
                         if (modeList.size() != 0) {
                             initRecyclerView(response.body().getResult().getUserModes());
                             pullToRefresh.setRefreshing(false);
@@ -129,6 +124,7 @@ public class FragmentUserModes extends Fragment {
                     lyt_not_found.setVisibility(View.VISIBLE);
                 }
             }
+
             @Override
             public void onFailure(Call<GetSingleUserResponse> call, Throwable t) {
                 if (t instanceof NoConnectivityException) {

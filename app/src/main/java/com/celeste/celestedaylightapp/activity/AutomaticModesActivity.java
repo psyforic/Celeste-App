@@ -20,14 +20,13 @@ import com.celeste.celestedaylightapp.UARTInterface;
 import com.celeste.celestedaylightapp.UARTService;
 import com.celeste.celestedaylightapp.adapter.ModeListAdapter;
 import com.celeste.celestedaylightapp.data.Constants;
+import com.celeste.celestedaylightapp.database.DatabaseHelper;
 import com.celeste.celestedaylightapp.domain.Command;
 import com.celeste.celestedaylightapp.domain.UartConfiguration;
 import com.celeste.celestedaylightapp.fragment.Frag_Dashboard;
 import com.celeste.celestedaylightapp.model.Mode;
 import com.celeste.celestedaylightapp.profile.BleProfileService;
 import com.celeste.celestedaylightapp.profile.BleProfileServiceReadyActivity;
-import com.celeste.celestedaylightapp.sqllitedb.DBManager;
-import com.celeste.celestedaylightapp.database.DatabaseHelper;
 import com.celeste.celestedaylightapp.utils.Tools;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -39,12 +38,7 @@ import org.simpleframework.xml.stream.HyphenStyle;
 import java.util.List;
 import java.util.UUID;
 
-public class AutomaticModesActivity  extends BleProfileServiceReadyActivity<UARTService.UARTBinder> implements UARTInterface, MainActivity.ConfigurationListener {
-    private View parenView;
-    private RecyclerView recyclerView;
-    private ActionModeCallback actionModeCallback;
-    private ActionMode actionMode;
-    private List<Mode> modes;
+public class AutomaticModesActivity extends BleProfileServiceReadyActivity<UARTService.UARTBinder> implements UARTInterface, MainActivity.ConfigurationListener {
     private LinearLayout lyt_not_found;
     private ModeListAdapter mAdapter;
     private FloatingActionButton fab;
@@ -52,12 +46,6 @@ public class AutomaticModesActivity  extends BleProfileServiceReadyActivity<UART
     private UartConfiguration mConfiguration;
     private SharedPreferences mPreferences;
     private final static String PREFS_CONFIGURATION = "configuration_id";
-    private DBManager dbManager;
-
-  /*  @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-    }*/
 
     @Override
     protected void onServiceBound(UARTService.UARTBinder binder) {
@@ -76,15 +64,14 @@ public class AutomaticModesActivity  extends BleProfileServiceReadyActivity<UART
 
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_automatic_modes);
         mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         initToolbar();
         setup();
         addMode();
         initComponent();
-
     }
+
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -95,10 +82,10 @@ public class AutomaticModesActivity  extends BleProfileServiceReadyActivity<UART
     }
 
     private void initComponent() {
-        recyclerView = findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
-        modes = Constants.getDefaultModesData(this);
+        List<Mode> modes = Constants.getDefaultModesData(this);
         try {
             DatabaseHelper mDatabaseHelper = new DatabaseHelper(this);
             long id = mPreferences.getLong(PREFS_CONFIGURATION, 0);
@@ -109,28 +96,24 @@ public class AutomaticModesActivity  extends BleProfileServiceReadyActivity<UART
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mAdapter = new ModeListAdapter(mConfiguration, this, new ModeListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Command obj, int position) {
-                final Command.Eol eol = obj.getEol();
-                String text = obj.getCommand();
-                if (text == null)
-                    text = "";
-                switch (eol) {
-                    case CR_LF:
-                        text = text.replaceAll("\n", "\r\n");
-                        break;
-                    case CR:
-                        text = text.replaceAll("\n", "\r");
-                        break;
-                }
-                final UARTInterface uart = (UARTInterface) AutomaticModesActivity.this;
-                uart.send(text);
+        mAdapter = new ModeListAdapter(mConfiguration, this, (ModeListAdapter.OnItemClickListener) (obj, position) -> {
+            final Command.Eol eol = obj.getEol();
+            String text = obj.getCommand();
+            if (text == null)
+                text = "";
+            switch (eol) {
+                case CR_LF:
+                    text = text.replaceAll("\n", "\r\n");
+                    break;
+                case CR:
+                    text = text.replaceAll("\n", "\r");
+                    break;
             }
+            final UARTInterface uart = (UARTInterface) AutomaticModesActivity.this;
+            uart.send(text);
         });
 
         recyclerView.setAdapter(mAdapter);
-        actionModeCallback = new ActionModeCallback();
         if (modes.size() == 0) {
             lyt_not_found.setVisibility(View.VISIBLE);
         } else {
@@ -139,7 +122,6 @@ public class AutomaticModesActivity  extends BleProfileServiceReadyActivity<UART
     }
 
     private void setup() {
-        parenView = findViewById(android.R.id.content);
         lyt_not_found = findViewById(R.id.lyt_not_found);
         fab = findViewById(R.id.fab);
     }
@@ -186,24 +168,22 @@ public class AutomaticModesActivity  extends BleProfileServiceReadyActivity<UART
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            //mAdapter.clearSelections();
-            actionMode = null;
+            ActionMode actionMode = null;
             Tools.setSystemBarColor(AutomaticModesActivity.this, R.color.colorPrimaryDark);
         }
     }
+
     private void setDefaultFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_content,new Frag_Dashboard());
+        transaction.replace(R.id.frame_content, new Frag_Dashboard());
         transaction.commit();
 
     }
+
     private void addMode() {
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), AddModeActivity.class));
-                overridePendingTransition(R.anim.enter_from_right, R.anim.exit_from_left);
-            }
+        fab.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), AddModeActivity.class));
+            overridePendingTransition(R.anim.enter_from_right, R.anim.exit_from_left);
         });
     }
 

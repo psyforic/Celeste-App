@@ -17,7 +17,6 @@ import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.model.user.GetSingleUserResponse;
 import com.celeste.celestedaylightapp.model.user.UserModel;
-import com.celeste.celestedaylightapp.model.user.UserResult;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
 import com.celeste.celestedaylightapp.sqllitedb.SQLLiteOpenHelper;
@@ -40,14 +39,12 @@ public class ActivityProfile extends AppCompatActivity {
     TextView tvEmail;
     TextView tvAddress;
     TextView tvNames;
-    TextView tvCellphone;
     LinearLayout profile_layout;
     ProgressBar progressBar;
     LinearLayout lyt_not_found;
     FloatingActionButton floatingActionButton;
     Api api = ApiClient.getInstance(this).create(Api.class);
     UserModel userModel;
-    UserResult userResult;
     private int Id;
 
     @Override
@@ -99,14 +96,11 @@ public class ActivityProfile extends AppCompatActivity {
                 TastyToast.makeText(getApplicationContext(), "" + t.getMessage(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
             }
         });
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ActivityProfile.this, ActivityEditUser.class);
-                intent.putExtra("userId", Id);
-                startActivity(intent);
-                finish();
-            }
+        floatingActionButton.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityProfile.this, ActivityEditUser.class);
+            intent.putExtra("userId", Id);
+            startActivity(intent);
+            finish();
         });
     }
 
@@ -117,15 +111,13 @@ public class ActivityProfile extends AppCompatActivity {
         userProfileInfo.setLastName(user.getSurname());
         userProfileInfo.setUsername(user.getUserName());
         userProfileInfo.setUserEmail(user.getEmailAddress());
-        if(dbHelper.checkUser(userProfileInfo.getUserEmail()))
-        {
+        if (dbHelper.checkUser(userProfileInfo.getUserEmail())) {
             dbHelper.addUser(userProfileInfo);
         }
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
@@ -160,8 +152,6 @@ public class ActivityProfile extends AppCompatActivity {
     protected void onStart() {
         if (isNetworkAvailable()) {
             initProfile();
-        } else {
-            //load from database
         }
         super.onStart();
     }
@@ -169,13 +159,11 @@ public class ActivityProfile extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //     initProfile();
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        //    initProfile();
     }
 
     @Override

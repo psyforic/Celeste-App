@@ -60,8 +60,7 @@ public class ModesFragment extends BleProfileServiceReadyActivity<UARTService.UA
     private SharedPreferences mPreferences;
     private final static String PREFS_CONFIGURATION = "configuration_id";
     private DBManager dbManager;
-    private List<UserMode> assessments = new ArrayList<>();
-    private Api api = ApiClient.getInstance(this).create(Api.class);
+    private final List<UserMode> assessments = new ArrayList<>();
 
 
     public ModesFragment() {
