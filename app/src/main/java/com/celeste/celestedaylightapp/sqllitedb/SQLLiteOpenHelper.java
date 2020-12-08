@@ -139,10 +139,7 @@ public class SQLLiteOpenHelper extends SQLiteOpenHelper {
         int cursorCount = cursor.getCount();
         cursor.close();
         db.close();
-        if (cursorCount > 0) {
-            return true;
-        }
-        return false;
+        return cursorCount > 0;
     }
     public boolean checkUser(String email, String password) {
         // array of columns to fetch
@@ -170,9 +167,6 @@ public class SQLLiteOpenHelper extends SQLiteOpenHelper {
         int cursorCount = cursor.getCount();
         cursor.close();
         db.close();
-        if (cursorCount > 0) {
-            return true;
-        }
-        return false;
+        return cursorCount > 0;
     }
 }

@@ -5,7 +5,8 @@ import android.util.Log;
 
 import com.celeste.celestedaylightapp.utils.Constants;
 import com.celeste.celestedaylightapp.utils.Tools;
-import com.google.firebase.database.annotations.NotNull;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;

@@ -13,14 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.adapter.UsersAdapter;
-import com.celeste.celestedaylightapp.model.User;
 import com.celeste.celestedaylightapp.model.user.UserGetResponse;
 import com.celeste.celestedaylightapp.model.user.UserModel;
 import com.celeste.celestedaylightapp.model.user.UserResult;
 import com.celeste.celestedaylightapp.retrofit.Api;
 import com.celeste.celestedaylightapp.retrofit.ApiClient;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -32,13 +30,11 @@ import retrofit2.Response;
  * create an instance of this fragment.
  */
 public class UsersFragment extends Fragment {
-    Api api = ApiClient.getInstance(getContext()).create(Api.class);
     private View parent_view;
-    private UsersAdapter usersAdapter;
-    private RecyclerView recyclerView;
-    private List<User> items = new ArrayList<>();
     private UserResult userResult;
     private ProgressBar progressBar;
+
+    Api api = ApiClient.getInstance(getContext()).create(Api.class);
 
     public UsersFragment() {
         // Required empty public constructor
@@ -72,18 +68,17 @@ public class UsersFragment extends Fragment {
 
             @Override
             public void onFailure(Call<UserGetResponse> call, Throwable t) {
-                Toast.makeText(getContext(), "" + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
                 progressBar.setVisibility(View.GONE);
             }
         });
     }
 
     public void initRecyclerView(List<UserModel> userList) {
-        recyclerView = parent_view.findViewById(R.id.usersRecyclerView);
+        RecyclerView recyclerView = parent_view.findViewById(R.id.usersRecyclerView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        usersAdapter = new UsersAdapter(getContext(), userList);
+        UsersAdapter usersAdapter = new UsersAdapter(getContext(), userList);
         recyclerView.setAdapter(usersAdapter);
     }
-
 }

@@ -37,6 +37,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +47,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-/*import com.celeste.celesteapp.utility.DebugLogger;*/
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.scanner.ScannerFragment;
 
@@ -433,7 +433,7 @@ public abstract class BleProfileServiceReadyActivity<E extends BleProfileService
                 mService.disconnect();
             }
         } else {
-           showBLEDialog();
+            showBLEDialog();
         }
     }
 
@@ -467,7 +467,7 @@ public abstract class BleProfileServiceReadyActivity<E extends BleProfileService
         }
         mBluetoothDevice = device;
         mDeviceName = name;
-        Toast.makeText(getApplicationContext(), "Connecting to " + mDeviceName+"...", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Connecting to " + mDeviceName + "...", Toast.LENGTH_LONG).show();
         // The device may not be in the range but the service will try to connect to it if it reach it
         Logger.d(mLogSession, "Creating service...");
         final Intent service = new Intent(this, getServiceClass());
@@ -491,7 +491,7 @@ public abstract class BleProfileServiceReadyActivity<E extends BleProfileService
         mPreferences.edit().putString(MDEVICE_NAME, mDeviceName != null ? mDeviceName : getString(R.string.not_available)).apply();
         //  mConnectButton.setText(R.string.action_connecting);
         // textConnected.setText(R.string.action_connecting);
-       // Toast.makeText(getApplicationContext(), "Connecting to " + mDeviceName +"...", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Connecting to " + mDeviceName +"...", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -562,7 +562,7 @@ public abstract class BleProfileServiceReadyActivity<E extends BleProfileService
 
     @Override
     public void onError(final BluetoothDevice device, final String message, final int errorCode) {
-      //  DebugLogger.e(TAG, "Error occurred: " + message + ",  error code: " + errorCode);
+        Log.e(TAG, "Error occurred: " + message + ",  error code: " + errorCode);
         showToast(message + " (" + errorCode + ")");
     }
 

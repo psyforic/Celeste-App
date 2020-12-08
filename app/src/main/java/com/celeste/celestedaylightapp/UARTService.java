@@ -29,13 +29,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.celeste.celestedaylightapp.profile.BleProfileService;
 import com.celeste.celestedaylightapp.profile.LoggableBleManager;
-import com.celeste.celestedaylightapp.profile.BleProfileService;
 
 import no.nordicsemi.android.log.Logger;
 

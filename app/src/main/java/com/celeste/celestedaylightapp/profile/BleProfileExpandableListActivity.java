@@ -22,7 +22,6 @@
 package com.celeste.celestedaylightapp.profile;
 
 
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -33,6 +32,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,7 +40,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-//import com.celeste.celesteapp.utility.DebugLogger;
 import com.celeste.celestedaylightapp.ExpandableListActivity;
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.scanner.ScannerFragment;
@@ -51,6 +50,8 @@ import no.nordicsemi.android.ble.BleManagerCallbacks;
 import no.nordicsemi.android.log.ILogSession;
 import no.nordicsemi.android.log.LocalLogSession;
 import no.nordicsemi.android.log.Logger;
+
+//import com.celeste.celesteapp.utility.DebugLogger;
 
 
 @SuppressWarnings("unused")
@@ -64,14 +65,15 @@ public abstract class BleProfileExpandableListActivity extends ExpandableListAct
     private LoggableBleManager<? extends BleManagerCallbacks> mBleManager;
 
     //  private TextView mDeviceNameView;
-   // private Button mConnectButton;
+    // private Button mConnectButton;
     // private SwitchCompat mConnectSwitch;
     private ILogSession mLogSession;
     private SharedPreferences mPreferences;
     private boolean mDeviceConnected = false;
-   // private TextView textConnected;
+    // private TextView textConnected;
     private String mDeviceName;
     Context c;
+
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -332,23 +334,23 @@ public abstract class BleProfileExpandableListActivity extends ExpandableListAct
 
     @Override
     public void onBondingRequired(@NonNull final BluetoothDevice device) {
-       // showToast(R.string.bonding);
+        showToast(R.string.bonding);
     }
 
     @Override
     public void onBonded(@NonNull final BluetoothDevice device) {
 
-      //  showToast(R.string.bonded);
+        showToast(R.string.bonded);
     }
 
     @Override
     public void onBondingFailed(@NonNull final BluetoothDevice device) {
-       // showToast(R.string.bonding_failed);
+        showToast(R.string.bonding_failed);
     }
 
     @Override
     public void onError(@NonNull final BluetoothDevice device, @NonNull final String message, final int errorCode) {
-     //   DebugLogger.e(TAG, "Error occurred: " + message + ",  error code: " + errorCode);
+        Log.e(TAG, "Error occurred: " + message + ",  error code: " + errorCode);
         showToast(message + " (" + errorCode + ")");
     }
 
@@ -461,13 +463,7 @@ public abstract class BleProfileExpandableListActivity extends ExpandableListAct
     }
 
     protected void showBLEDialog() {
-        if(isBLEEnabled())
-        {
-            final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-        }else {
-            Toast.makeText(this, R.string.no_ble, Toast.LENGTH_LONG).show();
-        }
-
+        final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
     }
 }

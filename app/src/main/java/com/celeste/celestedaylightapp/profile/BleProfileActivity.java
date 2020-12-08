@@ -30,6 +30,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +39,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-//import com.celeste.celesteapp.utility.DebugLogger;
 import com.celeste.celestedaylightapp.R;
 import com.celeste.celestedaylightapp.scanner.ScannerFragment;
 
@@ -283,7 +283,7 @@ public abstract class BleProfileActivity extends AppCompatActivity implements Bl
                     //    textConnected.setText("Connected");
                     //            mConnectSwitch.setChecked(true);
 
-            mPreferences.edit().putString(MDEVICE_NAME, getDeviceName()).apply();
+                    mPreferences.edit().putString(MDEVICE_NAME, getDeviceName()).apply();
                 }
         );
     }
@@ -325,23 +325,22 @@ public abstract class BleProfileActivity extends AppCompatActivity implements Bl
 
     @Override
     public void onBondingRequired(@NonNull final BluetoothDevice device) {
-      //  showToast(R.string.bonding);
+        showToast(R.string.bonding);
     }
 
     @Override
     public void onBonded(@NonNull final BluetoothDevice device) {
-
-        //showToast(R.string.bonded);
+        showToast(R.string.bonded);
     }
 
     @Override
     public void onBondingFailed(@NonNull final BluetoothDevice device) {
-//        showToast(R.string.bonding_failed);
+        showToast(R.string.bonding_failed);
     }
 
     @Override
     public void onError(@NonNull final BluetoothDevice device, @NonNull final String message, final int errorCode) {
-     //   DebugLogger.e(TAG, "Error occurred: " + message + ",  error code: " + errorCode);
+        Log.e(TAG, "Error occurred: " + message + ",  error code: " + errorCode);
         showToast(message + " (" + errorCode + ")");
     }
 

@@ -25,13 +25,8 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-//import android.support.annotation.ColorRes;
-//import android.support.annotation.DrawableRes;
-
 public class Tools {
-    SharedPreferences myPref;
-
-    private static float getAPIVerison() {
+    private static float getAPIVersion() {
 
         Float f = null;
         try {
@@ -44,7 +39,7 @@ public class Tools {
     }
 
     public static void systemBarLolipop(Activity act) {
-        if (getAPIVerison() >= 5.0) {
+        if (getAPIVersion() >= 5.0) {
             Window window = act.getWindow();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -100,6 +95,7 @@ public class Tools {
                     .placeholder(R.drawable.ic_automatic)
                     .into(img);
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

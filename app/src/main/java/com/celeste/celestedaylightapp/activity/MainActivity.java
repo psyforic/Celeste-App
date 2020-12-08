@@ -87,6 +87,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     private DatabaseHelper mDatabaseHelper;
     private SharedPreferences mPreferences;
     private UARTService.UARTBinder mServiceBinder;
+    private ConfigurationListener mConfigurationListener;
     private UserModel userModel;
     private com.celeste.celestedaylightapp.sqllitedb.DatabaseHelper dbHelper;
 
@@ -152,6 +153,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     }
 
     public void setConfigurationListener(final ConfigurationListener listener) {
+        mConfigurationListener = listener;
     }
 
     @Override
@@ -298,7 +300,7 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
                     }
                 } else {
                     final String cmds = mPreferences.getString(PREFS_BUTTON_COMMAND + i, null);
-                    if (cmd != null) {
+                    if (cmds != null) {
                         final Command command = new Command();
                         command.setCommand(cmds);
                         command.setActive(mPreferences.getBoolean(PREFS_BUTTON_ENABLED + i, false));
@@ -351,14 +353,12 @@ public class MainActivity extends BleProfileServiceReadyActivity<UARTService.UAR
     private void logout() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setMessage(R.string.logout_message);
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                EasyPreference.with(getApplicationContext()).remove(Constants.CREDENTIALS).save();
-                Intent intent = new Intent(getApplicationContext(), TenantLoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
-            }
+        builder.setPositiveButton(R.string.ok, (dialog, id) -> {
+            EasyPreference.with(getApplicationContext()).remove(Constants.CREDENTIALS).save();
+            Intent intent = new Intent(getApplicationContext(), TenantLoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {

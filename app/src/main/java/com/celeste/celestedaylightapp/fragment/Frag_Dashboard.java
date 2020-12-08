@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -107,6 +108,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         }
 
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -301,24 +303,19 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                                     switch (position) {
                                         case 0:
                                             mCircularSeekBar.setProgress(27f);
-                                            TastyToast.makeText(getActivity(), "Selected mode " + text, TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                                             break;
                                         case 1:
                                             mCircularSeekBar.setProgress(30f);
-                                            TastyToast.makeText(getActivity(), "Selected mode " + text, TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                                             break;
                                         case 2:
                                             mCircularSeekBar.setProgress(45f);
-                                            TastyToast.makeText(getActivity(), "Selected mode " + text, TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                                             break;
                                         case 3:
                                             mCircularSeekBar.setProgress(65f);
-                                            TastyToast.makeText(getActivity(), "Selected mode " + text, TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                                             break;
                                     }
                                     mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
                                     uart.send(text);
-                                    TastyToast.makeText(getActivity(), "Selected mode " + selectedMode.getText(), TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
                                 }
                             });
                             recyclerView.setAdapter(modeAdapter);
@@ -327,7 +324,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                         }
                     }
                 } else {
-                    TastyToast.makeText(getContext(), "Response code error " + response.code(), TastyToast.LENGTH_LONG, TastyToast.ERROR).show();
+                    Toast.makeText(getContext(), "An Error Occurred", Toast.LENGTH_LONG).show();
                 }
                 // progressBar.setVisibility(View.GONE);
             }
@@ -339,6 +336,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
             }
         });
     }
+
     private void getModes() {
         progressBar.setVisibility(View.VISIBLE);
         selectedMode = view.findViewById(R.id.text_mode_name);
@@ -389,7 +387,6 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                 mPreferences.edit().putString(ACTIVEMODE, selectedMode.getText().toString()).apply();
                 assert uart != null;
                 uart.send(text);
-                TastyToast.makeText(getContext(), " " + comm.getCommand(), TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
             });
             recyclerView.setAdapter(modeAdapter);
             recyclerView.getAdapter().notifyDataSetChanged();

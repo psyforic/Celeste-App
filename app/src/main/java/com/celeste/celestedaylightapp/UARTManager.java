@@ -27,10 +27,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
-
-import com.celeste.celestedaylightapp.profile.LoggableBleManager;
 import com.celeste.celestedaylightapp.profile.LoggableBleManager;
 
 import java.util.UUID;
