@@ -9,7 +9,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 public class ApiClient {
-    private static final String BASE_URL = "http://vuyo921009-001-site1.gtempurl.com";
+    private static final String BASE_URL = "http://celestedaylight-001-site1.itempurl.com";
     //    private static final String BASE_URL = "http://celesteweb-001-site1.ftempurl.com:80";
     private static Retrofit retrofitInstance = null;
 

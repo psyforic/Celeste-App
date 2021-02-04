@@ -402,9 +402,9 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
         call.enqueue(new Callback<AddModeResponse>() {
             @Override
             public void onResponse(Call<AddModeResponse> call, Response<AddModeResponse> response) {
-                if (response.code() == 200 && response.body() != null) {
-                    TastyToast.makeText(getContext(), "Success", TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
-                }
+//                if (response.code() == 200 && response.body() != null) {
+//                    TastyToast.makeText(getContext(), "Success", TastyToast.LENGTH_LONG, TastyToast.SUCCESS).show();
+//                }
             }
 
             @Override
@@ -519,7 +519,7 @@ public class Frag_Dashboard extends Fragment implements MainActivity.Configurati
                 for (int i = 0; i < integers[0]; i++) {
                     publishProgress((i * 100) / integers[0]);
                     try {
-                        getModes();
+                        getActivity().runOnUiThread((Frag_Dashboard.this::getModes));
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
